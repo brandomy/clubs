@@ -1,6 +1,6 @@
 # Project Backlog
 
-**Last Updated**: 2025-12-17
+**Last Updated**: 2025-12-18
 
 See [Backlog Management System](docs/backlog-management-system.md) for process and best practices.
 
@@ -14,6 +14,7 @@ See [Backlog Management System](docs/backlog-management-system.md) for process a
 | GEO-002 | P2 | Backlog | Add Umami analytics integration | Georgetown | Feature | S | 2025-12-17 | Integrate Umami analytics for usage tracking |
 | GEO-003 | P2 | Backlog | Add screenshots to PWA manifest | Georgetown | Feature | S | 2025-12-17 | Add app screenshots to manifest for better app store presentation |
 | GEO-004 | P2 | Backlog | Add language switcher | Georgetown | Feature | M | 2025-12-17 | Enable users to switch between English and Chinese language options |
+| GEO-005 | P1 | Backlog | Verify Facebook OG preview works | Georgetown | Bug | XS | 2025-12-18 | Check https://developers.facebook.com/tools/debug/ for rotary-club.app after 24-48hr cache expiration. See docs/troubleshooting-logs/troubleshooting-log-2025-12-18-facebook-og-preview.md |
 | HUA-001 | P2 | Backlog | Add Umami analytics integration | HuaQiao | Feature | S | 2025-12-17 | Integrate Umami analytics for usage tracking |
 | HUA-002 | P2 | Backlog | Add screenshots to PWA manifest | HuaQiao | Feature | S | 2025-12-17 | Add app screenshots to manifest for better app store presentation |
 | PIT-001 | P2 | Backlog | Add Umami analytics integration | Pitchmasters | Feature | S | 2025-12-17 | Integrate Umami analytics for usage tracking |
@@ -58,8 +59,8 @@ See [Backlog Management System](docs/backlog-management-system.md) for process a
 
 ## Quick Stats
 
-- **Total Items**: 10
-- **P0/P1 Items**: 0
+- **Total Items**: 11
+- **P0/P1 Items**: 1
 - **In Progress**: 0
 - **Blocked**: 0
 - **Done (pending archive)**: 2
