@@ -1,0 +1,26 @@
+Category,Metric,Value,Source,Year,Geographic_Scope,Notes
+Extent,Global wheelchair need,80 million people,WHO,2023,Global,Only 5-35% have access
+Extent,Children with disabilities in Asia-Pacific,108 million,UNICEF,2025,Asia-Pacific,Nearly half of global total
+Extent,Access rate low-income countries,3%,WHO/UNICEF,2022,Global,vs 90% in wealthy countries
+Extent,Indonesia baseline access,80% had no wheelchair,BMC Health Services Research,2016,Indonesia,Study sample
+Extent,Data quality in LMICs,50% countries 15% datasets adequate,World Bank,2019,LMICs,International standards
+Gravity,Brain development by age 5,90%,WHO/UNICEF,2022,Global,Critical window
+Gravity,Cognitive test success with locomotion,76% vs 13%,Kermoian & Campos,1988,Research sample,Crawling vs pre-crawling infants
+Gravity,Hip displacement onset age,2-3 years,Multiple studies,2024,Global,When displacement begins
+Gravity,Hip displacement GMFCS V,90%,SICOT-J,2024,Global,Highest severity level
+Gravity,Scoliosis in CP,21-64%,PMC,2017,Global,Develops before age 10
+Gravity,Respiratory death risk ratio,14x general population,Frontiers in Pediatrics,2020,Global,#1 cause of death severe CP
+Gravity,Feeding disorders CP,80% prevalence,Rogers,1994,Global,Positioning-dependent
+Implications,Hip dislocation prevention,8% to 0%,Swedish CPUP,2014,Sweden,20-year program data
+Implications,Lifetime cost per person CP,$921000+,CDC MMWR,2003,United States,$1.6M adjusted to 2023
+Implications,Medical cost multiplier,10x,CDC,2003,United States,vs children without disability
+Implications,Caregiver depression rate,31% vs 7%,Meta-analysis,2021,Global,IDD vs control parents
+Implications,Employment impact one child,1/3 reduction in odds,Stabile & Allin,2012,United States,Multiple children: 90%+ reduction
+Implications,Educational exclusion LMICs,50%,UNICEF,2023,LMICs,Not enrolled in school
+Implications,School gap Cambodia,50 percentage points,UNESCO,2020,Cambodia,57% vs 7% out of school
+Implications,GDP loss from exclusion,3-7%,ILO/WEF,2022,Global,Labor market exclusion
+Implications,ROI assistive technology,$15-38 per $1,SROI Studies,2019,Australia,10-year benefit period
+Evidence,RCT age range,14-30 months,Jones et al,2012,United States,Significant developmental gains
+Evidence,Youngest power mobility training,7 months,Lynch et al,2009,Research sample,Spina bifida infant
+Costs,Wheelchairs for Kids unit cost,$280-300,WFK,2025,Australia/ASEAN,WHO-compliant design
+Costs,Go Baby Go unit cost,$200,Oregon State,2024,Global,Modified ride-on car

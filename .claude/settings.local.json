@@ -81,7 +81,20 @@
       "Bash(__NEW_LINE__ curl -s \"$SUPABASE_URL/rest/v1/service_projects?select=id,project_name,status,area_of_focus&order=project_name\" )",
       "Bash(git config:*)",
       "Bash(sips:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nrefactor: remove HTML meta tag SEO blocking, rely on robots.txt only\n\nRemove conflicting HTML meta tags that were blocking all search engines,\ncontradicting the robots.txt policy \\(ADR-001\\) that allows public content\nindexing while protecting member data.\n\nChanges:\n- Remove <meta name=\"robots\"> blocking tags from index.html\n- Keep Open Graph tags for social media previews\n- Update documentation to reflect robots.txt-only approach\n- Add dev journal entry documenting policy simplification\n\nBenefits:\n- Single source of truth \\(robots.txt\\)\n- Public content now indexable by search engines\n- Member data remains protected\n- Social media link previews work correctly\n- Simpler architecture, no dynamic meta tag injection needed\n\nRelated: ADR-001 \\(robots.txt policy decision\\)\n\n🤖 Generated with Claude Code \\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git restore:*)",
+      "Bash(git push)",
+      "Bash(git -C /Users/randaleastman/dev/clubs status)",
+      "Bash(git -C /Users/randaleastman/dev/clubs diff .claude/settings.local.json)",
+      "Bash(git -C /Users/randaleastman/dev/clubs diff BACKLOG.md)",
+      "Bash(git -C /Users/randaleastman/dev/clubs add BACKLOG.md docs/knowledge-transfer/brandmine-updates-blog-technical-overview.md docs/knowledge-transfer/open-graph-social-sharing-setup.md docs/troubleshooting-logs/)",
+      "Bash(git -C /Users/randaleastman/dev/clubs log --oneline -5)",
+      "Bash(git -C /Users/randaleastman/dev/clubs commit -m \"$\\(cat <<''EOF''\ndocs: add Open Graph setup guide and troubleshooting documentation\n\nAdd knowledge transfer documentation for Open Graph/social sharing setup\nand troubleshooting log for Facebook OG preview investigation.\n\nChanges:\n- Add Open Graph social sharing setup guide\n- Add Brandmine updates blog technical overview\n- Add Facebook OG preview troubleshooting log\n- Update backlog with GEO-005 for OG preview verification\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C /Users/randaleastman/dev/clubs status --porcelain)",
+      "Bash(git -C /Users/randaleastman/dev/clubs add .gitignore research/wheelchairs/)",
+      "Bash(git -C /Users/randaleastman/dev/clubs commit -m \"$\\(cat <<''EOF''\ndocs: add wheelchair research for Karpal Singh project\n\nAdd organized research files for wheelchair donation project in Penang,\nincluding Karpal Singh legacy analysis and ASEAN pediatric wheelchair\nneeds assessment prompts.\n\nFiles:\n- Karpal Singh Research Report and executive summary\n- Jagdeep Singh Deo briefing \\(key contact as Penang Deputy CM\\)\n- Pediatric wheelchair needs analysis prompts for Penang and ASEAN\n\nAlso add temp/ to .gitignore to exclude working research archive.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(deno task extract-pdf:*)"
     ]
   }
 }

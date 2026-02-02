@@ -1,0 +1,6 @@
+{
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "extract-pdf": "deno run --allow-read --allow-write --allow-env --allow-net scripts/extract-pdf.ts"
+  }
+}

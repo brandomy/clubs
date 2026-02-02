@@ -1,0 +1,11 @@
+country,pop_under_18_millions,children_needing_wheelchair,children_without,gap_pct,avg_wait_months,confidence
+Indonesia,75-80,700000-1600000,630000-1520000,90,unknown,LOW
+Malaysia,9.03,63000-106000,56000-95000,89,8-18,MEDIUM
+Philippines,38,570000-950000,485000-855000,85,4-8,MEDIUM
+Singapore,0.72,1500-2400,150-240,10,1-2,HIGH
+Thailand,12-13,55000-60000,27500-48000,50-80,unknown,MEDIUM-HIGH
+Vietnam,26,100000-150000,85000-142500,85-95,unknown,MEDIUM
+Myanmar,15,unable-to-estimate,critical,95+,unknown,LOW
+Cambodia,5-6,50000-60000,30000-48000,60-80,unknown,MEDIUM
+Laos,2.5,20000-30000,14000-27000,70-90,unknown,LOW-MEDIUM
+Brunei,0.15,1400-1500,700-1200,50,unknown,VERY-LOW
