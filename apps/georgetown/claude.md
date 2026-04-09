@@ -39,7 +39,7 @@ npm run build               # Production build
 
 ### **Supabase Database Connection**
 **Region**: Southeast Asia (Singapore) - `aws-1-ap-southeast-1`
-**Project**: `zooszmqdrdocuiuledql.supabase.co`
+**Project**: `rmorlqozjwbftzowqmps.supabase.co`
 
 **Connection Details** (stored in `.env.local`):
 - **DATABASE_URL** - Pooled connection (port 6543) for application queries
