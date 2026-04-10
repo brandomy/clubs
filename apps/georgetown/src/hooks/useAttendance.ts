@@ -15,6 +15,7 @@ interface UseAttendanceReturn {
   records: AttendanceRecord[]
   summary: MeetingAttendanceSummary | null
   checkInMember: (memberId: string, notes?: string) => Promise<void>
+  checkOutMember: (memberId: string) => Promise<void>
   checkInVisitor: (name: string, club: string, district?: string, notes?: string) => Promise<void>
   checkInGuest: (name: string, hostedBy: string, isProspective?: boolean, contactInfo?: string, notes?: string) => Promise<void>
   bulkCheckIn: (memberIds: string[]) => Promise<void>
@@ -111,14 +112,24 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
           }
 
           // Refresh summary
-          supabase
-            .from('meeting_attendance_summary')
-            .select('*')
-            .eq('event_id', eventId)
-            .single()
-            .then(({ data }) => {
+          ;(async () => {
+            try {
+              const { data, error } = await supabase
+                .from('meeting_attendance_summary')
+                .select('*')
+                .eq('event_id', eventId)
+                .single()
+
+              if (error && error.code !== 'PGRST116') {
+                console.error('Failed to refresh attendance summary:', error)
+                return
+              }
+
               if (data) setSummary(data)
-            })
+            } catch (err) {
+              console.error('Unexpected error refreshing summary:', err)
+            }
+          })()
         }
       )
       .subscribe()
@@ -270,10 +281,38 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
     [eventId, user?.id]
   )
 
+  const checkOutMember = useCallback(
+    async (memberId: string) => {
+      if (!eventId) {
+        throw new Error('Event ID is missing')
+      }
+
+      setError(null)
+
+      try {
+        const { error: deleteError } = await supabase
+          .from('attendance_records')
+          .delete()
+          .eq('event_id', eventId)
+          .eq('member_id', memberId)
+
+        if (deleteError) throw deleteError
+
+        // Records will update via real-time subscription
+      } catch (err) {
+        console.error('Error checking out member:', err)
+        setError(err as Error)
+        throw err
+      }
+    },
+    [eventId]
+  )
+
   return {
     records,
     summary,
     checkInMember,
+    checkOutMember,
     checkInVisitor,
     checkInGuest,
     bulkCheckIn,

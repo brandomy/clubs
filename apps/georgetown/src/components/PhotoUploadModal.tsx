@@ -114,11 +114,18 @@ export default function PhotoUploadModal({
       // Get member ID (optional during development)
       let member = null
       if (user?.email) {
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('members')
           .select('id')
           .eq('email', user.email)
           .single()
+
+        // Handle "no rows found" error gracefully - optional field during development
+        if (memberError && memberError.code !== 'PGRST116') {
+          console.error('Error fetching member:', memberError)
+          throw memberError
+        }
+
         member = memberData
       }
 

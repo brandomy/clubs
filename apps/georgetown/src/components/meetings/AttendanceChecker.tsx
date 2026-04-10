@@ -31,7 +31,7 @@ interface AttendanceCheckerProps {
 }
 
 export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceCheckerProps) {
-  const { records, summary: _summary, checkInMember, bulkCheckIn, isLoading: attendanceLoading } = useAttendance(eventId)
+  const { records, summary: _summary, checkInMember, checkOutMember, bulkCheckIn, isLoading: attendanceLoading } = useAttendance(eventId)
   const { summary: _rsvpSummary } = useRSVP(eventId)
   const { isOfficer } = usePermissions()
 
@@ -95,18 +95,16 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
   }
 
   const handleToggleMember = async (memberId: string) => {
-    if (checkedInIds.has(memberId)) {
-      // TODO: Implement un-check-in (delete attendance record)
-      console.warn('Un-check-in not yet implemented')
-      return
-    }
-
     setIsCheckingIn(true)
     try {
-      await checkInMember(memberId)
+      if (checkedInIds.has(memberId)) {
+        await checkOutMember(memberId)
+      } else {
+        await checkInMember(memberId)
+      }
       // checkedInIds will update via real-time subscription
     } catch (error) {
-      console.error('Failed to check in member:', error)
+      console.error('Failed to toggle attendance:', error)
     } finally {
       setIsCheckingIn(false)
     }
