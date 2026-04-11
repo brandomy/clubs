@@ -22,12 +22,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center gap-3">
-                <img
-                  src="/assets/logos/ToastmastersLogoWhite.svg"
-                  alt="Toastmasters International"
-                  className="h-8 w-auto"
-                />
+              <Link to="/" className="flex items-center">
                 <h1 className="text-xl font-montserrat font-semibold text-white">
                   Pitchmasters
                 </h1>
@@ -199,7 +194,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Club Info */}
             <div>
-              <h3 className="text-base font-semibold text-tm-blue mb-3">Pitchmasters Toastmasters</h3>
+              <h3 className="text-base font-semibold text-tm-blue mb-3">Pitchmasters</h3>
               <p className="text-sm text-gray-600 mb-2">
                 Asia's first startup-focused Toastmasters club
               </p>
