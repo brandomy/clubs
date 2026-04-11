@@ -73,7 +73,7 @@ export default function PartnersPage() {
     try {
       setIsLoading(true)
       const { data, error } = await supabase
-        .from('partners')
+        .from('gt_partners')
         .select('*')
         .order('name', { ascending: true })
 

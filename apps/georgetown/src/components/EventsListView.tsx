@@ -135,7 +135,7 @@ export default function EventsListView() {
 
   const fetchLocations = async () => {
     const { data, error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .select('*')
       .order('name', { ascending: true })
 
@@ -184,7 +184,7 @@ export default function EventsListView() {
 
     // Fetch events with locations
     const { data: eventsData, error: eventsError } = await supabase
-      .from('events')
+      .from('gt_events')
       .select(`
         *,
         location:locations(*)
@@ -202,7 +202,7 @@ export default function EventsListView() {
 
     // Fetch speakers for the date range (any status with a scheduled_date)
     const { data: speakersData, error: speakersError } = await supabase
-      .from('speakers')
+      .from('gt_speakers')
       .select('*')
       .gte('scheduled_date', startDate)
       .lte('scheduled_date', endDate)

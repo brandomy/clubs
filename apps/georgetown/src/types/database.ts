@@ -382,62 +382,62 @@ export type MeetingAttendanceSummary = {
 export type Database = {
   public: {
     Tables: {
-      speakers: {
+      gt_speakers: {
         Row: Speaker
         Insert: Omit<Speaker, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Speaker, 'id' | 'created_at'>>
       }
-      members: {
+      gt_members: {
         Row: Member
         Insert: Omit<Member, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Member, 'id' | 'created_at'>>
       }
-      events: {
+      gt_events: {
         Row: ClubEvent
         Insert: Omit<ClubEvent, 'id' | 'created_at' | 'updated_at' | 'location'>
         Update: Partial<Omit<ClubEvent, 'id' | 'created_at' | 'location'>>
       }
-      locations: {
+      gt_locations: {
         Row: Location
         Insert: Omit<Location, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Location, 'id' | 'created_at'>>
       }
-      partners: {
+      gt_partners: {
         Row: Partner
         Insert: Omit<Partner, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Partner, 'id' | 'created_at'>>
       }
-      service_projects: {
+      gt_service_projects: {
         Row: ServiceProject
         Insert: Omit<ServiceProject, 'id' | 'created_at' | 'updated_at' | 'project_year' | 'partners'>
         Update: Partial<Omit<ServiceProject, 'id' | 'created_at' | 'project_year' | 'partners'>>
       }
-      rotary_years: {
+      gt_rotary_years: {
         Row: RotaryYear
         Insert: Omit<RotaryYear, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<RotaryYear, 'id' | 'created_at'>>
       }
-      user_roles: {
+      gt_user_roles: {
         Row: UserRole
         Insert: Omit<UserRole, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<UserRole, 'id' | 'created_at'>>
       }
-      role_permissions: {
+      gt_role_permissions: {
         Row: RolePermission
         Insert: Omit<RolePermission, 'id' | 'created_at'>
         Update: Partial<Omit<RolePermission, 'id' | 'created_at'>>
       }
-      meeting_rsvps: {
+      gt_meeting_rsvps: {
         Row: MeetingRSVP
         Insert: Omit<MeetingRSVP, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<MeetingRSVP, 'id' | 'created_at'>>
       }
-      attendance_records: {
+      gt_attendance_records: {
         Row: AttendanceRecord
         Insert: Omit<AttendanceRecord, 'id' | 'created_at' | 'checked_in_at'>
         Update: Partial<Omit<AttendanceRecord, 'id' | 'created_at' | 'checked_in_at'>>
       }
-      member_attendance_stats: {
+      gt_member_attendance_stats: {
         Row: MemberAttendanceStats
         Insert: Omit<MemberAttendanceStats, 'updated_at'>
         Update: Partial<Omit<MemberAttendanceStats, 'member_id' | 'updated_at'>>

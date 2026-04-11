@@ -76,7 +76,7 @@ export default function MemberDirectory() {
     try {
       setLoading(true)
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .order('name', { ascending: true })
 
@@ -96,7 +96,7 @@ export default function MemberDirectory() {
   const fetchAttendanceStats = async () => {
     try {
       const { data, error } = await supabase
-        .from('member_attendance_stats')
+        .from('gt_member_attendance_stats')
         .select('*')
 
       if (error) {

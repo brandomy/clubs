@@ -37,7 +37,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
 
       try {
         const { data, error: fetchError } = await supabase
-          .from('meeting_rsvps')
+          .from('gt_meeting_rsvps')
           .select('*')
           .eq('event_id', eventId)
           .eq('member_id', memberId)
@@ -67,7 +67,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
 
       try {
         const { data, error: summaryError } = await supabase
-          .from('meeting_rsvp_summary')
+          .from('gt_meeting_rsvp_summary')
           .select('*')
           .eq('event_id', eventId)
           .single()
@@ -96,7 +96,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
         {
           event: '*',
           schema: 'public',
-          table: 'meeting_rsvps',
+          table: 'gt_meeting_rsvps',
           filter: `event_id=eq.${eventId},member_id=eq.${memberId}`
         },
         (payload) => {
@@ -126,13 +126,13 @@ export function useRSVP(eventId: string): UseRSVPReturn {
         {
           event: '*',
           schema: 'public',
-          table: 'meeting_rsvps',
+          table: 'gt_meeting_rsvps',
           filter: `event_id=eq.${eventId}`
         },
         () => {
           // Refresh summary when any RSVP changes for this event
           supabase
-            .from('meeting_rsvp_summary')
+            .from('gt_meeting_rsvp_summary')
             .select('*')
             .eq('event_id', eventId)
             .single()
@@ -168,7 +168,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
         }
 
         const { data: result, error: upsertError } = await supabase
-          .from('meeting_rsvps')
+          .from('gt_meeting_rsvps')
           .upsert(rsvpData, {
             onConflict: 'event_id,member_id'
           })
@@ -223,7 +223,7 @@ export function useEventRSVPList(eventId: string): UseEventRSVPListReturn {
 
       try {
         const { data, error: fetchError } = await supabase
-          .from('meeting_rsvps')
+          .from('gt_meeting_rsvps')
           .select(`
             *,
             members!inner(name)
@@ -261,13 +261,13 @@ export function useEventRSVPList(eventId: string): UseEventRSVPListReturn {
         {
           event: '*',
           schema: 'public',
-          table: 'meeting_rsvps',
+          table: 'gt_meeting_rsvps',
           filter: `event_id=eq.${eventId}`
         },
         () => {
           // Refresh list on any change
           supabase
-            .from('meeting_rsvps')
+            .from('gt_meeting_rsvps')
             .select(`
               *,
               members!inner(name)

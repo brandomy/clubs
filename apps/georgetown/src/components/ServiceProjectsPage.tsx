@@ -226,7 +226,7 @@ export default function ServiceProjectsPage() {
 
       // Fetch projects
       const { data: projectsData, error: projectsError } = await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*')
         .order('start_date', { ascending: false })
 
@@ -242,13 +242,13 @@ export default function ServiceProjectsPage() {
       const projectsWithPartners = await Promise.all(
         (projectsData || []).map(async (project) => {
           const { data: partnerLinks } = await supabase
-            .from('project_partners')
+            .from('gt_project_partners')
             .select('partner_id')
             .eq('project_id', project.id)
 
           if (partnerLinks && partnerLinks.length > 0) {
             const { data: partners } = await supabase
-              .from('partners')
+              .from('gt_partners')
               .select('*')
               .in('id', partnerLinks.map((link) => link.partner_id))
 
@@ -307,7 +307,7 @@ export default function ServiceProjectsPage() {
 
     // Update database
     const { error } = await supabase
-      .from('service_projects')
+      .from('gt_service_projects')
       .update({ status: newStatus })
       .eq('id', projectId)
 

@@ -21,7 +21,7 @@ export default function PartnerDetailModal({ partner, onClose, onEdit }: Partner
     try {
       setIsDeleting(true)
       const { error } = await supabase
-        .from('partners')
+        .from('gt_partners')
         .delete()
         .eq('id', partner.id)
 

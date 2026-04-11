@@ -33,7 +33,7 @@ export default function NarrativeEditor({
       setSaveStatus('saving')
       try {
         const { error } = await supabase
-          .from('rotary_years')
+          .from('gt_rotary_years')
           .update({
             summary: formData.summary || null,
             narrative: formData.narrative || null,
@@ -335,7 +335,7 @@ export default function NarrativeEditor({
                   setSaveStatus('saving')
                   try {
                     const { error } = await supabase
-                      .from('rotary_years')
+                      .from('gt_rotary_years')
                       .update({
                         summary: formData.summary || null,
                         narrative: formData.narrative || null,

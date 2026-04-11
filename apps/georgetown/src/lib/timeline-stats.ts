@@ -35,7 +35,7 @@ export async function calculateRotaryYearStats(
 ): Promise<RotaryYearStats> {
   // First, get the Rotary year record to get date range
   const { data: rotaryYearData, error: yearError } = await supabase
-    .from('rotary_years')
+    .from('gt_rotary_years')
     .select('start_date, end_date, rotary_year')
     .eq('id', rotaryYearId)
     .single()
@@ -55,7 +55,7 @@ export async function calculateRotaryYearStats(
   // Fetch speakers for this year using BOTH rotary_year_id AND date range fallback
   // This handles speakers that were marked "spoken" before auto-linking was implemented
   const { data: speakers, error: speakersError } = await supabase
-    .from('speakers')
+    .from('gt_speakers')
     .select('*')
     .eq('status', 'spoken')
     .gte('scheduled_date', rotaryYearData.start_date)
@@ -67,7 +67,7 @@ export async function calculateRotaryYearStats(
 
   // Fetch completed service projects for this year using BOTH methods
   const { data: projects, error: projectsError } = await supabase
-    .from('service_projects')
+    .from('gt_service_projects')
     .select('*')
     .eq('rotary_year_id', rotaryYearId)
     .eq('status', 'Completed')
@@ -110,7 +110,7 @@ export async function updateRotaryYearStats(
   const stats = await calculateRotaryYearStats(rotaryYearId)
 
   const { error } = await supabase
-    .from('rotary_years')
+    .from('gt_rotary_years')
     .update({ stats })
     .eq('id', rotaryYearId)
 
@@ -130,7 +130,7 @@ export async function updateRotaryYearStats(
  */
 export async function recalculateAllRotaryYearStats(): Promise<number> {
   const { data: rotaryYears, error } = await supabase
-    .from('rotary_years')
+    .from('gt_rotary_years')
     .select('id')
 
   if (error) {
@@ -247,7 +247,7 @@ export async function validateRotaryYearStats(
 ): Promise<boolean> {
   // Fetch stored stats
   const { data: rotaryYear, error } = await supabase
-    .from('rotary_years')
+    .from('gt_rotary_years')
     .select('stats')
     .eq('id', rotaryYearId)
     .single()

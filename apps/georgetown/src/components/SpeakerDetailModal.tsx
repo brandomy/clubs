@@ -35,7 +35,7 @@ export default function SpeakerDetailModal({ speaker, onClose, onEdit }: Speaker
 
     try {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .eq('id', speaker.proposer_id)
         .single()

@@ -46,7 +46,7 @@ export async function getLifetimeImpact(filters?: ImpactFilters): Promise<Lifeti
   try {
     // Build service projects query
     let projectsQuery = supabase
-      .from('service_projects')
+      .from('gt_service_projects')
       .select('*')
 
     // Apply filters
@@ -79,7 +79,7 @@ export async function getLifetimeImpact(filters?: ImpactFilters): Promise<Lifeti
 
     // Get speakers count (spoken status only)
     const speakersQuery = supabase
-      .from('speakers')
+      .from('gt_speakers')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'spoken')
 
@@ -120,7 +120,7 @@ export async function getLifetimeImpact(filters?: ImpactFilters): Promise<Lifeti
 export async function getImpactByAreaOfFocus(filters?: ImpactFilters): Promise<AreaImpact[]> {
   try {
     let query = supabase
-      .from('service_projects')
+      .from('gt_service_projects')
       .select('area_of_focus, beneficiary_count, project_value_rm')
 
     // Apply status filter
@@ -171,7 +171,7 @@ export async function getImpactByAreaOfFocus(filters?: ImpactFilters): Promise<A
 export async function getImpactOverTime(filters?: ImpactFilters): Promise<YearImpact[]> {
   try {
     let projectsQuery = supabase
-      .from('service_projects')
+      .from('gt_service_projects')
       .select('project_year, beneficiary_count, project_value_rm')
 
     // Apply area filter
@@ -190,7 +190,7 @@ export async function getImpactOverTime(filters?: ImpactFilters): Promise<YearIm
 
     // Get speakers grouped by year
     const speakersQuery = supabase
-      .from('speakers')
+      .from('gt_speakers')
       .select('scheduled_date')
       .eq('status', 'spoken')
       .not('scheduled_date', 'is', null)
@@ -246,7 +246,7 @@ export async function getImpactOverTime(filters?: ImpactFilters): Promise<YearIm
 export async function getAvailableRotaryYears(): Promise<string[]> {
   try {
     const { data: projects, error } = await supabase
-      .from('service_projects')
+      .from('gt_service_projects')
       .select('project_year')
       .order('project_year', { ascending: false })
 

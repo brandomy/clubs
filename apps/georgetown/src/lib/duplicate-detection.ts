@@ -10,7 +10,7 @@ export async function checkDuplicateSpeaker(
   }
 
   let query = supabase
-    .from('speakers')
+    .from('gt_speakers')
     .select('id, name, email, organization, status')
     .eq('email', email.trim().toLowerCase())
 
@@ -40,7 +40,7 @@ export async function checkDuplicateMember(
   }
 
   let query = supabase
-    .from('members')
+    .from('gt_members')
     .select('id, name, email, roles')
     .eq('email', email.trim().toLowerCase())
 

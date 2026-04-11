@@ -49,7 +49,7 @@ export default function CalendarView() {
   // Fetch functions (defined before useEffect)
   const fetchSpeakers = async () => {
     const { data, error } = await supabase
-      .from('speakers')
+      .from('gt_speakers')
       .select('*')
       .order('scheduled_date', { ascending: true, nullsFirst: false })
 
@@ -63,7 +63,7 @@ export default function CalendarView() {
 
   const fetchEvents = async () => {
     const { data, error } = await supabase
-      .from('events')
+      .from('gt_events')
       .select(`
         *,
         location:locations(*)
@@ -79,7 +79,7 @@ export default function CalendarView() {
 
   const fetchMembers = async () => {
     const { data, error } = await supabase
-      .from('members')
+      .from('gt_members')
       .select('*')
       .eq('active', true)
       .order('name', { ascending: true })
@@ -93,7 +93,7 @@ export default function CalendarView() {
 
   const fetchRSVPSummaries = async () => {
     const { data, error } = await supabase
-      .from('meeting_rsvp_summary')
+      .from('gt_meeting_rsvp_summary')
       .select('event_id, attending_count, total_headcount')
 
     if (error) {
@@ -120,7 +120,7 @@ export default function CalendarView() {
       .channel('speakers-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'speakers' },
+        { event: '*', schema: 'public', table: 'gt_speakers' },
         handleRealtimeUpdate
       )
       .subscribe()
@@ -129,7 +129,7 @@ export default function CalendarView() {
       .channel('events-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'events' },
+        { event: '*', schema: 'public', table: 'gt_events' },
         handleEventRealtimeUpdate
       )
       .subscribe()
@@ -138,7 +138,7 @@ export default function CalendarView() {
       .channel('rsvps-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'meeting_rsvps' },
+        { event: '*', schema: 'public', table: 'gt_meeting_rsvps' },
         () => fetchRSVPSummaries()
       )
       .subscribe()

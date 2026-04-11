@@ -34,7 +34,7 @@ export default function SpeakerCard({ speaker, isDragging = false }: SpeakerCard
 
     try {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .eq('id', speaker.proposer_id)
         .single()

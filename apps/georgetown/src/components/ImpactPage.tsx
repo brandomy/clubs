@@ -97,7 +97,7 @@ export default function ImpactPage() {
   async function loadProjects(filters: ImpactFilters): Promise<ServiceProject[]> {
     try {
       let query = supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*')
         .order('start_date', { ascending: false })
 

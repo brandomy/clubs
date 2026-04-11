@@ -54,7 +54,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
 
   const fetchLocation = async (locationId: string) => {
     const { data, error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .select('*')
       .eq('id', locationId)
       .single()
@@ -95,7 +95,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
 
     try {
       const { error } = await supabase
-        .from('events')
+        .from('gt_events')
         .update({
           title: editData.title,
           description: editData.description || null,
@@ -133,7 +133,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
 
     try {
       const { error } = await supabase
-        .from('events')
+        .from('gt_events')
         .delete()
         .eq('id', event.id)
 

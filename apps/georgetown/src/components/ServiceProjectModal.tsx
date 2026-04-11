@@ -81,7 +81,7 @@ export default function ServiceProjectModal({
   const loadPartners = async () => {
     try {
       const { data, error } = await supabase
-        .from('partners')
+        .from('gt_partners')
         .select('*')
         .order('name')
 
@@ -97,7 +97,7 @@ export default function ServiceProjectModal({
   const loadMembers = async () => {
     try {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('id, name, active, created_at, updated_at')
         .in('type', ['Active', 'Honorary'])
         .order('name')
@@ -114,7 +114,7 @@ export default function ServiceProjectModal({
   
     try {
       const { data, error } = await supabase
-        .from('project_partners')
+        .from('gt_project_partners')
         .select('partner_id')
         .eq('project_id', project.id)
 
@@ -174,7 +174,7 @@ export default function ServiceProjectModal({
 
       if (isEditing) {
         const { error } = await supabase
-          .from('service_projects')
+          .from('gt_service_projects')
           .update(dbData)
           .eq('id', project.id)
           .select()
@@ -184,14 +184,14 @@ export default function ServiceProjectModal({
 
         // Delete existing partner relationships before reinserting
         const { error: deleteError } = await supabase
-          .from('project_partners')
+          .from('gt_project_partners')
           .delete()
           .eq('project_id', projectId)
 
         if (deleteError) logger.error('Partner delete error:', deleteError)
       } else {
         const { data, error } = await supabase
-          .from('service_projects')
+          .from('gt_service_projects')
           .insert([dbData])
           .select()
           .single()
@@ -208,7 +208,7 @@ export default function ServiceProjectModal({
         }))
 
         const { error: partnerError } = await supabase
-          .from('project_partners')
+          .from('gt_project_partners')
           .insert(partnerLinks)
 
         if (partnerError) throw partnerError
@@ -225,14 +225,14 @@ export default function ServiceProjectModal({
       if (isNowCompleted && formData.completion_date) {
         const rotaryYear = getRotaryYearFromDate(formData.completion_date)
         const { data: yearRecord, error: yearError } = await supabase
-          .from('rotary_years')
+          .from('gt_rotary_years')
           .select('id')
           .eq('rotary_year', rotaryYear)
           .single()
 
         if (!yearError && yearRecord) {
           const { error: linkError } = await supabase
-            .from('service_projects')
+            .from('gt_service_projects')
             .update({ rotary_year_id: yearRecord.id })
             .eq('id', projectId)
 
@@ -265,7 +265,7 @@ export default function ServiceProjectModal({
 
     try {
       const { error } = await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .delete()
         .eq('id', project.id)
 

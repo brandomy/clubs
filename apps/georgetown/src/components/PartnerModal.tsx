@@ -103,7 +103,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
       if (partner) {
         // Update existing partner
         const { error: updateError } = await supabase
-          .from('partners')
+          .from('gt_partners')
           .update({
             ...dataToSave,
             updated_at: new Date().toISOString(),
@@ -114,7 +114,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
       } else {
         // Create new partner
         const { error: insertError } = await supabase
-          .from('partners')
+          .from('gt_partners')
           .insert(dataToSave)
 
         if (insertError) throw insertError

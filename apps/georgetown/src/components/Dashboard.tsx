@@ -39,26 +39,26 @@ export default function Dashboard() {
 
       // Fetch Active members
       const { count: activeCount } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'Active')
 
       // Fetch Honorary members
       const { count: honoraryCount } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'Honorary')
 
       // Fetch active projects (Planning, Approved, Execution)
       const { count: projectsCount } = await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*', { count: 'exact', head: true })
         .in('status', ['Planning', 'Approved', 'Execution'])
 
       // Fetch upcoming speakers (scheduled status with future dates)
       const today = new Date().toISOString().split('T')[0]
       const { count: speakersCount } = await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'scheduled')
         .gte('scheduled_date', today)

@@ -38,7 +38,7 @@ export default function SpeakerEditRoute() {
 
     try {
       const { data, error } = await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .select('*')
         .eq('id', speakerId)
         .single()

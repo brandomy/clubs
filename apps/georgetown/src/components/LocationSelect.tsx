@@ -44,7 +44,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
       .channel('locations-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'locations' },
+        { event: '*', schema: 'public', table: 'gt_locations' },
         handleRealtimeUpdate
       )
       .subscribe()
@@ -56,7 +56,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
 
   const fetchLocations = async () => {
     const { data, error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .select('*')
       .order('name', { ascending: true })
 
@@ -89,7 +89,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
 
     setSaving(true)
     const { data, error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .insert({
         name: formData.name.trim(),
         address: formData.address.trim() || null,
@@ -145,7 +145,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
 
     setSaving(true)
     const { error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .update({
         name: formData.name.trim(),
         address: formData.address.trim() || null,
@@ -191,7 +191,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
     setSaving(true)
 
     const { error } = await supabase
-      .from('locations')
+      .from('gt_locations')
       .delete()
       .eq('id', location.id)
 

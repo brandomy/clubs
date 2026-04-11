@@ -79,7 +79,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
         }
 
         const { error } = await supabase
-          .from('members')
+          .from('gt_members')
           .update(updateData)
           .eq('id', member.id)
 
@@ -92,7 +92,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
         showToast('Member updated successfully!', 'success')
       } else {
         const { error } = await supabase
-          .from('members')
+          .from('gt_members')
           .insert(saveData)
 
         if (error) {
@@ -124,7 +124,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
 
     try {
       const { error } = await supabase
-        .from('members')
+        .from('gt_members')
         .delete()
         .eq('id', member.id)
 

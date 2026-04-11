@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserRole = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('user_roles')
+        .from('gt_user_roles')
         .select('*')
         .eq('user_id', userId)
         .single()

@@ -62,7 +62,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
   const loadMembers = async () => {
     try {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .eq('active', true)
         .order('name')
@@ -140,7 +140,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         dbData.updated_by = 'current_user'
 
         const { error } = await supabase
-          .from('speakers')
+          .from('gt_speakers')
           .update(dbData)
           .eq('id', speaker.id)
 
@@ -156,7 +156,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         dbData.updated_by = 'current_user'
 
         const { error } = await supabase
-          .from('speakers')
+          .from('gt_speakers')
           .insert(dbData)
 
         if (error) {
@@ -194,7 +194,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
     trackInteraction('speaker-delete-attempt', 'speaker-modal', speaker.id)
 
     const { error } = await supabase
-      .from('speakers')
+      .from('gt_speakers')
       .delete()
       .eq('id', speaker.id)
 

@@ -44,7 +44,7 @@ export function usePermissions(): UsePermissionsReturn {
 
       try {
         const { data, error } = await supabase
-          .from('role_permissions')
+          .from('gt_role_permissions')
           .select('*')
           .eq('role', userRole.role)
 

@@ -41,7 +41,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { data, error: fetchError } = await supabase
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .select('*')
           .eq('event_id', eventId)
           .order('checked_in_at', { ascending: false })
@@ -67,7 +67,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { data, error: summaryError } = await supabase
-          .from('meeting_attendance_summary')
+          .from('gt_meeting_attendance_summary')
           .select('*')
           .eq('event_id', eventId)
           .single()
@@ -96,7 +96,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
         {
           event: '*',
           schema: 'public',
-          table: 'attendance_records',
+          table: 'gt_attendance_records',
           filter: `event_id=eq.${eventId}`
         },
         (payload) => {
@@ -116,7 +116,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
           ;(async () => {
             try {
               const { data, error } = await supabase
-                .from('meeting_attendance_summary')
+                .from('gt_meeting_attendance_summary')
                 .select('*')
                 .eq('event_id', eventId)
                 .single()
@@ -150,7 +150,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .insert({
             event_id: eventId,
             attendee_type: 'member',
@@ -183,7 +183,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .insert({
             event_id: eventId,
             attendee_type: 'visiting_rotarian',
@@ -224,7 +224,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .insert({
             event_id: eventId,
             attendee_type: 'guest',
@@ -267,7 +267,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
         }))
 
         const { error: insertError } = await supabase
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .insert(records)
 
         if (insertError) throw insertError
@@ -292,7 +292,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
       try {
         const { error: deleteError } = await supabase
-          .from('attendance_records')
+          .from('gt_attendance_records')
           .delete()
           .eq('event_id', eventId)
           .eq('member_id', memberId)
@@ -350,7 +350,7 @@ export function useMemberAttendanceStats(memberId: string | null): UseMemberAtte
 
       try {
         const { data, error: fetchError } = await supabase
-          .from('member_attendance_stats')
+          .from('gt_member_attendance_stats')
           .select('*')
           .eq('member_id', memberId)
           .single()
@@ -382,7 +382,7 @@ export function useMemberAttendanceStats(memberId: string | null): UseMemberAtte
         {
           event: '*',
           schema: 'public',
-          table: 'member_attendance_stats',
+          table: 'gt_member_attendance_stats',
           filter: `member_id=eq.${memberId}`
         },
         (payload) => {

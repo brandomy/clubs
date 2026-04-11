@@ -48,7 +48,7 @@ export default function TimelineView() {
       .channel('rotary-years-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'rotary_years' },
+        { event: '*', schema: 'public', table: 'gt_rotary_years' },
         (payload) => {
           logger.log('Rotary year updated:', payload)
           // Refetch all years to get updated statistics
@@ -74,7 +74,7 @@ export default function TimelineView() {
       .channel('speakers-timeline-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'speakers' },
+        { event: '*', schema: 'public', table: 'gt_speakers' },
         (payload) => {
           logger.log('Speaker updated in timeline:', payload)
           // Reload year data when speakers change
@@ -95,7 +95,7 @@ export default function TimelineView() {
       setLoading(true)
       logger.log('=== FETCHING ROTARY YEARS FROM DATABASE ===')
       const { data, error } = await supabase
-        .from('rotary_years')
+        .from('gt_rotary_years')
         .select('*')
         .order('rotary_year', { ascending: false })
 
@@ -135,7 +135,7 @@ export default function TimelineView() {
     } else {
       // Fetch from database if not in local state
       const { data, error } = await supabase
-        .from('rotary_years')
+        .from('gt_rotary_years')
         .select('*')
         .eq('rotary_year', year)
         .single()
@@ -154,7 +154,7 @@ export default function TimelineView() {
   const loadYearProjects = async (rotaryYearId: string) => {
     try {
       const { data, error } = await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*')
         .eq('rotary_year_id', rotaryYearId)
         .eq('status', 'Completed')
@@ -174,7 +174,7 @@ export default function TimelineView() {
   const loadYearSpeakers = async (startDate: string, endDate: string) => {
     try {
       const { data, error } = await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .select('*')
         .eq('status', 'spoken')
         .gte('scheduled_date', startDate)
@@ -195,7 +195,7 @@ export default function TimelineView() {
   const loadYearPhotos = async (rotaryYearId: string) => {
     try {
       const { data, error } = await supabase
-        .from('photos')
+        .from('gt_photos')
         .select('*')
         .eq('rotary_year_id', rotaryYearId)
         .eq('approval_status', 'approved')
@@ -222,7 +222,7 @@ export default function TimelineView() {
 
       // Check if user is an officer or committee chair
       const { data: member, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('roles')
         .eq('email', user.email)
         .single()

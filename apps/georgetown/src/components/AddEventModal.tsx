@@ -32,7 +32,7 @@ export default function AddEventModal({ onClose, onEventAdded, defaultDate }: Ad
 
     try {
       const { data, error } = await supabase
-        .from('events')
+        .from('gt_events')
         .insert([
           {
             date: formData.date,

@@ -116,7 +116,7 @@ export default function PhotoUploadModal({
       let member = null
       if (user?.email) {
         const { data: memberData, error: memberError } = await supabase
-          .from('members')
+          .from('gt_members')
           .select('id')
           .eq('email', user.email)
           .single()
@@ -171,7 +171,7 @@ export default function PhotoUploadModal({
 
       // Create photo database record
       const { data: photoData, error: dbError } = await supabase
-        .from('photos')
+        .from('gt_photos')
         .insert({
           url: publicUrl,
           storage_path: fileName,

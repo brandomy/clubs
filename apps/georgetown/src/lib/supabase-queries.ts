@@ -18,7 +18,7 @@ export const queries = {
   fetchSpeakers: async () =>
     await fetchWithRetry(async () =>
       await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .select('*')
         .order('position', { ascending: true })
     ),
@@ -27,7 +27,7 @@ export const queries = {
   fetchMembers: async () =>
     await fetchWithRetry(async () =>
       await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .order('name', { ascending: true })
     ),
@@ -36,7 +36,7 @@ export const queries = {
   fetchProjects: async () =>
     await fetchWithRetry(async () =>
       await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*')
         .order('start_date', { ascending: false })
     ),
@@ -45,7 +45,7 @@ export const queries = {
   fetchRotaryYears: async () =>
     await fetchWithRetry(async () =>
       await supabase
-        .from('rotary_years')
+        .from('gt_rotary_years')
         .select('*')
         .order('rotary_year', { ascending: false })
     ),
@@ -54,7 +54,7 @@ export const queries = {
   fetchPhotos: async (rotaryYearId?: string) =>
     await fetchWithRetry(async () => {
       let query = supabase
-        .from('photos')
+        .from('gt_photos')
         .select('*')
         .eq('approval_status', 'approved')
 

@@ -48,7 +48,7 @@ export default function HolidayViewModal({ holiday, onClose, onHolidayUpdated }:
       if (holiday.id.startsWith('static-holiday-')) {
         // Convert static holiday to database holiday
         const { error } = await supabase
-          .from('events')
+          .from('gt_events')
           .insert([{
             date: editData.date,
             type: 'holiday',
@@ -63,7 +63,7 @@ export default function HolidayViewModal({ holiday, onClose, onHolidayUpdated }:
       } else {
         // Update existing database holiday
         const { error } = await supabase
-          .from('events')
+          .from('gt_events')
           .update({
             title: editData.title,
             description: editData.description || null,

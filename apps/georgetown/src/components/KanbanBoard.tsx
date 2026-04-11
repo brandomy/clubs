@@ -106,7 +106,7 @@ export default function KanbanBoard() {
       .channel('speakers-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'speakers' },
+        { event: '*', schema: 'public', table: 'gt_speakers' },
         handleRealtimeUpdate
       )
       .subscribe()
@@ -143,7 +143,7 @@ export default function KanbanBoard() {
 
   const fetchSpeakers = async () => {
     const { data, error } = await supabase
-      .from('speakers')
+      .from('gt_speakers')
       .select('*')
       .order('position', { ascending: true })
 
@@ -409,7 +409,7 @@ export default function KanbanBoard() {
     setSpeakers(updatedSpeakers)
 
     const { error } = await supabase
-      .from('speakers')
+      .from('gt_speakers')
       .update({ status: newStatus, updated_by: 'current_user' })
       .eq('id', speakerId)
 
@@ -427,7 +427,7 @@ export default function KanbanBoard() {
 
         // Find Rotary year record
         const { data: yearRecord, error: yearError } = await supabase
-          .from('rotary_years')
+          .from('gt_rotary_years')
           .select('id')
           .eq('rotary_year', rotaryYear)
           .single()
@@ -439,7 +439,7 @@ export default function KanbanBoard() {
 
           // Link speaker to Rotary year
           const { error: linkError } = await supabase
-            .from('speakers')
+            .from('gt_speakers')
             .update({ rotary_year_id: yearRecord.id })
             .eq('id', speakerId)
 
@@ -473,7 +473,7 @@ export default function KanbanBoard() {
 
     for (const [index, speaker] of columnSpeakers.entries()) {
       await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .update({ position: index, updated_by: 'current_user' })
         .eq('id', speaker.id)
     }

@@ -38,7 +38,7 @@ export default function ProjectDetailRoute() {
     try {
       // Fetch project data
       const { data: projectData, error: projectError } = await supabase
-        .from('service_projects')
+        .from('gt_service_projects')
         .select('*')
         .eq('id', projectId)
         .single()
@@ -52,13 +52,13 @@ export default function ProjectDetailRoute() {
 
       // Fetch partners for the project
       const { data: partnerLinks } = await supabase
-        .from('project_partners')
+        .from('gt_project_partners')
         .select('partner_id')
         .eq('project_id', projectId)
 
       if (partnerLinks && partnerLinks.length > 0) {
         const { data: partners } = await supabase
-          .from('partners')
+          .from('gt_partners')
           .select('*')
           .in('id', partnerLinks.map((link) => link.partner_id))
 

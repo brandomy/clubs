@@ -68,7 +68,7 @@ export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RS
     const fetchMemberName = async () => {
       if (memberId && !memberName) {
         const { data, error } = await supabase
-          .from('members')
+          .from('gt_members')
           .select('name')
           .eq('id', memberId)
           .single()

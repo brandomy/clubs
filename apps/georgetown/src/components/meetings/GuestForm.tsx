@@ -41,7 +41,7 @@ export function GuestForm({ eventId, isOpen, onClose }: GuestFormProps) {
   useEffect(() => {
     const fetchMembers = async () => {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('id, name')
         .eq('active', true)
         .order('name')

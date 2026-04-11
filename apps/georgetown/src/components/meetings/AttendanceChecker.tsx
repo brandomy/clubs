@@ -47,7 +47,7 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
   useEffect(() => {
     const fetchMembers = async () => {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .eq('active', true)
         .order('name')
@@ -76,7 +76,7 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
   useEffect(() => {
     const fetchRSVPs = async () => {
       const { data } = await supabase
-        .from('meeting_rsvps')
+        .from('gt_meeting_rsvps')
         .select('member_id')
         .eq('event_id', eventId)
         .eq('status', 'attending')

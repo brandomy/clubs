@@ -40,7 +40,7 @@ export default function PhotoGallery() {
       .channel('photos-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'photos' },
+        { event: '*', schema: 'public', table: 'gt_photos' },
         () => {
           logger.log('Photo updated, refetching...')
           fetchPhotos()
@@ -57,7 +57,7 @@ export default function PhotoGallery() {
     try {
       setLoading(true)
       const { data, error } = await supabase
-        .from('photos')
+        .from('gt_photos')
         .select('*')
         .eq('approval_status', 'approved')
         .order('photo_date', { ascending: false })
@@ -78,7 +78,7 @@ export default function PhotoGallery() {
   const fetchRotaryYears = async () => {
     try {
       const { data, error } = await supabase
-        .from('rotary_years')
+        .from('gt_rotary_years')
         .select('id, rotary_year')
         .order('rotary_year', { ascending: false })
 
@@ -102,7 +102,7 @@ export default function PhotoGallery() {
       }
 
       const { data: member, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('roles')
         .eq('email', user.email)
         .single()

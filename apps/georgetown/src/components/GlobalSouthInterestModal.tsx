@@ -31,7 +31,7 @@ export default function GlobalSouthInterestModal({ isOpen, onClose }: GlobalSout
 
     try {
       const { error: dbError } = await supabase
-        .from('global_south_interest')
+        .from('gt_global_south_interest')
         .insert([
           {
             name: formData.name.trim(),

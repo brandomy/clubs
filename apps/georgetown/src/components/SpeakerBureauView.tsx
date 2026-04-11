@@ -26,7 +26,7 @@ export default function SpeakerBureauView() {
   const fetchMembers = async () => {
     try {
       const { data, error } = await supabase
-        .from('members')
+        .from('gt_members')
         .select('*')
         .eq('active', true)
 
@@ -49,7 +49,7 @@ export default function SpeakerBureauView() {
   const fetchRecommendedSpeakers = async () => {
     try {
       const { data, error } = await supabase
-        .from('speakers')
+        .from('gt_speakers')
         .select('*')
         .eq('recommend', true)
         .eq('status', 'spoken')
