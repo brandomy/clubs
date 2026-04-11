@@ -108,7 +108,7 @@ export default function ServiceProjectModal({
 
   const loadProjectPartners = async () => {
     if (!project) return
-
+  
     try {
       const { data, error } = await supabase
         .from('project_partners')
@@ -139,13 +139,10 @@ export default function ServiceProjectModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('=== FORM SUBMIT STARTED ===')
-    console.log('Is editing?', isEditing)
-    console.log('Form data:', formData)
     setIsSubmitting(true)
 
     try {
-      const dbData = {
+      const dbData: Record<string, unknown> = {
         project_name: formData.project_name,
         description: formData.description || null,
         area_of_focus: formData.area_of_focus,
@@ -170,64 +167,38 @@ export default function ServiceProjectModal({
         repeat_recommendations: formData.repeat_recommendations || null,
       }
 
-      console.log('Database data prepared:', dbData)
-
       let projectId: string
 
       if (isEditing) {
-        // Update existing project
-        console.log('=== UPDATING PROJECT ===')
-        console.log('Project ID:', project.id)
-        console.log('Update data:', dbData)
-
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('service_projects')
           .update(dbData)
           .eq('id', project.id)
           .select()
 
-        console.log('Update response - data:', data)
-        console.log('Update response - error:', error)
-
-        if (error) {
-          console.error('Update error:', error)
-          throw error
-        }
-        console.log('=== PROJECT UPDATED SUCCESSFULLY ===')
+        if (error) throw error
         projectId = project.id
 
-        // Delete existing partner relationships
-        console.log('Deleting existing partner relationships...')
+        // Delete existing partner relationships before reinserting
         const { error: deleteError } = await supabase
           .from('project_partners')
           .delete()
           .eq('project_id', projectId)
 
-        if (deleteError) {
-          console.error('Partner delete error:', deleteError)
-        } else {
-          console.log('Partner relationships deleted')
-        }
+        if (deleteError) console.error('Partner delete error:', deleteError) // eslint-disable-line no-console
       } else {
-        // Create new project
-        console.log('=== CREATING NEW PROJECT ===')
         const { data, error } = await supabase
           .from('service_projects')
           .insert([dbData])
           .select()
           .single()
 
-        console.log('Insert response - data:', data)
-        console.log('Insert response - error:', error)
-
         if (error) throw error
         projectId = data.id
-        console.log('=== PROJECT CREATED WITH ID:', projectId, '===')
       }
 
       // Insert new partner relationships
       if (selectedPartnerIds.length > 0) {
-        console.log('Adding partner relationships:', selectedPartnerIds)
         const partnerLinks = selectedPartnerIds.map((partnerId) => ({
           project_id: projectId,
           partner_id: partnerId,
@@ -237,90 +208,48 @@ export default function ServiceProjectModal({
           .from('project_partners')
           .insert(partnerLinks)
 
-        if (partnerError) {
-          console.error('Partner insert error:', partnerError)
-          throw partnerError
-        }
-        console.log('Partner relationships added successfully')
+        if (partnerError) throw partnerError
       }
 
       // Handle Rotary year linking and stats updates
       const wasCompleted = project?.status === 'Completed'
       const isNowCompleted = formData.status === 'Completed'
 
-      // If project status changed FROM Completed to something else, recalculate old year's stats
       if (wasCompleted && !isNowCompleted && project?.rotary_year_id) {
-        console.log('=== PROJECT STATUS CHANGED FROM COMPLETED ===')
-        console.log('Recalculating stats for previous Rotary year:', project.rotary_year_id)
         await updateRotaryYearStats(project.rotary_year_id)
-        console.log('Previous year statistics updated')
       }
 
-      // Auto-link to Rotary year if status is Completed and completion_date is set
       if (isNowCompleted && formData.completion_date) {
-        console.log('=== AUTO-LINKING TO ROTARY YEAR ===')
         const rotaryYear = getRotaryYearFromDate(formData.completion_date)
-        console.log('Determined Rotary year:', rotaryYear)
-
-        // Find or verify Rotary year record exists
         const { data: yearRecord, error: yearError } = await supabase
           .from('rotary_years')
           .select('id')
           .eq('rotary_year', rotaryYear)
           .single()
 
-        if (yearError) {
-          console.warn('Rotary year record not found:', rotaryYear, yearError)
-        } else if (yearRecord) {
-          console.log('Found Rotary year record:', yearRecord.id)
-
-          // Link project to Rotary year
+        if (!yearError && yearRecord) {
           const { error: linkError } = await supabase
             .from('service_projects')
             .update({ rotary_year_id: yearRecord.id })
             .eq('id', projectId)
 
-          if (linkError) {
-            console.error('Error linking project to Rotary year:', linkError)
-          } else {
-            console.log('Project linked to Rotary year successfully')
-
-            // Update statistics for this Rotary year
+          if (!linkError) {
             await updateRotaryYearStats(yearRecord.id)
-            console.log('Rotary year statistics updated')
           }
         }
       }
 
-      // If project was already completed and still is, but other data changed, recalculate stats
       if (wasCompleted && isNowCompleted && project?.rotary_year_id) {
-        console.log('=== COMPLETED PROJECT DATA UPDATED ===')
         await updateRotaryYearStats(project.rotary_year_id)
-        console.log('Rotary year statistics refreshed')
       }
 
-      console.log('=== PROJECT SAVED SUCCESSFULLY ===')
-      console.log('=== CLOSING MODAL ===')
-
-      // Close modal (wrapped in try-catch in case parent component unmounted)
-      try {
-        onClose()
-      } catch (closeError) {
-        console.warn('Modal close error (may be harmless):', closeError)
-      }
-    } catch (error: any) {
-      console.error('=== ERROR SAVING PROJECT ===', error)
-      console.error('Error details:', {
-        message: error?.message,
-        code: error?.code,
-        details: error?.details,
-        hint: error?.hint,
-      })
-
-      // Provide more specific error message
-      const errorMessage = error?.message || 'Unknown error occurred'
-      const errorHint = error?.hint ? `\n\nHint: ${error.hint}` : ''
-      alert(`Failed to save project: ${errorMessage}${errorHint}\n\nPlease check the console for details.`)
+      onClose()
+    } catch (error: unknown) {
+      const err = error as { message?: string; hint?: string }
+      console.error('Error saving project:', error) // eslint-disable-line no-console
+      const errorMessage = err?.message || 'Unknown error occurred'
+      const errorHint = err?.hint ? `\n\nHint: ${err.hint}` : ''
+      alert(`Failed to save project: ${errorMessage}${errorHint}`)
     } finally {
       setIsSubmitting(false)
     }

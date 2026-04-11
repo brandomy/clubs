@@ -3,67 +3,48 @@ import MemberDirectory from '../components/MemberDirectory';
 import EcosystemPartnerDirectory from '../components/EcosystemPartnerDirectory';
 import PrivacySettings from '../components/PrivacySettings';
 import { Users, Building2, Shield, Layout, Loader } from 'lucide-react';
-import { MemberWithProfile, EcosystemPartner, PrivacySettings as PrivacySettingsType, User } from '../types';
+import { EcosystemPartner, PrivacySettings as PrivacySettingsType } from '../types';
 import { supabase } from '../lib/supabase';
+import { useMembersData } from '../hooks/useMembersData';
+import { useAuth } from '../hooks/useAuth';
 
 type ActiveTab = 'members' | 'partners' | 'privacy';
 
 export default function CommunityPage() {
-  const [members, setMembers] = useState<MemberWithProfile[]>([]);
+  const { members, isLoading: membersLoading, error: membersError } = useMembersData();
+  const { user } = useAuth();
   const [partners, setPartners] = useState<EcosystemPartner[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [partnersLoading, setPartnersLoading] = useState(true);
+  const [partnersError, setPartnersError] = useState<string | null>(null);
 
-  // For demo: simulating authenticated admin user
-  const currentUser: User | undefined = undefined; // Set to undefined for unauthenticated demo
-  const isAuthenticated = false; // Set to false for public view demo
+  const currentUser = user ?? undefined;
+  const isAuthenticated = !!user;
   const [activeTab, setActiveTab] = useState<ActiveTab>('members');
 
-  // Load data from Supabase on mount
+  // Load ecosystem partners
   useEffect(() => {
-    async function loadData() {
+    async function loadPartners() {
       try {
-        setIsLoading(true);
-        setError(null);
+        setPartnersLoading(true);
+        setPartnersError(null);
 
-        // Load members with profiles and privacy settings
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select(`
-            *,
-            profile:member_profiles(*),
-            privacy_settings:privacy_settings(*)
-          `);
-
-        if (usersError) throw usersError;
-
-        const membersWithProfiles: MemberWithProfile[] = (usersData || []).map((user: any) => ({
-          ...user,
-          profile: user.profile || null,
-          privacy_settings: user.privacy_settings || null
-        }));
-
-        setMembers(membersWithProfiles);
-
-        // Load ecosystem partners
-        const { data: partnersData, error: partnersError } = await supabase
-          .from('ecosystem_partners')
+        const { data: partnersData, error } = await supabase
+          .from('pm_ecosystem_partners')
           .select('*')
           .eq('status', 'active');
 
-        if (partnersError) throw partnersError;
+        if (error) throw error;
 
         setPartners(partnersData || []);
-
-      } catch (err: any) {
-        console.error('Error loading data:', err);
-        setError(err.message || 'Failed to load data');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to load partners';
+        setPartnersError(message);
       } finally {
-        setIsLoading(false);
+        setPartnersLoading(false);
       }
     }
 
-    loadData();
+    loadPartners();
   }, []);
 
   // Mock current user's privacy settings for demo
@@ -87,9 +68,8 @@ export default function CommunityPage() {
   });
 
   const handlePrivacySettingsUpdate = async (newSettings: Partial<PrivacySettingsType>) => {
-    // In real app, this would save to the database
-    console.log('Privacy settings updated:', newSettings);
-    // For demo, just log - would update Supabase in production
+    // TODO: Save to Supabase in production
+    void newSettings;
   };
 
   const tabs = [
@@ -112,6 +92,9 @@ export default function CommunityPage() {
       description: 'Control your data visibility'
     }
   ];
+
+  const isLoading = membersLoading || partnersLoading;
+  const error = membersError || partnersError;
 
   // Loading state
   if (isLoading) {

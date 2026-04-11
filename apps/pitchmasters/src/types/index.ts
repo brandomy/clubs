@@ -161,3 +161,15 @@ export interface MemberWithProfile extends User {
   profile?: MemberProfile;
   privacy_settings?: PrivacySettings;
 }
+
+export interface PublicPage {
+  id: string;
+  club_id: string;
+  slug: string;
+  title: string;
+  content: any; // BlockNote JSON document
+  published: boolean;
+  author_id: string | null;
+  created_at: string;
+  updated_at: string;
+}

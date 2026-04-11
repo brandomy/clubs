@@ -51,6 +51,14 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   Members
                 </Link>
+                <Link
+                  to="/pages"
+                  className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-touch ${
+                    location.pathname.startsWith('/pages') ? 'bg-white bg-opacity-20' : 'hover:bg-white hover:bg-opacity-10'
+                  }`}
+                >
+                  Pages
+                </Link>
                 <a
                   href="#"
                   className="flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-touch opacity-50 cursor-not-allowed"
@@ -106,6 +114,15 @@ export default function Layout({ children }: LayoutProps) {
                 }`}
               >
                 Members
+              </Link>
+              <Link
+                to="/pages"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block px-3 py-2 rounded-md text-base font-medium text-white min-h-touch ${
+                  location.pathname.startsWith('/pages') ? 'bg-white bg-opacity-20' : 'hover:bg-white hover:bg-opacity-10'
+                }`}
+              >
+                Pages
               </Link>
               <a
                 href="#"

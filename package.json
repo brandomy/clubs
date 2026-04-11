@@ -11,7 +11,9 @@
     "build": "pnpm --recursive --filter \"./apps/*\" build",
     "lint": "pnpm --recursive --filter \"./apps/*\" lint",
     "typecheck": "pnpm --recursive --filter \"./apps/*\" typecheck",
-    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist pnpm-lock.yaml"
+    "test": "pnpm --recursive --filter \"./apps/*\" test",
+    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist pnpm-lock.yaml",
+    "migrate": "pnpm --filter pitchmasters-club-management migrate"
   },
   "devDependencies": {},
   "engines": {

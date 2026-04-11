@@ -32,8 +32,6 @@ export type RotaryYearStats = {
 export async function calculateRotaryYearStats(
   rotaryYearId: string
 ): Promise<RotaryYearStats> {
-  console.log('Calculating stats for Rotary Year ID:', rotaryYearId)
-
   // First, get the Rotary year record to get date range
   const { data: rotaryYearData, error: yearError } = await supabase
     .from('rotary_years')
@@ -53,8 +51,6 @@ export async function calculateRotaryYearStats(
     }
   }
 
-  console.log(`Calculating for Rotary Year: ${rotaryYearData.rotary_year} (${rotaryYearData.start_date} to ${rotaryYearData.end_date})`)
-
   // Fetch speakers for this year using BOTH rotary_year_id AND date range fallback
   // This handles speakers that were marked "spoken" before auto-linking was implemented
   const { data: speakers, error: speakersError } = await supabase
@@ -65,9 +61,7 @@ export async function calculateRotaryYearStats(
     .lte('scheduled_date', rotaryYearData.end_date)
 
   if (speakersError) {
-    console.error('Error fetching speakers for stats:', speakersError)
-  } else {
-    console.log(`Found ${speakers?.length || 0} speakers with status='spoken' between ${rotaryYearData.start_date} and ${rotaryYearData.end_date}`)
+    console.error('Error fetching speakers for stats:', speakersError) // eslint-disable-line no-console
   }
 
   // Fetch completed service projects for this year using BOTH methods
@@ -78,9 +72,7 @@ export async function calculateRotaryYearStats(
     .eq('status', 'Completed')
 
   if (projectsError) {
-    console.error('Error fetching projects for stats:', projectsError)
-  } else {
-    console.log(`Found ${projects?.length || 0} completed projects with rotary_year_id='${rotaryYearId}'`)
+    console.error('Error fetching projects for stats:', projectsError) // eslint-disable-line no-console
   }
 
   // Calculate totals from service projects
@@ -114,11 +106,7 @@ export async function calculateRotaryYearStats(
 export async function updateRotaryYearStats(
   rotaryYearId: string
 ): Promise<RotaryYearStats | null> {
-  console.log('=== UPDATING ROTARY YEAR STATS ===')
-  console.log('Rotary Year ID:', rotaryYearId)
-
   const stats = await calculateRotaryYearStats(rotaryYearId)
-  console.log('Calculated stats:', stats)
 
   const { error } = await supabase
     .from('rotary_years')
@@ -126,11 +114,10 @@ export async function updateRotaryYearStats(
     .eq('id', rotaryYearId)
 
   if (error) {
-    console.error('Error updating rotary year stats:', error)
+    console.error('Error updating rotary year stats:', error) // eslint-disable-line no-console
     return null
   }
 
-  console.log('Stats successfully updated in database')
   return stats
 }
 

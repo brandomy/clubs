@@ -32,26 +32,6 @@ export default function EcosystemPartnerDirectory({ partners, isAuthenticated }:
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Authentication gate - only members can access partner directory
-  if (!isAuthenticated) {
-    return (
-      <div className="max-w-2xl mx-auto text-center py-12">
-        <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Member-Only Access</h2>
-        <p className="text-gray-600 mb-6">
-          The ecosystem partner directory is exclusively available to authenticated club members.
-          This ensures privacy and appropriate access to our curated network of startup partners.
-        </p>
-        <div className="bg-tm-blue bg-opacity-5 border border-tm-blue border-opacity-20 rounded-lg p-4">
-          <p className="text-sm text-gray-700">
-            Please log in to access our exclusive partner network including investors,
-            accelerators, service providers, and other startup ecosystem partners.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Get unique filter options from partners data
   const filterOptions = useMemo(() => {
     const industries = new Set<string>();
@@ -174,6 +154,25 @@ export default function EcosystemPartnerDirectory({ partners, isAuthenticated }:
       </div>
     );
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-12">
+        <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Member-Only Access</h2>
+        <p className="text-gray-600 mb-6">
+          The ecosystem partner directory is exclusively available to authenticated club members.
+          This ensures privacy and appropriate access to our curated network of startup partners.
+        </p>
+        <div className="bg-tm-blue bg-opacity-5 border border-tm-blue border-opacity-20 rounded-lg p-4">
+          <p className="text-sm text-gray-700">
+            Please log in to access our exclusive partner network including investors,
+            accelerators, service providers, and other startup ecosystem partners.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto">

@@ -164,7 +164,7 @@ export function memberMatchesSearch(
 export function filterMembersByPrivacy<T extends keyof VisibleMemberData>(
   members: MemberWithProfile[],
   filterField: T,
-  filterValue: any,
+  filterValue: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   currentUser?: User,
   isAuthenticated: boolean = false
 ): MemberWithProfile[] {
@@ -305,11 +305,12 @@ export function canUserViewData(
     case 'member':
       return isAuthenticated;
 
-    case 'private':
+    case 'private': {
       if (!viewerUser || !targetUser) return false;
       const isOwnProfile = viewerUser.id === targetUser.id;
       const isOfficer = viewerUser.role === 'officer' || viewerUser.role === 'admin';
       return isOwnProfile || isOfficer;
+    }
 
     default:
       return false;

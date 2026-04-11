@@ -101,7 +101,7 @@ export async function copyToClipboard(
 
     onSuccess?.('clipboard')
     return { success: true, method: 'clipboard' }
-  } catch (error) {
+  } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
     // Fallback to execCommand for older browsers
     return fallbackCopyToClipboard(text, contentType, onSuccess, onError)
   }

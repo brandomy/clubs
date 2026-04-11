@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import {
   ArrowLeft,
   User as UserIcon,
@@ -17,7 +18,7 @@ import {
   MapPin,
   Building
 } from 'lucide-react';
-import { MemberWithProfile, User } from '../types';
+import { MemberWithProfile } from '../types';
 import { supabase } from '../lib/supabase';
 import { getVisibleMemberData } from '../utils/privacy';
 import { hasPermission } from '../utils/permissions';
@@ -33,17 +34,9 @@ export default function MemberProfilePage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // For demo: simulating authenticated admin user (enable edit permissions)
-  const currentUser: User | undefined = {
-    id: 'demo-admin',
-    email: 'admin@demo.com',
-    full_name: 'Demo Admin',
-    club_id: '9cb0034c-12df-4c24-acc6-ea5659a7651b',
-    role: 'admin',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-  const isAuthenticated = true; // Set to true to enable edit permissions
+  const { user } = useAuth();
+  const currentUser = user ?? undefined;
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     async function loadMemberProfile() {
@@ -59,7 +52,7 @@ export default function MemberProfilePage() {
 
         // Load specific member with profile and privacy settings
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('pm_members')
           .select(`
             *,
             profile:member_profiles(*),
@@ -105,7 +98,7 @@ export default function MemberProfilePage() {
 
       // Update member profile
       const { error: updateError } = await supabase
-        .from('member_profiles')
+        .from('pm_member_profiles')
         .update({
           bio: member.profile.bio,
           phone: member.profile.phone,
@@ -144,21 +137,21 @@ export default function MemberProfilePage() {
 
       // Delete in correct order due to foreign key constraints
       const { error: privacyError } = await supabase
-        .from('privacy_settings')
+        .from('pm_privacy_settings')
         .delete()
         .eq('user_id', member.id);
 
       if (privacyError) throw privacyError;
 
       const { error: profileError } = await supabase
-        .from('member_profiles')
+        .from('pm_member_profiles')
         .delete()
         .eq('user_id', member.id);
 
       if (profileError) throw profileError;
 
       const { error: userError } = await supabase
-        .from('users')
+        .from('pm_members')
         .delete()
         .eq('id', member.id);
 

@@ -8,7 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export type Database = {
   public: {
     Tables: {
-      clubs: {
+      pm_clubs: {
         Row: {
           id: string;
           name: string;
@@ -34,7 +34,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      users: {
+      pm_members: {
         Row: {
           id: string;
           email: string;
@@ -63,7 +63,7 @@ export type Database = {
           updated_at?: string;
         };
       };
-      meetings: {
+      pm_meetings: {
         Row: {
           id: string;
           club_id: string;
@@ -101,11 +101,11 @@ export type Database = {
           updated_at?: string;
         };
       };
-      speeches: {
+      pm_speeches: {
         Row: {
           id: string;
           meeting_id: string;
-          user_id: string;
+          member_id: string;
           title: string;
           manual: string;
           project_number: number;
@@ -117,7 +117,7 @@ export type Database = {
         Insert: {
           id?: string;
           meeting_id: string;
-          user_id: string;
+          member_id: string;
           title: string;
           manual: string;
           project_number: number;
@@ -129,7 +129,7 @@ export type Database = {
         Update: {
           id?: string;
           meeting_id?: string;
-          user_id?: string;
+          member_id?: string;
           title?: string;
           manual?: string;
           project_number?: number;
@@ -139,11 +139,11 @@ export type Database = {
           updated_at?: string;
         };
       };
-      meeting_roles: {
+      pm_meeting_roles: {
         Row: {
           id: string;
           meeting_id: string;
-          user_id: string | null;
+          member_id: string | null;
           role_type: 'toastmaster' | 'evaluator' | 'timer' | 'grammarian' | 'ah_counter' | 'table_topics_master';
           created_at: string;
           updated_at: string;
@@ -151,7 +151,7 @@ export type Database = {
         Insert: {
           id?: string;
           meeting_id: string;
-          user_id?: string | null;
+          member_id?: string | null;
           role_type: 'toastmaster' | 'evaluator' | 'timer' | 'grammarian' | 'ah_counter' | 'table_topics_master';
           created_at?: string;
           updated_at?: string;
@@ -159,9 +159,41 @@ export type Database = {
         Update: {
           id?: string;
           meeting_id?: string;
-          user_id?: string | null;
+          member_id?: string | null;
           role_type?: 'toastmaster' | 'evaluator' | 'timer' | 'grammarian' | 'ah_counter' | 'table_topics_master';
           created_at?: string;
+          updated_at?: string;
+        };
+      };
+      pm_public_pages: {
+        Row: {
+          id: string;
+          club_id: string;
+          slug: string;
+          title: string;
+          content: any;
+          published: boolean;
+          author_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          club_id: string;
+          slug: string;
+          title: string;
+          content?: any;
+          published?: boolean;
+          author_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          content?: any;
+          published?: boolean;
+          author_id?: string | null;
           updated_at?: string;
         };
       };

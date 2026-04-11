@@ -77,7 +77,7 @@ export async function getLifetimeImpact(filters?: ImpactFilters): Promise<Lifeti
     const totalProjects = projects?.length || 0
 
     // Get speakers count (spoken status only)
-    let speakersQuery = supabase
+    const speakersQuery = supabase
       .from('speakers')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'spoken')
@@ -188,7 +188,7 @@ export async function getImpactOverTime(filters?: ImpactFilters): Promise<YearIm
     if (projectsError) throw projectsError
 
     // Get speakers grouped by year
-    let speakersQuery = supabase
+    const speakersQuery = supabase
       .from('speakers')
       .select('scheduled_date')
       .eq('status', 'spoken')

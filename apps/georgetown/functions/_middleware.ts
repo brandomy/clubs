@@ -24,18 +24,15 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-// Supabase configuration
-// Production credentials for rmorlqozjwbftzowqmps.supabase.co
-const SUPABASE_URL = 'https://rmorlqozjwbftzowqmps.supabase.co'
-const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb3JscW96andiZnR6b3dxbXBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NzIwNDMsImV4cCI6MjA4MTQ0ODA0M30.RzsIZo_-kGF2sAaXWfd4K-bj5PgVvrFNUOsGNycRkQ8'
+// Supabase configuration — set SUPABASE_URL and SUPABASE_ANON_KEY in
+// Cloudflare Pages dashboard: Settings → Environment variables
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
  * Determine appropriate og:type based on content
  */
-function getOgType(pathname: string): string {
+function getOgType(pathname: string): string { // eslint-disable-line @typescript-eslint/no-unused-vars
   // Profiles have first/last name
   if (pathname.startsWith('/speakers/') || pathname.startsWith('/members/')) {
     return 'profile'
@@ -53,9 +50,9 @@ function getOgType(pathname: string): string {
 export async function onRequest(context: {
   request: Request
   next: () => Promise<Response>
-  env: any
+  env: { SUPABASE_URL?: string; SUPABASE_ANON_KEY?: string }
 }): Promise<Response> {
-  const { request, next } = context
+  const { request, next, env } = context
   const url = new URL(request.url)
 
   // Detect if request is from a crawler/bot (check once for all routes)
@@ -91,7 +88,12 @@ export async function onRequest(context: {
   }
 
   // Initialize Supabase client for crawler requests on dynamic routes
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  const supabaseUrl = env.SUPABASE_URL
+  const supabaseAnonKey = env.SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return next()
+  }
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
   // Process speaker URLs: /speakers/:uuid
   const speakerMatch = url.pathname.match(/^\/speakers\/([^/]+)$/)

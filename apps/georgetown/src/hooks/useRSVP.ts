@@ -26,9 +26,6 @@ export function useRSVP(eventId: string): UseRSVPReturn {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  // Debug logging
-  console.log('useRSVP - memberId from useAuth:', memberId, 'eventId:', eventId)
-
   // Fetch member's RSVP
   useEffect(() => {
     const fetchRSVP = async () => {

@@ -105,7 +105,7 @@ export function useInteractionMetrics() {
   const [avgResponseTime, setAvgResponseTime] = useState<number | null>(null);
 
   useEffect(() => {
-    let responseTimes: number[] = [];
+    const responseTimes: number[] = [];
 
     const trackInteraction = (startTime: number) => {
       const endTime = performance.now();

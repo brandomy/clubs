@@ -29,10 +29,6 @@ export function useRealtimeSubscription<T = any>({
           filter,
         },
         (payload: any) => {
-          if (import.meta.env.DEV) {
-            console.log(`Realtime ${payload.eventType} on ${table}:`, payload)
-          }
-
           switch (payload.eventType) {
             case 'INSERT':
               onInsert?.(payload.new)

@@ -557,7 +557,7 @@ export default function MemberDirectory() {
                                       </span>
                                     </td>
                                   )
-                                case 'attendance':
+                                case 'attendance': {
                                   const stats = attendanceStats[member.id]
                                   const isAtRisk = stats && ((stats.ytd_percentage !== null && stats.ytd_percentage !== undefined && stats.ytd_percentage < 60) || stats.consecutive_absences >= 4)
                                   return (
@@ -584,6 +584,7 @@ export default function MemberDirectory() {
                                       </div>
                                     </td>
                                   )
+                                }
                                 case 'classification':
                                   return (
                                     <td key={col.key} className="px-6 py-4">

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Calendar as CalendarIcon, MapPin, Mic, List, Download, Settings, X, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar as CalendarIcon, MapPin, Mic, List, Download, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { Speaker, Location } from '../types/database'
 import { format, endOfMonth, addMonths, addYears } from 'date-fns'
@@ -9,6 +9,8 @@ import EventViewModal from './EventViewModal'
 import AddEventModal from './AddEventModal'
 import { RSVPButton, RSVPModal, RSVPList, AttendanceChecker } from './meetings'
 import { usePermissions } from '../hooks/usePermissions'
+import ColumnSettings from './ColumnSettings'
+import { useTableFilters } from '../hooks/useTableFilters'
 import {
   DndContext,
   closestCenter,
@@ -54,10 +56,6 @@ export default function EventsListView() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
-  const [showHolidays, setShowHolidays] = useState(false)
-  const [selectedType, setSelectedType] = useState<string>('all')
-  const [selectedLocation, setSelectedLocation] = useState<string>('all')
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [isEventModalOpen, setIsEventModalOpen] = useState(false)
   const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false)
@@ -69,13 +67,18 @@ export default function EventsListView() {
   const [showRSVPListModal, setShowRSVPListModal] = useState(false)
   const [showAttendanceModal, setShowAttendanceModal] = useState(false)
 
-  // Search and sorting state
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortField, setSortField] = useState<'date' | 'type' | 'title' | 'location'>('date')
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  // Filter, search and sorting state (via hook)
+  const {
+    showFilters, setShowFilters,
+    showHolidays, setShowHolidays,
+    selectedType, setSelectedType,
+    selectedLocation, setSelectedLocation,
+    searchTerm, setSearchTerm,
+    sortField, sortDirection, handleSort,
+    sortedEvents,
+  } = useTableFilters(events)
 
   // Column visibility state
-  const [showColumnSettings, setShowColumnSettings] = useState(false)
   const [visibleColumns, setVisibleColumns] = useState({
     date: true,
     startTime: true,
@@ -100,8 +103,6 @@ export default function EventsListView() {
   const [resizingColumn, setResizingColumn] = useState<string | null>(null)
   const [resizeStartX, setResizeStartX] = useState(0)
   const [resizeStartWidth, setResizeStartWidth] = useState(0)
-
-  const columnSettingsRef = useRef<HTMLDivElement>(null)
 
   // Calculate Rotary year start (July 1 of current Rotary year)
   const getRotaryYearStart = () => {
@@ -151,19 +152,6 @@ export default function EventsListView() {
     }
   }, [startDate, endDate])
 
-  // Click outside handler for column settings dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (columnSettingsRef.current && !columnSettingsRef.current.contains(event.target as Node)) {
-        setShowColumnSettings(false)
-      }
-    }
-
-    if (showColumnSettings) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showColumnSettings])
 
   // Save column order to localStorage
   useEffect(() => {
@@ -238,19 +226,10 @@ export default function EventsListView() {
     setIsInitialLoad(false)
   }
 
-  const handleSort = (field: 'date' | 'type' | 'title' | 'location') => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('asc')
-    }
-  }
-
-  const toggleColumn = (column: keyof typeof visibleColumns) => {
+  const toggleColumn = (column: string) => {
     setVisibleColumns((prev) => ({
       ...prev,
-      [column]: !prev[column],
+      [column]: !prev[column as keyof typeof prev],
     }))
   }
 
@@ -317,43 +296,6 @@ export default function EventsListView() {
     speakers: 'Speaker(s)',
     description: 'Description',
   }
-
-  // Filter events based on showHolidays, type, location, and search
-  const filteredEvents = events
-    .filter(event => showHolidays || event.type !== 'holiday')
-    .filter(event => selectedType === 'all' || event.type === selectedType)
-    .filter(event => selectedLocation === 'all' || event.location_id === selectedLocation)
-    .filter(event => {
-      if (!searchTerm) return true
-      const searchLower = searchTerm.toLowerCase()
-      return (
-        event.title.toLowerCase().includes(searchLower) ||
-        event.description?.toLowerCase().includes(searchLower) ||
-        event.location?.name.toLowerCase().includes(searchLower) ||
-        event.speakers.some(s =>
-          s.name.toLowerCase().includes(searchLower) ||
-          s.organization?.toLowerCase().includes(searchLower) ||
-          s.topic.toLowerCase().includes(searchLower)
-        )
-      )
-    })
-
-  // Sort filtered events
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    let comparison = 0
-    if (sortField === 'date') {
-      comparison = a.date.localeCompare(b.date)
-    } else if (sortField === 'type') {
-      comparison = a.type.localeCompare(b.type)
-    } else if (sortField === 'title') {
-      comparison = a.title.localeCompare(b.title)
-    } else if (sortField === 'location') {
-      const aLocation = a.location?.name || ''
-      const bLocation = b.location?.name || ''
-      comparison = aLocation.localeCompare(bLocation)
-    }
-    return sortDirection === 'asc' ? comparison : -comparison
-  })
 
   const exportToCSV = () => {
     // Use column order to maintain consistent CSV export
@@ -761,52 +703,11 @@ export default function EventsListView() {
                 <span>Export CSV</span>
               </button>
 
-              {/* Column Settings Dropdown */}
-              <div className="relative" ref={columnSettingsRef}>
-              <button
-                onClick={() => setShowColumnSettings(!showColumnSettings)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-              >
-                <Settings size={18} />
-                <span>Columns</span>
-              </button>
-
-              {showColumnSettings && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                    <h3 className="font-semibold text-gray-900 text-sm">Column Visibility</h3>
-                    <button
-                      onClick={() => setShowColumnSettings(false)}
-                      className="text-gray-400 hover:text-gray-600 transition-colors"
-                      aria-label="Close"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  {/* Column Checkboxes */}
-                  <div className="p-3 max-h-96 overflow-y-auto">
-                    {Object.keys(visibleColumns).map((column) => (
-                      <label
-                        key={column}
-                        className="flex items-center gap-2 px-2 py-2 hover:bg-gray-50 rounded cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={visibleColumns[column as keyof typeof visibleColumns]}
-                          onChange={() => toggleColumn(column as keyof typeof visibleColumns)}
-                          className="rounded border-gray-300 text-[#0067c8] focus:ring-[#0067c8]"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {columnLabels[column]}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-              </div>
+              <ColumnSettings
+                visibleColumns={visibleColumns}
+                columnLabels={columnLabels}
+                toggleColumn={toggleColumn}
+              />
             </div>
           </div>
         )}

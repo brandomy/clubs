@@ -17,7 +17,11 @@ function getGitInfo() {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  esbuild: {
+    // Strip all console calls and debugger statements from production builds
+    drop: command === 'build' ? ['console', 'debugger'] : [],
+  },
   define: {
     __APP_VERSION__: JSON.stringify(getGitInfo())
   },
@@ -193,6 +197,12 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          tiptap: ['@tiptap/react', '@tiptap/starter-kit'],
+          ui: ['lucide-react', 'date-fns', '@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+        },
         assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.svg')) {
             return 'assets/images/[name]-[hash][extname]'
@@ -208,4 +218,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))

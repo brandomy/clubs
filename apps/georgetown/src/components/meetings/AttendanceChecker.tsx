@@ -31,8 +31,8 @@ interface AttendanceCheckerProps {
 }
 
 export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceCheckerProps) {
-  const { records, summary: _summary, checkInMember, checkOutMember, bulkCheckIn, isLoading: attendanceLoading } = useAttendance(eventId)
-  const { summary: _rsvpSummary } = useRSVP(eventId)
+  const { records, summary: _summary, checkInMember, checkOutMember, bulkCheckIn, isLoading: attendanceLoading } = useAttendance(eventId) // eslint-disable-line @typescript-eslint/no-unused-vars
+  const { summary: _rsvpSummary } = useRSVP(eventId) // eslint-disable-line @typescript-eslint/no-unused-vars
   const { isOfficer } = usePermissions()
 
   const [members, setMembers] = useState<Member[]>([])

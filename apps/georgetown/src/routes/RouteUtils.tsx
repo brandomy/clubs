@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Shared utilities for route components
  * Used across all entity route implementations (speakers, projects, members, etc.)

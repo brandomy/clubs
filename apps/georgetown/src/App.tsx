@@ -6,6 +6,9 @@ import Footer from './components/Footer'
 import RouteTracker from './components/RouteTracker'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { OfflineIndicator } from './components/OfflineIndicator'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import LoginPage from './components/LoginPage'
 import './App.css'
 
 // Eager load only the landing page for instant display
@@ -37,57 +40,55 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <RouteTracker />
-        <div className="flex flex-col min-h-screen">
-          <div className="flex-1">
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Dashboard - Home page (eager loaded) */}
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/about" element={<AboutPage />} />
+        <AuthProvider>
+          <RouteTracker />
+          <div className="flex flex-col min-h-screen">
+            <div className="flex-1">
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/login" element={<LoginPage />} />
 
-                {/* Primary Sections (lazy loaded) */}
-                <Route path="/members" element={<MemberDirectory />} />
-                <Route path="/calendar" element={<CalendarView />} />
+                  {/* Protected routes */}
+                  <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
+                  <Route path="/members" element={<ProtectedRoute><MemberDirectory /></ProtectedRoute>} />
+                  <Route path="/calendar" element={<ProtectedRoute><CalendarView /></ProtectedRoute>} />
+                  <Route path="/timeline" element={<ProtectedRoute><TimelineView /></ProtectedRoute>} />
+                  <Route path="/photos" element={<ProtectedRoute><PhotoGallery /></ProtectedRoute>} />
+                  <Route path="/partners" element={<ProtectedRoute><PartnersPage /></ProtectedRoute>} />
+                  <Route path="/impact" element={<ProtectedRoute><ImpactPage /></ProtectedRoute>} />
+                  <Route path="/speakers-bureau" element={<ProtectedRoute><SpeakerBureauView /></ProtectedRoute>} />
+                  <Route path="/events-list" element={<ProtectedRoute><EventsListView /></ProtectedRoute>} />
+                  <Route path="/availability" element={<ProtectedRoute><Availability /></ProtectedRoute>} />
 
-                {/* Projects - Nested routes for consistent pattern with speakers */}
-                <Route path="/projects" element={<ServiceProjectsPage />}>
-                  <Route path=":projectId" element={<ProjectDetailRoute />} />
-                </Route>
+                  {/* Projects - Nested routes */}
+                  <Route path="/projects" element={<ProtectedRoute><ServiceProjectsPage /></ProtectedRoute>}>
+                    <Route path=":projectId" element={<ProjectDetailRoute />} />
+                  </Route>
 
-                {/* Speakers - Nested routes for hybrid modal + URL routing */}
-                <Route path="/speakers" element={<SpeakersPage />}>
-                  <Route path=":speakerId" element={<SpeakerDetailRoute />} />
-                  <Route path=":speakerId/edit" element={<SpeakerEditRoute />} />
-                </Route>
+                  {/* Speakers - Nested routes */}
+                  <Route path="/speakers" element={<ProtectedRoute><SpeakersPage /></ProtectedRoute>}>
+                    <Route path=":speakerId" element={<SpeakerDetailRoute />} />
+                    <Route path=":speakerId/edit" element={<SpeakerEditRoute />} />
+                  </Route>
 
-                <Route path="/timeline" element={<TimelineView />} />
-                <Route path="/photos" element={<PhotoGallery />} />
+                  {/* Redirects for backwards compatibility */}
+                  <Route path="/service-projects" element={<Navigate to="/projects" replace />} />
+                  <Route path="/speaker-bureau" element={<Navigate to="/speakers-bureau" replace />} />
 
-                {/* Secondary Sections (lazy loaded) */}
-                <Route path="/partners" element={<PartnersPage />} />
-                <Route path="/impact" element={<ImpactPage />} />
-
-                {/* Legacy/Other Routes (lazy loaded) */}
-                <Route path="/speakers-bureau" element={<SpeakerBureauView />} />
-                <Route path="/events-list" element={<EventsListView />} />
-                <Route path="/availability" element={<Availability />} />
-
-                {/* Redirects for backwards compatibility */}
-                <Route path="/service-projects" element={<Navigate to="/projects" replace />} />
-                <Route path="/speaker-bureau" element={<Navigate to="/speakers-bureau" replace />} />
-
-                {/* Development-only route for testing error boundary */}
-                {import.meta.env.DEV && ErrorTest && <Route path="/error-test" element={<ErrorTest />} />}
-              </Routes>
-            </Suspense>
+                  {/* Development-only route for testing error boundary */}
+                  {import.meta.env.DEV && ErrorTest && <Route path="/error-test" element={<ErrorTest />} />}
+                </Routes>
+              </Suspense>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
 
-        {/* PWA Components */}
-        <UpdatePrompt />
-        <OfflineIndicator />
+          {/* PWA Components */}
+          <UpdatePrompt />
+          <OfflineIndicator />
+        </AuthProvider>
       </Router>
     </ErrorBoundary>
   )

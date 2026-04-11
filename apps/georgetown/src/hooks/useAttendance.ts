@@ -148,7 +148,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
       setError(null)
 
       try {
-        const { data: _data, error: insertError } = await supabase
+        const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
           .from('attendance_records')
           .insert({
             event_id: eventId,
@@ -181,7 +181,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
       setError(null)
 
       try {
-        const { data: _data, error: insertError } = await supabase
+        const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
           .from('attendance_records')
           .insert({
             event_id: eventId,
@@ -222,7 +222,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
       setError(null)
 
       try {
-        const { data: _data, error: insertError } = await supabase
+        const { data: _data, error: insertError } = await supabase // eslint-disable-line @typescript-eslint/no-unused-vars
           .from('attendance_records')
           .insert({
             event_id: eventId,

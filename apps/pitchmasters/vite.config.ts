@@ -5,7 +5,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 // Read version from package.json
 import packageJson from './package.json'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  esbuild: {
+    // Strip all console calls and debugger statements from production builds
+    drop: command === 'build' ? ['console', 'debugger'] : [],
+  },
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version)
   },
@@ -144,7 +148,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           supabase: ['@supabase/supabase-js'],
-          ui: ['lucide-react', '@dnd-kit/sortable', '@dnd-kit/core', 'date-fns']
+          ui: ['lucide-react', 'date-fns']
         }
       }
     },
@@ -158,4 +162,4 @@ export default defineConfig({
   preview: {
     port: 5190
   }
-})
+}))

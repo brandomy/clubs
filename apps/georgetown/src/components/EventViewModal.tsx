@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
+import DOMPurify from 'dompurify'
 import { X, Edit, Calendar, Info, Trash2, MapPin, UserCheck, ChevronDown, ChevronUp, Phone, Mail, Globe, Facebook, Instagram, Youtube, MessageCircle, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import LocationSelect from './LocationSelect'
-import RichTextEditor from './RichTextEditor'
+const RichTextEditor = lazy(() => import('./RichTextEditor'))
 import type { Location } from '../types/database'
 
 interface Event {
@@ -409,11 +410,13 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
                   <label htmlFor="agenda" className="block text-sm font-medium text-gray-700 mb-2">
                     Meeting Agenda
                   </label>
-                  <RichTextEditor
-                    content={editData.agenda}
-                    onChange={(html) => setEditData({ ...editData, agenda: html })}
-                    placeholder="Enter meeting agenda (use toolbar for formatting)..."
-                  />
+                  <Suspense fallback={<div className="h-32 bg-gray-50 rounded border border-gray-200 animate-pulse" />}>
+                    <RichTextEditor
+                      content={editData.agenda}
+                      onChange={(html) => setEditData({ ...editData, agenda: html })}
+                      placeholder="Enter meeting agenda (use toolbar for formatting)..."
+                    />
+                  </Suspense>
                   <p className="mt-1 text-xs text-gray-500">
                     Use the toolbar buttons to format your agenda with headings, lists, and emphasis.
                   </p>
@@ -738,7 +741,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <div
                   className="agenda-content text-gray-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: event.agenda }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.agenda) }}
                 />
               </div>
             </div>

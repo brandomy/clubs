@@ -1,54 +1,14 @@
-import { useState, useEffect } from 'react';
+import { Loader, Users } from 'lucide-react';
 import MemberDirectory from '../components/MemberDirectory';
-import { Users, Loader } from 'lucide-react';
-import { MemberWithProfile, User } from '../types';
-import { supabase } from '../lib/supabase';
+import { useMembersData } from '../hooks/useMembersData';
+import { useAuth } from '../hooks/useAuth';
 
 export default function MembersPage() {
-  const [members, setMembers] = useState<MemberWithProfile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { members, isLoading, error } = useMembersData();
+  const { user } = useAuth();
 
-  // For demo: simulating authenticated admin user
-  const currentUser: User | undefined = undefined; // Set to undefined for unauthenticated demo
-  const isAuthenticated = false; // Set to false for public view demo
-
-  // Load data from Supabase on mount
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Load members with profiles and privacy settings
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select(`
-            *,
-            profile:member_profiles(*),
-            privacy_settings:privacy_settings(*)
-          `);
-
-        if (usersError) throw usersError;
-
-        const membersWithProfiles: MemberWithProfile[] = (usersData || []).map((user: any) => ({
-          ...user,
-          profile: user.profile || null,
-          privacy_settings: user.privacy_settings || null
-        }));
-
-        setMembers(membersWithProfiles);
-
-      } catch (err: any) {
-        console.error('Error loading data:', err);
-        setError(err.message || 'Failed to load data');
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadData();
-  }, []);
+  const currentUser = user ?? undefined;
+  const isAuthenticated = !!user;
 
   // Loading state
   if (isLoading) {

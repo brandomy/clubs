@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
@@ -15,7 +16,7 @@ async function insertTestData() {
 
   try {
     // Get existing club or create new one
-    let { data: existingClub } = await supabase
+    const { data: existingClub } = await supabase
       .from('clubs')
       .select('*')
       .eq('name', 'Pitchmasters Toastmasters')

@@ -108,6 +108,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
       // Clean and add social media links (only non-empty values)
       const cleanedSocialLinks = Object.fromEntries(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         Object.entries(formData.social_media_links).filter(([_, url]) => url && url.trim() !== '')
       )
       dbData.social_media_links = Object.keys(cleanedSocialLinks).length > 0 ? cleanedSocialLinks : null
@@ -531,7 +532,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* LinkedIn */}
               <div className="flex items-center gap-2">
-                <FaLinkedin size={18} className="text-[#0A66C2] flex-shrink-0" />
+                <span className="text-[#0A66C2] flex-shrink-0"><FaLinkedin size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://linkedin.com/in/..."
@@ -549,7 +550,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* Facebook */}
               <div className="flex items-center gap-2">
-                <FaFacebook size={18} className="text-[#1877F2] flex-shrink-0" />
+                <span className="text-[#1877F2] flex-shrink-0"><FaFacebook size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://facebook.com/..."
@@ -567,7 +568,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* Instagram */}
               <div className="flex items-center gap-2">
-                <FaInstagram size={18} className="text-[#E4405F] flex-shrink-0" />
+                <span className="text-[#E4405F] flex-shrink-0"><FaInstagram size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://instagram.com/..."
@@ -585,7 +586,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* WhatsApp */}
               <div className="flex items-center gap-2">
-                <FaWhatsapp size={18} className="text-[#25D366] flex-shrink-0" />
+                <span className="text-[#25D366] flex-shrink-0"><FaWhatsapp size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://wa.me/..."
@@ -603,7 +604,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* WeChat */}
               <div className="flex items-center gap-2">
-                <SiWechat size={18} className="text-[#07C160] flex-shrink-0" />
+                <span className="text-[#07C160] flex-shrink-0"><SiWechat size={18} /></span>
                 <input
                   type="text"
                   placeholder="WeChat ID"
@@ -621,7 +622,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* Telegram */}
               <div className="flex items-center gap-2">
-                <FaTelegram size={18} className="text-[#0088cc] flex-shrink-0" />
+                <span className="text-[#0088cc] flex-shrink-0"><FaTelegram size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://t.me/..."
@@ -639,7 +640,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* YouTube */}
               <div className="flex items-center gap-2">
-                <FaYoutube size={18} className="text-[#FF0000] flex-shrink-0" />
+                <span className="text-[#FF0000] flex-shrink-0"><FaYoutube size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://youtube.com/@..."
@@ -657,7 +658,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* Twitter/X */}
               <div className="flex items-center gap-2">
-                <FaTwitter size={18} className="text-[#1DA1F2] flex-shrink-0" />
+                <span className="text-[#1DA1F2] flex-shrink-0"><FaTwitter size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://twitter.com/... or https://x.com/..."
@@ -675,7 +676,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
               {/* TikTok */}
               <div className="flex items-center gap-2">
-                <FaTiktok size={18} className="text-[#000000] flex-shrink-0" />
+                <span className="text-[#000000] flex-shrink-0"><FaTiktok size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://tiktok.com/@..."

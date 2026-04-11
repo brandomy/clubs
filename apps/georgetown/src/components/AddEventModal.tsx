@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { X, Calendar, Info } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import LocationSelect from './LocationSelect'
-import RichTextEditor from './RichTextEditor'
+const RichTextEditor = lazy(() => import('./RichTextEditor'))
 
 interface AddEventModalProps {
   onClose: () => void
@@ -309,11 +309,13 @@ export default function AddEventModal({ onClose, onEventAdded, defaultDate }: Ad
                 <label htmlFor="agenda" className="block text-sm font-medium text-gray-700 mb-2">
                   Meeting Agenda
                 </label>
-                <RichTextEditor
-                  content={formData.agenda}
-                  onChange={(html) => setFormData({ ...formData, agenda: html })}
-                  placeholder="Enter meeting agenda (use toolbar for formatting)..."
-                />
+                <Suspense fallback={<div className="h-32 bg-gray-50 rounded border border-gray-200 animate-pulse" />}>
+                  <RichTextEditor
+                    content={formData.agenda}
+                    onChange={(html) => setFormData({ ...formData, agenda: html })}
+                    placeholder="Enter meeting agenda (use toolbar for formatting)..."
+                  />
+                </Suspense>
                 <p className="mt-1 text-xs text-gray-500">
                   Use the toolbar buttons to format your agenda with headings, lists, and emphasis.
                 </p>

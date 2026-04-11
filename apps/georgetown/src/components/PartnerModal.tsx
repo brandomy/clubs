@@ -80,7 +80,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
       // Filter out empty social media links
       const cleanedSocialLinks = Object.fromEntries(
-        Object.entries(formData.social_media_links).filter(([_, url]) => url && url.trim() !== '')
+        Object.entries(formData.social_media_links).filter(([_, url]) => url && url.trim() !== '') // eslint-disable-line @typescript-eslint/no-unused-vars
       )
 
       const dataToSave = {
@@ -332,7 +332,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* LinkedIn */}
               <div className="flex items-center gap-2">
-                <FaLinkedin size={18} className="text-[#0A66C2] flex-shrink-0" />
+                <span className="text-[#0A66C2] flex-shrink-0"><FaLinkedin size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://linkedin.com/company/..."
@@ -350,7 +350,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* Facebook */}
               <div className="flex items-center gap-2">
-                <FaFacebook size={18} className="text-[#1877F2] flex-shrink-0" />
+                <span className="text-[#1877F2] flex-shrink-0"><FaFacebook size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://facebook.com/..."
@@ -368,7 +368,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* Instagram */}
               <div className="flex items-center gap-2">
-                <FaInstagram size={18} className="text-[#E4405F] flex-shrink-0" />
+                <span className="text-[#E4405F] flex-shrink-0"><FaInstagram size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://instagram.com/..."
@@ -386,7 +386,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* WhatsApp */}
               <div className="flex items-center gap-2">
-                <FaWhatsapp size={18} className="text-[#25D366] flex-shrink-0" />
+                <span className="text-[#25D366] flex-shrink-0"><FaWhatsapp size={18} /></span>
                 <input
                   type="tel"
                   placeholder="+60123456789 or https://wa.me/60123456789"
@@ -404,7 +404,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* WeChat */}
               <div className="flex items-center gap-2">
-                <SiWechat size={18} className="text-[#07C160] flex-shrink-0" />
+                <span className="text-[#07C160] flex-shrink-0"><SiWechat size={18} /></span>
                 <input
                   type="text"
                   placeholder="WeChat ID or QR code URL"
@@ -422,7 +422,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* Telegram */}
               <div className="flex items-center gap-2">
-                <FaTelegram size={18} className="text-[#0088cc] flex-shrink-0" />
+                <span className="text-[#0088cc] flex-shrink-0"><FaTelegram size={18} /></span>
                 <input
                   type="text"
                   placeholder="https://t.me/username"
@@ -440,7 +440,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* YouTube */}
               <div className="flex items-center gap-2">
-                <FaYoutube size={18} className="text-[#FF0000] flex-shrink-0" />
+                <span className="text-[#FF0000] flex-shrink-0"><FaYoutube size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://youtube.com/@username"
@@ -458,7 +458,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* Twitter/X */}
               <div className="flex items-center gap-2">
-                <FaTwitter size={18} className="text-[#1DA1F2] flex-shrink-0" />
+                <span className="text-[#1DA1F2] flex-shrink-0"><FaTwitter size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://twitter.com/... or https://x.com/..."
@@ -476,7 +476,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
               {/* TikTok */}
               <div className="flex items-center gap-2">
-                <FaTiktok size={18} className="text-[#000000] flex-shrink-0" />
+                <span className="text-[#000000] flex-shrink-0"><FaTiktok size={18} /></span>
                 <input
                   type="url"
                   placeholder="https://tiktok.com/@username"
