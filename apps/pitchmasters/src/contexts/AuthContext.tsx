@@ -17,19 +17,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        await fetchUser(session.user.id);
-      }
-      setIsLoading(false);
-    });
-
+    // onAuthStateChange fires INITIAL_SESSION on mount — no need to also call
+    // getSession(), which races for the same PKCE lock and causes AbortErrors.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         await fetchUser(session.user.id);
       } else {
         setUser(null);
       }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -46,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       setUser(data);
     } catch (error) {
-      logger.error('Error fetching user profile:', error);
+      logger.error('Error fetching user profile:', JSON.stringify(error));
       setUser(null);
     }
   };

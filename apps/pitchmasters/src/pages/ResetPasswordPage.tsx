@@ -10,16 +10,30 @@ export default function ResetPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  // Supabase exchanges the token from the URL hash automatically on load.
-  // Wait for the session to be established before showing the form.
+  // Listen for PASSWORD_RECOVERY event — Supabase fires this after exchanging
+  // the token from the URL hash. Do NOT call getSession() here; AuthContext
+  // already calls it on mount and they would race for the same PKCE lock.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    let resolved = false;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        resolved = true;
         setIsReady(true);
-      } else {
-        setError('This link is invalid or has expired. Request a new one from the login page.');
       }
     });
+
+    // If no PASSWORD_RECOVERY fires within 3s the link is invalid/expired.
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        setError('This link is invalid or has expired. Request a new one from the login page.');
+      }
+    }, 3000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
