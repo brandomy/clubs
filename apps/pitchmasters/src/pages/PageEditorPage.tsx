@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Loader } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Loader, Eye } from 'lucide-react';
 import PageEditor from '../components/cms/PageEditor';
 import { usePublicPages } from '../hooks/usePublicPages';
 import { useAuth } from '../hooks/useAuth';
@@ -21,10 +21,10 @@ export default function PageEditorPage() {
   useEffect(() => {
     if (isNew || !slug) return;
     setIsLoading(true);
-    getPage(slug).then((result) => {
-      setPage(result ?? undefined);
-      setIsLoading(false);
-    });
+    getPage(slug)
+      .then((result) => setPage(result ?? undefined))
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   }, [slug, isNew, getPage]);
 
   const handleSave = async (data: Partial<PublicPage> & { title: string; content: any }) => {
@@ -52,6 +52,25 @@ export default function PageEditorPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Editor nav bar */}
+      <div className="flex items-center justify-between mb-4">
+        <Link
+          to="/pages"
+          className="text-sm text-gray-500 hover:text-tm-blue transition-colors"
+        >
+          ← All Pages
+        </Link>
+        {page?.published && page.slug && (
+          <Link
+            to={`/pages/${page.slug}`}
+            className="flex items-center gap-1.5 text-sm text-tm-blue hover:underline"
+          >
+            <Eye className="w-4 h-4" />
+            View published page
+          </Link>
+        )}
+      </div>
+
       <PageEditor
         page={page}
         currentUser={user}

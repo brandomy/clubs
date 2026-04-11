@@ -46,7 +46,7 @@ Keep this context in mind — every UX decision should reduce friction compared 
 ## Implementation order
 
 Follow the order in the plan exactly:
-1. Database + types first (Steps 1-2) — get CEO/user to run the SQL migration in Supabase before proceeding
+1. Database + types first (Steps 1-2) — write the SQL migration file to `apps/pitchmasters/docs/database/sql-scripts/009-lms-schema.sql`, then run it yourself using `psql` with the `DIRECT_URL` from `apps/pitchmasters/.env.local`
 2. Data hook skeleton (Step 3)
 3. Evaluation form engine (Step 4) — test this in isolation before building the full path editor
 4. Evaluation template builder (Step 5)

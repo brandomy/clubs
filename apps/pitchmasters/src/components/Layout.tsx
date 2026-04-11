@@ -61,6 +61,14 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   Pages
                 </Link>
+                <Link
+                  to="/learn"
+                  className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-touch ${
+                    location.pathname.startsWith('/learn') ? 'bg-white bg-opacity-20' : 'hover:bg-white hover:bg-opacity-10'
+                  }`}
+                >
+                  Learn
+                </Link>
                 <a
                   href="#"
                   className="flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors min-h-touch opacity-50 cursor-not-allowed"
@@ -143,6 +151,15 @@ export default function Layout({ children }: LayoutProps) {
               >
                 Pages
               </Link>
+              <Link
+                to="/learn"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block px-3 py-2 rounded-md text-base font-medium text-white min-h-touch ${
+                  location.pathname.startsWith('/learn') ? 'bg-white bg-opacity-20' : 'hover:bg-white hover:bg-opacity-10'
+                }`}
+              >
+                Learn
+              </Link>
               <a
                 href="#"
                 className="block px-3 py-2 rounded-md text-base font-medium text-white min-h-touch opacity-50"
@@ -212,7 +229,7 @@ export default function Layout({ children }: LayoutProps) {
             <div>
               <h3 className="text-base font-semibold text-tm-blue mb-3">Official Club</h3>
               <p className="text-sm text-gray-600 mb-3">
-                Charter #12345
+                CB-28679395
               </p>
               <p className="text-xs text-gray-500 leading-relaxed">
                 This website is maintained by club members for club business only.
@@ -225,12 +242,8 @@ export default function Layout({ children }: LayoutProps) {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-500">
-                © {new Date().getFullYear()} Pitchmasters Toastmasters Club. All rights reserved.
+                © {new Date().getFullYear()} Pitchmasters. All rights reserved.
               </p>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">Powered by</span>
-                <span className="text-sm font-semibold text-tm-blue">Toastmasters Pathways</span>
-              </div>
             </div>
           </div>
         </div>
@@ -241,7 +254,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              Built by <a href="https://brandmine.io" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-tm-blue transition-colors">Brandmine.io</a> • {new Date().getFullYear()} • Available under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-tm-blue transition-colors">CC BY 4.0 License</a>
+              Built by <a href="https://brandmine.ai" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-tm-blue transition-colors">Brandmine.ai</a> • {new Date().getFullYear()} • Available under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-tm-blue transition-colors">CC BY 4.0 License</a>
             </p>
           </div>
         </div>

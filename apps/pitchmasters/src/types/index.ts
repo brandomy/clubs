@@ -173,3 +173,120 @@ export interface PublicPage {
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================
+// LMS Types
+// ============================================================
+
+export type ProjectType = 'speech' | 'assignment' | 'evaluation_exercise' | 'elective';
+export type CompletionStatus = 'pending_evaluation' | 'completed' | 'approved_by_officer';
+export type BadgeTriggerType = 'project_complete' | 'level_complete' | 'path_complete';
+
+export interface EvaluationField {
+  id: string;
+  type: 'rating' | 'textarea' | 'text' | 'checkbox' | 'select';
+  label: string;
+  required: boolean;
+  max?: number;           // for rating fields
+  options?: string[];     // for select fields
+  placeholder?: string;
+}
+
+export interface LearningPath {
+  id: string;
+  club_id: string;
+  title: string;
+  description: string;
+  slug: string;
+  published: boolean;
+  cover_image_url: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LearningLevel {
+  id: string;
+  path_id: string;
+  club_id: string;
+  title: string;
+  description: string;
+  order_index: number;
+  required_projects: number;
+}
+
+export interface EvaluationTemplate {
+  id: string;
+  club_id: string;
+  name: string;
+  description: string;
+  fields: EvaluationField[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LearningProject {
+  id: string;
+  level_id: string;
+  path_id: string;
+  club_id: string;
+  title: string;
+  description: string;
+  content: any; // BlockNote JSON document
+  project_type: ProjectType;
+  evaluation_template_id: string | null;
+  order_index: number;
+  is_elective: boolean;
+  time_estimate_minutes: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MemberPathEnrollment {
+  id: string;
+  member_id: string;
+  path_id: string;
+  club_id: string;
+  current_level_id: string | null;
+  enrolled_at: string;
+  completed_at: string | null;
+}
+
+export interface EvaluationSubmission {
+  [fieldId: string]: string | number | boolean;
+}
+
+export interface MemberProjectCompletion {
+  id: string;
+  member_id: string;
+  project_id: string;
+  path_id: string;
+  club_id: string;
+  speech_id: string | null;
+  status: CompletionStatus;
+  evaluation_data: EvaluationSubmission | null;
+  evaluator_id: string | null;
+  completed_at: string;
+  approved_at: string | null;
+  notes: string | null;
+}
+
+export interface LearningBadge {
+  id: string;
+  club_id: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+  trigger_type: BadgeTriggerType;
+  trigger_ref_id: string;
+  created_at: string;
+}
+
+export interface MemberBadge {
+  id: string;
+  member_id: string;
+  badge_id: string;
+  club_id: string;
+  earned_at: string;
+  speech_id: string | null;
+}

@@ -1,9 +1,150 @@
-import { useState, useCallback } from 'react';
-import { useCreateBlockNote } from '@blocknote/react';
+import { useState, useCallback, useRef } from 'react';
+import {
+  useCreateBlockNote,
+  useBlockNoteEditor,
+  FilePanel,
+  EmbedTab,
+  UploadTab,
+  FilePanelController,
+  createReactBlockSpec,
+  ResizableFileBlockWrapper,
+  type ReactCustomBlockRenderProps,
+} from '@blocknote/react';
+import {
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  createVideoBlockConfig,
+  videoParse,
+} from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
-import { Save, Globe, GlobeLock, Trash2 } from 'lucide-react';
+import { Save, Globe, GlobeLock, Trash2, CheckCircle, Video } from 'lucide-react';
 import { PublicPage, User } from '../../types';
+import { supabase } from '../../lib/supabase';
+
+// ── Custom video block with YouTube/Vimeo iframe support ──────────────────────
+
+function getEmbedInfo(url: string): { kind: 'iframe'; src: string } | { kind: 'video'; src: string } | null {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?#]+)/);
+  if (ytMatch) return { kind: 'iframe', src: `https://www.youtube.com/embed/${ytMatch[1]}` };
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) return { kind: 'iframe', src: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
+  return { kind: 'video', src: url };
+}
+
+type VideoBlockProps = Omit<ReactCustomBlockRenderProps<typeof createVideoBlockConfig>, 'contentRef'>;
+
+function CustomVideoPreview(props: VideoBlockProps) {
+  const url = props.block.props.url;
+  if (!url) return null;
+  const embed = getEmbedInfo(url);
+  if (!embed) return null;
+  if (embed.kind === 'iframe') {
+    return (
+      <iframe
+        src={embed.src}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore — contentEditable on non-form elements
+        contentEditable={false}
+        style={{ width: '100%', aspectRatio: '16/9', border: 'none', display: 'block' }}
+      />
+    );
+  }
+  return (
+    <video
+      className="bn-visual-media"
+      src={embed.src}
+      controls
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      contentEditable={false}
+      draggable={false}
+    />
+  );
+}
+
+function CustomVideoBlock(props: ReactCustomBlockRenderProps<typeof createVideoBlockConfig>) {
+  return (
+    <ResizableFileBlockWrapper
+      {...(props as any)}
+      buttonIcon={<Video size={24} />}
+    >
+      <CustomVideoPreview {...(props as any)} />
+    </ResizableFileBlockWrapper>
+  );
+}
+
+const customVideoBlockSpec = createReactBlockSpec(
+  createVideoBlockConfig,
+  (config) => ({
+    render: CustomVideoBlock,
+    parse: videoParse(config),
+  }),
+);
+
+const schema = BlockNoteSchema.create({
+  blockSpecs: {
+    ...defaultBlockSpecs,
+    video: customVideoBlockSpec(),
+  },
+});
+
+// ── Image upload ──────────────────────────────────────────────────────────────
+
+async function uploadImage(file: File): Promise<string> {
+  try {
+    const ext = file.name.split('.').pop() ?? 'png';
+    const path = `pages/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage
+      .from('cms-images')
+      .upload(path, file, { upsert: false });
+    if (!error) {
+      const { data } = supabase.storage.from('cms-images').getPublicUrl(path);
+      return data.publicUrl;
+    }
+  } catch { /* fall through */ }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target?.result as string);
+    reader.onerror = () => reject(new Error('Failed to read image file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Custom file panel: images → Embed first; video → Embed only ───────────────
+
+function CustomFilePanel({ blockId }: { blockId: string }) {
+  const editor = useBlockNoteEditor();
+  const [, setLoading] = useState(false);
+  const block = editor.getBlock(blockId);
+  const isVideo = block?.type === 'video';
+
+  if (isVideo) {
+    return (
+      <FilePanel
+        blockId={blockId}
+        tabs={[{ name: 'Embed', tabPanel: <EmbedTab blockId={blockId} /> }]}
+        defaultOpenTab="Embed"
+      />
+    );
+  }
+
+  return (
+    <FilePanel
+      blockId={blockId}
+      defaultOpenTab="Embed"
+      tabs={[
+        { name: 'Embed', tabPanel: <EmbedTab blockId={blockId} /> },
+        { name: 'Upload', tabPanel: <UploadTab blockId={blockId} setLoading={setLoading} /> },
+      ]}
+    />
+  );
+}
+
+// ── Editor component ──────────────────────────────────────────────────────────
 
 interface PageEditorProps {
   page?: PublicPage;
@@ -39,16 +180,24 @@ export default function PageEditor({
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const editor = useCreateBlockNote({
+    schema,
     initialContent: page?.content?.length ? page.content : undefined,
+    uploadFile: uploadImage,
   });
+
+  const showToast = useCallback(() => {
+    setSaveSuccess(true);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setSaveSuccess(false), 2500);
+  }, []);
 
   const handleTitleChange = useCallback((value: string) => {
     setTitle(value);
-    if (!slugEdited) {
-      setSlug(generateSlug(value));
-    }
+    if (!slugEdited) setSlug(generateSlug(value));
   }, [slugEdited]);
 
   const handleSlugChange = useCallback((value: string) => {
@@ -66,19 +215,19 @@ export default function PageEditor({
         title: title.trim(),
         slug: slug || generateSlug(title),
         content: editor.document,
-        published: false,
+        published: page?.published ?? false,
         author_id: currentUser.id,
       });
+      showToast();
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : 'Save failed');
     } finally {
       setIsSaving(false);
     }
-  }, [title, slug, editor, page, currentUser.id, onSave]);
+  }, [title, slug, editor, page, currentUser.id, onSave, showToast]);
 
   const handlePublishToggle = useCallback(async () => {
     if (!page?.id) {
-      // Save first, then publish
       setIsSaving(true);
       setSaveError(null);
       try {
@@ -90,6 +239,7 @@ export default function PageEditor({
           author_id: currentUser.id,
         });
         if (!saved) setSaveError('Failed to publish');
+        else showToast();
       } catch (err: unknown) {
         setSaveError(err instanceof Error ? err.message : 'Publish failed');
       } finally {
@@ -101,7 +251,6 @@ export default function PageEditor({
     setIsPublishing(true);
     setSaveError(null);
     try {
-      // Save latest content first
       await onSave({
         ...page,
         title: title.trim(),
@@ -111,12 +260,13 @@ export default function PageEditor({
         author_id: currentUser.id,
       });
       await onPublish(page.id, !page.published);
+      showToast();
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : 'Publish toggle failed');
     } finally {
       setIsPublishing(false);
     }
-  }, [page, title, slug, editor, currentUser.id, onSave, onPublish]);
+  }, [page, title, slug, editor, currentUser.id, onSave, onPublish, showToast]);
 
   const handleDelete = useCallback(async () => {
     if (!page?.id || !onDelete) return;
@@ -160,7 +310,9 @@ export default function PageEditor({
 
       {/* BlockNote Editor */}
       <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[400px]">
-        <BlockNoteView editor={editor} theme="light" />
+        <BlockNoteView editor={editor} theme="light" filePanel={false}>
+          <FilePanelController filePanel={CustomFilePanel} />
+        </BlockNoteView>
       </div>
 
       {/* Error */}
@@ -178,7 +330,7 @@ export default function PageEditor({
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 min-h-[44px]"
         >
           <Save className="w-4 h-4" />
-          {isSaving ? 'Saving…' : 'Save Draft'}
+          {isSaving ? 'Saving…' : isPublished ? 'Save' : 'Save Draft'}
         </button>
 
         <button
@@ -221,6 +373,14 @@ export default function PageEditor({
           Cancel
         </button>
       </div>
+
+      {/* Save success toast */}
+      {saveSuccess && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg text-sm font-medium animate-fade-in z-50">
+          <CheckCircle className="w-4 h-4 flex-shrink-0" />
+          Saved successfully
+        </div>
+      )}
     </div>
   );
 }

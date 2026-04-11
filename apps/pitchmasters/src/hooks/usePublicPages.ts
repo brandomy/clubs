@@ -50,15 +50,19 @@ export function usePublicPages(clubId: string | null) {
   const getPage = useCallback(async (slug: string): Promise<PublicPage | null> => {
     if (!clubId) return null;
 
-    const { data, error: fetchError } = await supabase
+    const fetchPromise = supabase
       .from('pm_public_pages')
       .select('*')
       .eq('club_id', clubId)
       .eq('slug', slug)
-      .single();
+      .single()
+      .then(({ data, error }) => (error ? null : (data as PublicPage)));
 
-    if (fetchError) return null;
-    return data;
+    const timeoutPromise = new Promise<null>((resolve) =>
+      setTimeout(() => resolve(null), 8000)
+    );
+
+    return Promise.race([fetchPromise, timeoutPromise]);
   }, [clubId]);
 
   const savePage = useCallback(async (

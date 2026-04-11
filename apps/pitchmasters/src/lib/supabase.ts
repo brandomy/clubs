@@ -197,6 +197,247 @@ export type Database = {
           updated_at?: string;
         };
       };
+      pm_learning_paths: {
+        Row: {
+          id: string;
+          club_id: string;
+          title: string;
+          description: string;
+          slug: string;
+          published: boolean;
+          cover_image_url: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          club_id: string;
+          title: string;
+          description?: string;
+          slug: string;
+          published?: boolean;
+          cover_image_url?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          slug?: string;
+          published?: boolean;
+          cover_image_url?: string | null;
+          updated_at?: string;
+        };
+      };
+      pm_learning_levels: {
+        Row: {
+          id: string;
+          path_id: string;
+          club_id: string;
+          title: string;
+          description: string;
+          order_index: number;
+          required_projects: number;
+        };
+        Insert: {
+          id?: string;
+          path_id: string;
+          club_id: string;
+          title: string;
+          description?: string;
+          order_index?: number;
+          required_projects?: number;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          order_index?: number;
+          required_projects?: number;
+        };
+      };
+      pm_evaluation_templates: {
+        Row: {
+          id: string;
+          club_id: string;
+          name: string;
+          description: string;
+          fields: any;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          club_id: string;
+          name: string;
+          description?: string;
+          fields?: any;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string;
+          fields?: any;
+          updated_at?: string;
+        };
+      };
+      pm_learning_projects: {
+        Row: {
+          id: string;
+          level_id: string;
+          path_id: string;
+          club_id: string;
+          title: string;
+          description: string;
+          content: any;
+          project_type: 'speech' | 'assignment' | 'evaluation_exercise' | 'elective';
+          evaluation_template_id: string | null;
+          order_index: number;
+          is_elective: boolean;
+          time_estimate_minutes: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          level_id: string;
+          path_id: string;
+          club_id: string;
+          title: string;
+          description?: string;
+          content?: any;
+          project_type?: 'speech' | 'assignment' | 'evaluation_exercise' | 'elective';
+          evaluation_template_id?: string | null;
+          order_index?: number;
+          is_elective?: boolean;
+          time_estimate_minutes?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          content?: any;
+          project_type?: 'speech' | 'assignment' | 'evaluation_exercise' | 'elective';
+          evaluation_template_id?: string | null;
+          order_index?: number;
+          is_elective?: boolean;
+          time_estimate_minutes?: number | null;
+          updated_at?: string;
+        };
+      };
+      pm_member_path_enrollments: {
+        Row: {
+          id: string;
+          member_id: string;
+          path_id: string;
+          club_id: string;
+          current_level_id: string | null;
+          enrolled_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          member_id: string;
+          path_id: string;
+          club_id: string;
+          current_level_id?: string | null;
+          enrolled_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          current_level_id?: string | null;
+          completed_at?: string | null;
+        };
+      };
+      pm_member_project_completions: {
+        Row: {
+          id: string;
+          member_id: string;
+          project_id: string;
+          path_id: string;
+          club_id: string;
+          speech_id: string | null;
+          status: 'pending_evaluation' | 'completed' | 'approved_by_officer';
+          evaluation_data: any | null;
+          evaluator_id: string | null;
+          completed_at: string;
+          approved_at: string | null;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          member_id: string;
+          project_id: string;
+          path_id: string;
+          club_id: string;
+          speech_id?: string | null;
+          status?: 'pending_evaluation' | 'completed' | 'approved_by_officer';
+          evaluation_data?: any | null;
+          evaluator_id?: string | null;
+          completed_at?: string;
+          approved_at?: string | null;
+          notes?: string | null;
+        };
+        Update: {
+          speech_id?: string | null;
+          status?: 'pending_evaluation' | 'completed' | 'approved_by_officer';
+          evaluation_data?: any | null;
+          evaluator_id?: string | null;
+          approved_at?: string | null;
+          notes?: string | null;
+        };
+      };
+      pm_learning_badges: {
+        Row: {
+          id: string;
+          club_id: string;
+          name: string;
+          description: string;
+          image_url: string | null;
+          trigger_type: 'project_complete' | 'level_complete' | 'path_complete';
+          trigger_ref_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          club_id: string;
+          name: string;
+          description?: string;
+          image_url?: string | null;
+          trigger_type: 'project_complete' | 'level_complete' | 'path_complete';
+          trigger_ref_id: string;
+          created_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string;
+          image_url?: string | null;
+        };
+      };
+      pm_member_badges: {
+        Row: {
+          id: string;
+          member_id: string;
+          badge_id: string;
+          club_id: string;
+          earned_at: string;
+          speech_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          member_id: string;
+          badge_id: string;
+          club_id: string;
+          earned_at?: string;
+          speech_id?: string | null;
+        };
+        Update: {
+          speech_id?: string | null;
+        };
+      };
     };
   };
 };

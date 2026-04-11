@@ -9,6 +9,12 @@ import PagesListPage from './pages/PagesListPage';
 const FaviconTestPage = import.meta.env.DEV ? lazy(() => import('./pages/FaviconTestPage')) : null;
 import PublicPageViewPage from './pages/PublicPageViewPage';
 import PageEditorPage from './pages/PageEditorPage';
+import LearningDashboard from './pages/LearningDashboard';
+import ProjectView from './pages/ProjectView';
+import LearningAdmin from './pages/LearningAdmin';
+import PathEditorPage from './pages/PathEditorPage';
+import EvaluationTemplates from './pages/EvaluationTemplates';
+import LearningAnalyticsPage from './pages/LearningAnalyticsPage';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from './contexts/AuthContext';
@@ -44,6 +50,18 @@ function AppRoutes() {
       <Route path="/pages/new" element={<ProtectedRoute><Layout><PageEditorPage /></Layout></ProtectedRoute>} />
       <Route path="/pages/:slug/edit" element={<ProtectedRoute><Layout><PageEditorPage /></Layout></ProtectedRoute>} />
       <Route path="/pages/:slug" element={<ProtectedRoute><Layout><PublicPageViewPage /></Layout></ProtectedRoute>} />
+
+      {/* LMS — member-facing */}
+      <Route path="/learn" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />
+      <Route path="/learn/:pathSlug" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />
+      <Route path="/learn/:pathSlug/project/:projectId" element={<ProtectedRoute><Layout><ProjectView /></Layout></ProtectedRoute>} />
+
+      {/* LMS — officer/admin */}
+      <Route path="/learn/admin" element={<ProtectedRoute><Layout><LearningAdmin /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/paths/new" element={<ProtectedRoute><Layout><PathEditorPage /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/paths/:pathId" element={<ProtectedRoute><Layout><PathEditorPage /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/templates" element={<ProtectedRoute><Layout><EvaluationTemplates /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/analytics" element={<ProtectedRoute><Layout><LearningAnalyticsPage /></Layout></ProtectedRoute>} />
 
       {/* Dev-only favicon test */}
       {import.meta.env.DEV && FaviconTestPage && (
