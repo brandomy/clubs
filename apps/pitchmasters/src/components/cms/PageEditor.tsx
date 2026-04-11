@@ -22,7 +22,7 @@ import { Save, Globe, GlobeLock, Trash2, CheckCircle, Video } from 'lucide-react
 import { PublicPage, User } from '../../types';
 import { supabase } from '../../lib/supabase';
 
-// ── Custom video block with YouTube/Vimeo iframe support ──────────────────────
+// ── Custom video block: YouTube/Vimeo iframe + S/M/L size picker ──────────────
 
 function getEmbedInfo(url: string): { kind: 'iframe'; src: string } | { kind: 'video'; src: string } | null {
   if (!url) return null;
@@ -33,47 +33,80 @@ function getEmbedInfo(url: string): { kind: 'iframe'; src: string } | { kind: 'v
   return { kind: 'video', src: url };
 }
 
-type VideoBlockProps = Omit<ReactCustomBlockRenderProps<typeof createVideoBlockConfig>, 'contentRef'>;
-
-function CustomVideoPreview(props: VideoBlockProps) {
-  const url = props.block.props.url;
-  if (!url) return null;
-  const embed = getEmbedInfo(url);
-  if (!embed) return null;
-  if (embed.kind === 'iframe') {
-    return (
-      <iframe
-        src={embed.src}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore — contentEditable on non-form elements
-        contentEditable={false}
-        style={{ width: '100%', aspectRatio: '16/9', border: 'none', display: 'block' }}
-      />
-    );
-  }
-  return (
-    <video
-      className="bn-visual-media"
-      src={embed.src}
-      controls
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      contentEditable={false}
-      draggable={false}
-    />
-  );
-}
+const VIDEO_SIZES = [
+  { label: 'S', width: 360 },
+  { label: 'M', width: 560 },
+  { label: 'L', width: undefined as number | undefined },
+] as const;
 
 function CustomVideoBlock(props: ReactCustomBlockRenderProps<typeof createVideoBlockConfig>) {
+  const url = props.block.props.url;
+  const currentWidth = props.block.props.previewWidth;
+  const embed = url ? getEmbedInfo(url) : null;
+
+  // undefined previewWidth = full width = L
+  const activeLabel = currentWidth === undefined
+    ? 'L'
+    : VIDEO_SIZES.find(s => s.width === currentWidth)?.label;
+
+  const setSize = (width: number | undefined) => {
+    (props.editor as any).updateBlock(props.block, { props: { previewWidth: width } });
+  };
+
   return (
-    <ResizableFileBlockWrapper
-      {...(props as any)}
-      buttonIcon={<Video size={24} />}
-    >
-      <CustomVideoPreview {...(props as any)} />
-    </ResizableFileBlockWrapper>
+    <>
+      {/*
+        key={currentWidth} forces ResizableFileBlockWrapper to remount when a
+        preset button is clicked, so its internal useState picks up the new width.
+      */}
+      <ResizableFileBlockWrapper
+        key={currentWidth ?? 'L'}
+        {...(props as any)}
+        buttonIcon={<Video size={24} />}
+      >
+        {embed?.kind === 'iframe' ? (
+          <iframe
+            src={embed.src}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            style={{ width: '100%', aspectRatio: '16/9', border: 'none', display: 'block' }}
+          />
+        ) : embed?.kind === 'video' ? (
+          <video className="bn-visual-media" src={embed.src} controls draggable={false} />
+        ) : null}
+      </ResizableFileBlockWrapper>
+
+      {/* S / M / L preset buttons — only in edit mode when a URL is set */}
+      {url && props.editor.isEditable && (
+        <div
+          contentEditable={false}
+          style={{ display: 'flex', gap: 4, marginTop: 4, justifyContent: 'flex-end' }}
+        >
+          {VIDEO_SIZES.map(s => {
+            const active = activeLabel === s.label;
+            return (
+              <button
+                key={s.label}
+                onClick={(e) => { e.preventDefault(); setSize(s.width); }}
+                style={{
+                  padding: '2px 10px',
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: active ? '#004165' : '#6b7280',
+                  background: active ? '#e0ecf4' : 'transparent',
+                  border: `1px solid ${active ? '#004165' : '#d1d5db'}`,
+                  cursor: 'pointer',
+                  borderRadius: 4,
+                  lineHeight: 1.5,
+                }}
+              >
+                {s.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -114,7 +147,7 @@ async function uploadImage(file: File): Promise<string> {
   });
 }
 
-// ── Custom file panel: images → Embed first; video → Embed only ───────────────
+// ── Custom file panel: images → Embed first; video → URL only ────────────────
 
 function CustomFilePanel({ blockId }: { blockId: string }) {
   const editor = useBlockNoteEditor();
