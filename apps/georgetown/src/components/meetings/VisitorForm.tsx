@@ -1,5 +1,6 @@
 import { logger } from '../../utils/logger'
 import { useState } from 'react'
+import { useToast } from '../../contexts/ToastContext'
 import { X } from 'lucide-react'
 import { useAttendance } from '../../hooks/useAttendance'
 
@@ -23,6 +24,7 @@ interface VisitorFormProps {
 }
 
 export function VisitorForm({ eventId, isOpen, onClose }: VisitorFormProps) {
+  const { showToast } = useToast()
   const { checkInVisitor } = useAttendance(eventId)
 
   const [name, setName] = useState('')
@@ -40,7 +42,7 @@ export function VisitorForm({ eventId, isOpen, onClose }: VisitorFormProps) {
 
   const handleSave = async (closeAfter = true) => {
     if (!name.trim() || !club.trim()) {
-      alert('Please enter visitor name and club name')
+      showToast('Please enter visitor name and club name', 'warning')
       return
     }
 
@@ -60,7 +62,7 @@ export function VisitorForm({ eventId, isOpen, onClose }: VisitorFormProps) {
       }
     } catch (error) {
       logger.error('Failed to add visitor:', error)
-      alert('Failed to add visitor. Please try again.')
+      showToast('Failed to add visitor. Please try again.', 'error')
     } finally {
       setIsSaving(false)
     }

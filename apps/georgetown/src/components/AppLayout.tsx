@@ -25,6 +25,7 @@ interface FilterConfig {
   type: 'select' | 'multiselect'
   options: FilterOption[]
   value: string | string[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (value: any) => void
 }
 

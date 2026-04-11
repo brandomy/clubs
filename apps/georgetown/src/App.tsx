@@ -7,6 +7,7 @@ import RouteTracker from './components/RouteTracker'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { OfflineIndicator } from './components/OfflineIndicator'
 import { AuthProvider } from './contexts/AuthContext'
+import { ToastProvider } from './contexts/ToastContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './components/LoginPage'
 import './App.css'
@@ -41,6 +42,7 @@ function App() {
     <ErrorBoundary>
       <Router>
         <AuthProvider>
+          <ToastProvider>
           <RouteTracker />
           <div className="flex flex-col min-h-screen">
             <div className="flex-1">
@@ -88,6 +90,7 @@ function App() {
           {/* PWA Components */}
           <UpdatePrompt />
           <OfflineIndicator />
+          </ToastProvider>
         </AuthProvider>
       </Router>
     </ErrorBoundary>

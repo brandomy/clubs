@@ -4,7 +4,7 @@ import { supabase } from './supabase'
 export async function checkDuplicateSpeaker(
   email: string | null,
   excludeId?: string
-): Promise<{ isDuplicate: boolean; existing: any | null }> {
+): Promise<{ isDuplicate: boolean; existing: Record<string, unknown> | null }> {
   if (!email || email.trim() === '') {
     return { isDuplicate: false, existing: null }
   }
@@ -34,7 +34,7 @@ export async function checkDuplicateSpeaker(
 export async function checkDuplicateMember(
   email: string | null,
   excludeId?: string
-): Promise<{ isDuplicate: boolean; existing: any | null }> {
+): Promise<{ isDuplicate: boolean; existing: Record<string, unknown> | null }> {
   if (!email || email.trim() === '') {
     return { isDuplicate: false, existing: null }
   }

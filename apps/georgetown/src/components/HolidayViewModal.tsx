@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger'
 import { useState } from 'react'
+import { useToast } from '../contexts/ToastContext'
 import { X, Calendar, Edit, MapPin, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
@@ -16,6 +17,7 @@ interface HolidayViewModalProps {
 }
 
 export default function HolidayViewModal({ holiday, onClose, onHolidayUpdated }: HolidayViewModalProps) {
+  const { showToast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
     title: holiday.title,
@@ -79,7 +81,7 @@ export default function HolidayViewModal({ holiday, onClose, onHolidayUpdated }:
       onClose()
     } catch (error) {
       logger.error('Error updating holiday:', error)
-      alert('Failed to update holiday. Please try again.')
+      showToast('Failed to update holiday. Please try again.', 'error')
     } finally {
       setLoading(false)
     }

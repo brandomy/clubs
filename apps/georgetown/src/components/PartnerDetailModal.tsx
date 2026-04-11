@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger'
 import { useState } from 'react'
+import { useToast } from '../contexts/ToastContext'
 import { X, Edit, Trash2, Building2, Calendar, Mail, Phone, Globe, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { Partner } from '../types/database'
@@ -12,6 +13,7 @@ interface PartnerDetailModalProps {
 }
 
 export default function PartnerDetailModal({ partner, onClose, onEdit }: PartnerDetailModalProps) {
+  const { showToast } = useToast()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -27,7 +29,7 @@ export default function PartnerDetailModal({ partner, onClose, onEdit }: Partner
       onClose()
     } catch (err) {
       logger.error('Error deleting partner:', err)
-      alert('Failed to delete partner. Please try again.')
+      showToast('Failed to delete partner. Please try again.', 'error')
     } finally {
       setIsDeleting(false)
     }

@@ -134,7 +134,7 @@ export default function PrivacySettings({ privacySettings, onSave }: PrivacySett
 
   const applyRecommendedSettings = () => {
     const recommendedSettings = Object.entries(settingsConfig).reduce((acc, [key, config]) => {
-      (acc as any)[key] = config.recommendedSetting;
+      (acc as Record<string, unknown>)[key] = config.recommendedSetting;
       return acc;
     }, {} as Partial<PrivacySettingsType>);
 

@@ -3,7 +3,7 @@ import { retryWithBackoff } from './retry-with-backoff'
 
 // Wrapper for SELECT queries with retry
 export async function fetchWithRetry<T>(
-  queryFn: () => Promise<{ data: T | null; error: any }>
+  queryFn: () => Promise<{ data: T | null; error: unknown }>
 ) {
   return retryWithBackoff(async () => {
     const { data, error } = await queryFn()
@@ -68,7 +68,7 @@ export const queries = {
 
 // For mutations (INSERT, UPDATE, DELETE), use retry sparingly
 export async function mutateWithRetry<T>(
-  mutateFn: () => Promise<{ data: T | null; error: any }>,
+  mutateFn: () => Promise<{ data: T | null; error: unknown }>,
   options?: { maxRetries?: number }
 ) {
   return retryWithBackoff(

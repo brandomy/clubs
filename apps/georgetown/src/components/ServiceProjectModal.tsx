@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger'
+import { useToast } from '../contexts/ToastContext'
 import { useState, useEffect } from 'react'
 import { X, Trash2, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -33,6 +34,7 @@ export default function ServiceProjectModal({
   project,
   onClose,
 }: ServiceProjectModalProps) {
+  const { showToast } = useToast()
   const isEditing = !!project
 
   const [formData, setFormData] = useState({
@@ -250,7 +252,7 @@ export default function ServiceProjectModal({
       logger.error('Error saving project:', error)
       const errorMessage = err?.message || 'Unknown error occurred'
       const errorHint = err?.hint ? `\n\nHint: ${err.hint}` : ''
-      alert(`Failed to save project: ${errorMessage}${errorHint}`)
+      showToast(`Failed to save project: ${errorMessage}${errorHint}`, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -271,7 +273,7 @@ export default function ServiceProjectModal({
       onClose()
     } catch (error) {
       logger.error('Error deleting project:', error)
-      alert('Failed to delete project. Please try again.')
+      showToast('Failed to delete project. Please try again.', 'error')
     } finally {
       setIsSubmitting(false)
     }

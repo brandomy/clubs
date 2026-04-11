@@ -1,6 +1,8 @@
 import { logger } from '../utils/logger'
 import { useState, useEffect, lazy, Suspense } from 'react'
 import DOMPurify from 'dompurify'
+import { useToast } from '../contexts/ToastContext'
+import ConfirmModal from './ConfirmModal'
 import { X, Edit, Calendar, Info, Trash2, MapPin, UserCheck, ChevronDown, ChevronUp, Phone, Mail, Globe, Facebook, Instagram, Youtube, MessageCircle, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import LocationSelect from './LocationSelect'
@@ -38,7 +40,9 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
     type: event.type,
     location_id: event.location_id
   })
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [location, setLocation] = useState<Location | null>(null)
   const [showLocationDetails, setShowLocationDetails] = useState(false)
 
@@ -113,19 +117,18 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
       onClose()
     } catch (error) {
       logger.error('Error updating event:', error)
-      alert('Failed to update event. Please try again.')
+      showToast('Failed to update event. Please try again.', 'error')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDeleteEvent = async () => {
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${event.title}"? This action cannot be undone.`
-    )
+  const handleDeleteEvent = () => {
+    setShowDeleteConfirm(true)
+  }
 
-    if (!confirmDelete) return
-
+  const handleDeleteEventConfirmed = async () => {
+    setShowDeleteConfirm(false)
     setLoading(true)
 
     try {
@@ -141,7 +144,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
       onClose()
     } catch (error) {
       logger.error('Error deleting event:', error)
-      alert('Failed to delete event. Please try again.')
+      showToast('Failed to delete event. Please try again.', 'error')
     } finally {
       setLoading(false)
     }
@@ -767,6 +770,17 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title="Delete Event"
+        message={`Are you sure you want to delete "${event.title}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive
+        isLoading={loading}
+        onConfirm={handleDeleteEventConfirmed}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   )
 }

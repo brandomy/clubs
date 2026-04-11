@@ -1,5 +1,7 @@
 import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
+import { useToast } from '../contexts/ToastContext'
+import ConfirmModal from './ConfirmModal'
 import { Plus, MapPin, X, Edit2, Trash2, Settings, Phone, Mail, MessageCircle, Globe, Facebook, Instagram, Youtube, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { Location } from '../types/database'
@@ -31,7 +33,9 @@ export default function LocationSelect({ value, onChange, required = false, clas
     key_contact: '',
     notes: ''
   })
+  const { showToast } = useToast()
   const [saving, setSaving] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Location | null>(null)
 
   useEffect(() => {
     fetchLocations()
@@ -64,18 +68,18 @@ export default function LocationSelect({ value, onChange, required = false, clas
     setLoading(false)
   }
 
-  const handleRealtimeUpdate = (payload: any) => {
+  const handleRealtimeUpdate = (payload: { eventType: string; new: unknown; old: unknown }) => {
     if (payload.eventType === 'INSERT') {
       setLocations((prev) => [...prev, payload.new as Location].sort((a, b) => a.name.localeCompare(b.name)))
     } else if (payload.eventType === 'UPDATE') {
       setLocations((prev) =>
         prev.map((location) =>
-          location.id === payload.new.id ? (payload.new as Location) : location
+          location.id === (payload.new as Location).id ? (payload.new as Location) : location
         ).sort((a, b) => a.name.localeCompare(b.name))
       )
     } else if (payload.eventType === 'DELETE') {
       setLocations((prev) =>
-        prev.filter((location) => location.id !== payload.old.id)
+        prev.filter((location) => location.id !== (payload.old as Location).id)
       )
     }
   }
@@ -105,9 +109,9 @@ export default function LocationSelect({ value, onChange, required = false, clas
     if (error) {
       logger.error('Error adding location:', error)
       if (error.code === '23505') {
-        alert('A location with this name already exists. Please use a different name.')
+        showToast('A location with this name already exists. Please use a different name.', 'warning')
       } else {
-        alert('Failed to add location. Please try again.')
+        showToast('Failed to add location. Please try again.', 'error')
       }
     } else {
       onChange(data.id)
@@ -160,9 +164,9 @@ export default function LocationSelect({ value, onChange, required = false, clas
     if (error) {
       logger.error('Error updating location:', error)
       if (error.code === '23505') {
-        alert('A location with this name already exists. Please use a different name.')
+        showToast('A location with this name already exists. Please use a different name.', 'warning')
       } else {
-        alert('Failed to update location. Please try again.')
+        showToast('Failed to update location. Please try again.', 'error')
       }
     } else {
       setShowEditModal(false)
@@ -172,19 +176,20 @@ export default function LocationSelect({ value, onChange, required = false, clas
     setSaving(false)
   }
 
-  const handleDeleteLocation = async (location: Location) => {
+  const handleDeleteLocation = (location: Location) => {
     if (value === location.id) {
-      alert('Cannot delete the currently selected location. Please select a different location first.')
+      showToast('Cannot delete the currently selected location. Please select a different location first.', 'warning')
       return
     }
+    setDeleteTarget(location)
+  }
 
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${location.name}"?\n\nNote: If any events use this location, they will have their location cleared.\n\nThis action cannot be undone.`
-    )
-
-    if (!confirmDelete) return
-
+  const handleDeleteLocationConfirmed = async () => {
+    if (!deleteTarget) return
+    const location = deleteTarget
+    setDeleteTarget(null)
     setSaving(true)
+
     const { error } = await supabase
       .from('locations')
       .delete()
@@ -192,7 +197,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
 
     if (error) {
       logger.error('Error deleting location:', error)
-      alert('Failed to delete location. It may be in use by existing events.')
+      showToast('Failed to delete location. It may be in use by existing events.', 'error')
     }
     setSaving(false)
   }
@@ -737,6 +742,21 @@ export default function LocationSelect({ value, onChange, required = false, clas
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={deleteTarget !== null}
+        title="Delete Location"
+        message={
+          deleteTarget
+            ? `Are you sure you want to delete "${deleteTarget.name}"? Events using this location will have their location cleared. This action cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        destructive
+        isLoading={saving}
+        onConfirm={handleDeleteLocationConfirmed}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </>
   )
 }

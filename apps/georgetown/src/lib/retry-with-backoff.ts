@@ -4,7 +4,7 @@ interface RetryOptions {
   initialDelay?: number
   maxDelay?: number
   backoffMultiplier?: number
-  shouldRetry?: (error: any) => boolean
+  shouldRetry?: (error: unknown) => boolean
 }
 
 const defaultOptions: Required<RetryOptions> = {
@@ -14,7 +14,8 @@ const defaultOptions: Required<RetryOptions> = {
   backoffMultiplier: 2,
   shouldRetry: (error) => {
     // Retry on network errors, not on auth/permission errors
-    const code = error?.code || error?.status
+    const e = error as { code?: string | number; status?: number } | null
+    const code = e?.code || e?.status
     return (
       code === 'NETWORK_ERROR' ||
       code === 'PGRST301' || // Supabase timeout
@@ -29,13 +30,13 @@ export async function retryWithBackoff<T>(
   options: RetryOptions = {}
 ): Promise<T> {
   const opts = { ...defaultOptions, ...options }
-  let lastError: any
+  let lastError: unknown
   let delay = opts.initialDelay
 
   for (let attempt = 0; attempt <= opts.maxRetries; attempt++) {
     try {
       return await fn()
-    } catch (error: any) {
+    } catch (error: unknown) {
       lastError = error
 
       // Don't retry if we shouldn't (e.g., auth errors)

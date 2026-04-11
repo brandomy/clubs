@@ -1,4 +1,5 @@
 import { logger } from '../../utils/logger'
+import { useToast } from '../../contexts/ToastContext'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useAttendance } from '../../hooks/useAttendance'
@@ -25,6 +26,7 @@ interface GuestFormProps {
 }
 
 export function GuestForm({ eventId, isOpen, onClose }: GuestFormProps) {
+  const { showToast } = useToast()
   const { checkInGuest } = useAttendance(eventId)
 
   const [name, setName] = useState('')
@@ -64,7 +66,7 @@ export function GuestForm({ eventId, isOpen, onClose }: GuestFormProps) {
 
   const handleSave = async (closeAfter = true) => {
     if (!name.trim() || !hostedBy) {
-      alert('Please enter guest name and select a host')
+      showToast('Please enter guest name and select a host', 'warning')
       return
     }
 
@@ -85,7 +87,7 @@ export function GuestForm({ eventId, isOpen, onClose }: GuestFormProps) {
       }
     } catch (error) {
       logger.error('Failed to add guest:', error)
-      alert('Failed to add guest. Please try again.')
+      showToast('Failed to add guest. Please try again.', 'error')
     } finally {
       setIsSaving(false)
     }

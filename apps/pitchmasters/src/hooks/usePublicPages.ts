@@ -36,8 +36,8 @@ export function usePublicPages(clubId: string | null) {
 
       if (fetchError) throw fetchError;
       setPages(data ?? []);
-    } catch (err: any) {
-      setError(err.message ?? 'Failed to load pages');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load pages');
     } finally {
       setIsLoading(false);
     }
@@ -105,8 +105,8 @@ export function usePublicPages(clubId: string | null) {
         await fetchPages();
         return data;
       }
-    } catch (err: any) {
-      throw new Error(err.message ?? 'Failed to save page');
+    } catch (err: unknown) {
+      throw new Error(err instanceof Error ? err.message : 'Failed to save page');
     }
   }, [clubId, fetchPages]);
 

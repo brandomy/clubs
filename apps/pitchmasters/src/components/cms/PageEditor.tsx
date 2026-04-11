@@ -69,8 +69,8 @@ export default function PageEditor({
         published: false,
         author_id: currentUser.id,
       });
-    } catch (err: any) {
-      setSaveError(err.message ?? 'Save failed');
+    } catch (err: unknown) {
+      setSaveError(err instanceof Error ? err.message : 'Save failed');
     } finally {
       setIsSaving(false);
     }
@@ -90,8 +90,8 @@ export default function PageEditor({
           author_id: currentUser.id,
         });
         if (!saved) setSaveError('Failed to publish');
-      } catch (err: any) {
-        setSaveError(err.message ?? 'Publish failed');
+      } catch (err: unknown) {
+        setSaveError(err instanceof Error ? err.message : 'Publish failed');
       } finally {
         setIsSaving(false);
       }
@@ -111,8 +111,8 @@ export default function PageEditor({
         author_id: currentUser.id,
       });
       await onPublish(page.id, !page.published);
-    } catch (err: any) {
-      setSaveError(err.message ?? 'Publish toggle failed');
+    } catch (err: unknown) {
+      setSaveError(err instanceof Error ? err.message : 'Publish toggle failed');
     } finally {
       setIsPublishing(false);
     }
@@ -124,8 +124,8 @@ export default function PageEditor({
     setIsDeleting(true);
     try {
       await onDelete(page.id);
-    } catch (err: any) {
-      setSaveError(err.message ?? 'Delete failed');
+    } catch (err: unknown) {
+      setSaveError(err instanceof Error ? err.message : 'Delete failed');
       setIsDeleting(false);
     }
   }, [page, onDelete]);

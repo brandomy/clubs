@@ -1,4 +1,5 @@
 import { logger } from '../../utils/logger'
+import { useToast } from '../../contexts/ToastContext'
 import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { useRSVP } from '../../hooks/useRSVP'
@@ -49,6 +50,7 @@ const getEventTypeDisplayName = (type?: string): string => {
 }
 
 export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RSVPModalProps) {
+  const { showToast } = useToast()
   const { rsvp, updateRSVP, isLoading } = useRSVP(eventId)
   const { memberId } = useAuth()
 
@@ -101,7 +103,7 @@ export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RS
   const handleSave = async () => {
     if (!memberId) {
       logger.error('Cannot save RSVP: memberId is missing')
-      alert('Authentication error. Please refresh the page and try again.')
+      showToast('Authentication error. Please refresh the page and try again.', 'error')
       return
     }
 
@@ -122,7 +124,7 @@ export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RS
       onClose()
     } catch (error) {
       logger.error('Failed to save RSVP:', error)
-      alert('Failed to save RSVP. Please try again.')
+      showToast('Failed to save RSVP. Please try again.', 'error')
     } finally {
       setIsSaving(false)
     }

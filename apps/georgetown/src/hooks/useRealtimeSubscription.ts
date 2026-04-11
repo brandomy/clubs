@@ -28,7 +28,7 @@ export function useRealtimeSubscription<T = any>({
           table,
           filter,
         },
-        (payload: any) => {
+        (payload: { eventType: string; new: T; old: T }) => {
           switch (payload.eventType) {
             case 'INSERT':
               onInsert?.(payload.new)

@@ -1,15 +1,16 @@
-import { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import MembersPage from './pages/MembersPage';
 import MemberProfilePage from './pages/MemberProfilePage';
 import CommunityPage from './pages/CommunityPage';
-import FaviconTestPage from './pages/FaviconTestPage';
 import PagesListPage from './pages/PagesListPage';
+const FaviconTestPage = import.meta.env.DEV ? lazy(() => import('./pages/FaviconTestPage')) : null;
 import PublicPageViewPage from './pages/PublicPageViewPage';
 import PageEditorPage from './pages/PageEditorPage';
 import LoginPage from './pages/LoginPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { usePerformanceMetrics } from './hooks/usePerformanceMetrics';
@@ -32,6 +33,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Protected routes — wrapped in Layout */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
@@ -44,7 +46,7 @@ function AppRoutes() {
       <Route path="/pages/:slug" element={<ProtectedRoute><Layout><PublicPageViewPage /></Layout></ProtectedRoute>} />
 
       {/* Dev-only favicon test */}
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && FaviconTestPage && (
         <Route path="/favicon-test" element={<Layout><FaviconTestPage /></Layout>} />
       )}
 

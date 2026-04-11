@@ -78,9 +78,9 @@ export default function MemberProfilePage() {
 
         setMember(memberWithProfile);
 
-      } catch (err: any) {
+      } catch (err: unknown) {
         logger.error('Error loading member profile:', err);
-        setError(err.message || 'Failed to load member profile');
+        setError(err instanceof Error ? err.message : 'Failed to load member profile');
       } finally {
         setIsLoading(false);
       }
@@ -120,9 +120,9 @@ export default function MemberProfilePage() {
       setIsEditing(false);
       logger.log('Profile updated successfully');
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error('Error saving profile:', err);
-      setError(err.message || 'Failed to save profile');
+      setError(err instanceof Error ? err.message : 'Failed to save profile');
     } finally {
       setIsSaving(false);
     }
@@ -161,9 +161,9 @@ export default function MemberProfilePage() {
       // Navigate back to directory
       navigate('/members');
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error('Error deleting member:', err);
-      setError(err.message || 'Failed to delete member');
+      setError(err instanceof Error ? err.message : 'Failed to delete member');
       setShowDeleteConfirm(false);
     } finally {
       setIsDeleting(false);
@@ -171,7 +171,7 @@ export default function MemberProfilePage() {
   }
 
   // Update member data in local state
-  function updateMemberProfile(field: string, value: any) {
+  function updateMemberProfile(field: string, value: string) {
     if (!member?.profile) return;
 
     setMember(prev => {
@@ -377,13 +377,17 @@ export default function MemberProfilePage() {
                     <div className="flex items-center gap-3">
                       <Phone className="w-4 h-4 text-gray-400" />
                       {isEditing ? (
-                        <input
-                          type="tel"
-                          value={member?.profile?.phone || ''}
-                          onChange={(e) => updateMemberProfile('phone', e.target.value)}
-                          placeholder="Phone number"
-                          className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
-                        />
+                        <div className="flex-1">
+                          <label htmlFor="edit-phone" className="sr-only">Phone number</label>
+                          <input
+                            id="edit-phone"
+                            type="tel"
+                            value={member?.profile?.phone || ''}
+                            onChange={(e) => updateMemberProfile('phone', e.target.value)}
+                            placeholder="Phone number"
+                            className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
+                          />
+                        </div>
                       ) : (
                         <span className="text-sm text-gray-700">
                           {member?.profile?.phone || 'Not provided'}
@@ -403,14 +407,18 @@ export default function MemberProfilePage() {
                       <MapPin className="w-4 h-4 text-gray-400" />
                       {isEditing ? (
                         <div className="flex-1 space-y-2">
+                          <label htmlFor="edit-city" className="sr-only">City</label>
                           <input
+                            id="edit-city"
                             type="text"
                             value={member?.profile?.city || ''}
                             onChange={(e) => updateMemberProfile('city', e.target.value)}
                             placeholder="City"
                             className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
                           />
+                          <label htmlFor="edit-country" className="sr-only">Country</label>
                           <input
+                            id="edit-country"
                             type="text"
                             value={member?.profile?.country || ''}
                             onChange={(e) => updateMemberProfile('country', e.target.value)}
@@ -440,21 +448,27 @@ export default function MemberProfilePage() {
                       <Building className="w-4 h-4 text-gray-400" />
                       {isEditing ? (
                         <div className="flex-1 space-y-2">
+                          <label htmlFor="edit-organization" className="sr-only">Organization</label>
                           <input
+                            id="edit-organization"
                             type="text"
                             value={member?.profile?.organization || ''}
                             onChange={(e) => updateMemberProfile('organization', e.target.value)}
                             placeholder="Organization"
                             className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
                           />
+                          <label htmlFor="edit-job-title" className="sr-only">Job Title</label>
                           <input
+                            id="edit-job-title"
                             type="text"
                             value={member?.profile?.job_title || ''}
                             onChange={(e) => updateMemberProfile('job_title', e.target.value)}
                             placeholder="Job Title"
                             className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
                           />
+                          <label htmlFor="edit-website-url" className="sr-only">Company website</label>
                           <input
+                            id="edit-website-url"
                             type="url"
                             value={member?.profile?.website_url || ''}
                             onChange={(e) => updateMemberProfile('website_url', e.target.value)}
@@ -499,13 +513,17 @@ export default function MemberProfilePage() {
                   <div className="flex items-center gap-3">
                     <ExternalLink className="w-4 h-4 text-gray-400" />
                     {isEditing ? (
-                      <input
-                        type="url"
-                        value={member?.profile?.linkedin_url || ''}
-                        onChange={(e) => updateMemberProfile('linkedin_url', e.target.value)}
-                        placeholder="LinkedIn URL"
-                        className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
-                      />
+                      <div className="flex-1">
+                        <label htmlFor="edit-linkedin" className="sr-only">LinkedIn URL</label>
+                        <input
+                          id="edit-linkedin"
+                          type="url"
+                          value={member?.profile?.linkedin_url || ''}
+                          onChange={(e) => updateMemberProfile('linkedin_url', e.target.value)}
+                          placeholder="LinkedIn URL"
+                          className="w-full text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
+                        />
+                      </div>
                     ) : (
                       member?.profile?.linkedin_url && (
                         <a
@@ -531,13 +549,17 @@ export default function MemberProfilePage() {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">About</h3>
                 {isEditing ? (
-                  <textarea
-                    value={member?.profile?.bio || ''}
-                    onChange={(e) => updateMemberProfile('bio', e.target.value)}
-                    placeholder="Tell us about yourself..."
-                    rows={4}
-                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent resize-none"
-                  />
+                  <>
+                    <label htmlFor="edit-bio" className="sr-only">Bio</label>
+                    <textarea
+                      id="edit-bio"
+                      value={member?.profile?.bio || ''}
+                      onChange={(e) => updateMemberProfile('bio', e.target.value)}
+                      placeholder="Tell us about yourself..."
+                      rows={4}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent resize-none"
+                    />
+                  </>
                 ) : (
                   <p className="text-gray-700 leading-relaxed">
                     {member?.profile?.bio || 'No biography provided'}
@@ -556,13 +578,17 @@ export default function MemberProfilePage() {
                 <div className="space-y-3">
                   <div>
                     {isEditing ? (
-                      <input
-                        type="text"
-                        value={member?.profile?.venture_name || ''}
-                        onChange={(e) => updateMemberProfile('venture_name', e.target.value)}
-                        placeholder="Venture name"
-                        className="w-full font-medium border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
-                      />
+                      <>
+                        <label htmlFor="edit-venture-name" className="sr-only">Venture name</label>
+                        <input
+                          id="edit-venture-name"
+                          type="text"
+                          value={member?.profile?.venture_name || ''}
+                          onChange={(e) => updateMemberProfile('venture_name', e.target.value)}
+                          placeholder="Venture name"
+                          className="w-full font-medium border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent"
+                        />
+                      </>
                     ) : (
                       <h4 className="font-medium text-gray-900">
                         {member?.profile?.venture_name || 'No venture specified'}
@@ -571,13 +597,17 @@ export default function MemberProfilePage() {
                   </div>
 
                   {isEditing ? (
-                    <textarea
-                      value={member?.profile?.venture_description || ''}
-                      onChange={(e) => updateMemberProfile('venture_description', e.target.value)}
-                      placeholder="Describe your venture..."
-                      rows={3}
-                      className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent resize-none"
-                    />
+                    <>
+                      <label htmlFor="edit-venture-description" className="sr-only">Venture description</label>
+                      <textarea
+                        id="edit-venture-description"
+                        value={member?.profile?.venture_description || ''}
+                        onChange={(e) => updateMemberProfile('venture_description', e.target.value)}
+                        placeholder="Describe your venture..."
+                        rows={3}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-tm-blue focus:border-transparent resize-none"
+                      />
+                    </>
                   ) : (
                     member?.profile?.venture_description && (
                       <p className="text-gray-700">{member.profile.venture_description}</p>

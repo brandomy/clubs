@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger'
 import { useState } from 'react'
+import { useToast } from '../contexts/ToastContext'
 import { X, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import type { Member } from '../types/database'
@@ -13,6 +14,7 @@ interface MemberModalProps {
 }
 
 export default function MemberModal({ member, onClose }: MemberModalProps) {
+  const { showToast } = useToast()
   const isEditing = !!member
 
   const [formData, setFormData] = useState({
@@ -49,7 +51,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
     e.preventDefault()
 
     if (!formData.name.trim()) {
-      alert('Please enter a member name.')
+      showToast('Please enter a member name.', 'warning')
       return
     }
 
@@ -83,11 +85,11 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
 
         if (error) {
           logger.error('Error updating member:', error)
-          alert('Error updating member. Please try again.')
+          showToast('Error updating member. Please try again.', 'error')
           return
         }
 
-        alert('Member updated successfully!')
+        showToast('Member updated successfully!', 'success')
       } else {
         const { error } = await supabase
           .from('members')
@@ -95,18 +97,18 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
 
         if (error) {
           logger.error('Error creating member:', error)
-          alert('Error creating member. Please try again.')
+          showToast('Error creating member. Please try again.', 'error')
           return
         }
 
-        alert('Member created successfully!')
+        showToast('Member created successfully!', 'success')
       }
 
       // Force a page refresh to show updated data
       window.location.reload()
     } catch (error) {
       logger.error('Error:', error)
-      alert(`Error ${isEditing ? 'updating' : 'creating'} member. Please try again.`)
+      showToast(`Error ${isEditing ? 'updating' : 'creating'} member. Please try again.`, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -114,7 +116,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
 
   const handleDelete = async () => {
     if (!member || deleteConfirmation !== member.name) {
-      alert('Please type the member name exactly to confirm deletion.')
+      showToast('Please type the member name exactly to confirm deletion.', 'warning')
       return
     }
 
@@ -128,7 +130,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
 
       if (error) {
         logger.error('Error deleting member:', error)
-        alert('Error deleting member. Please try again.')
+        showToast('Error deleting member. Please try again.', 'error')
         return
       }
 

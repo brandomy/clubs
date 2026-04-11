@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger'
 import { useState, lazy, Suspense } from 'react'
+import { useToast } from '../contexts/ToastContext'
 import { X, Calendar, Info } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import LocationSelect from './LocationSelect'
@@ -12,6 +13,7 @@ interface AddEventModalProps {
 }
 
 export default function AddEventModal({ onClose, onEventAdded, defaultDate }: AddEventModalProps) {
+  const { showToast } = useToast()
   const [formData, setFormData] = useState({
     date: defaultDate || new Date().toISOString().split('T')[0],
     start_time: '19:00',
@@ -54,7 +56,7 @@ export default function AddEventModal({ onClose, onEventAdded, defaultDate }: Ad
       onClose()
     } catch (error) {
       logger.error('Error creating event:', error)
-      alert('Failed to create event. Please try again.')
+      showToast('Failed to create event. Please try again.', 'error')
     } finally {
       setLoading(false)
     }

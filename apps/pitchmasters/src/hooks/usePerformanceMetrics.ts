@@ -31,8 +31,8 @@ export function usePerformanceMetrics() {
     const clsObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         // Only count unexpected layout shifts
-        if (!(entry as any).hadRecentInput) {
-          clsValue += (entry as any).value;
+        if (!(entry as PerformanceEntry & { hadRecentInput?: boolean }).hadRecentInput) {
+          clsValue += (entry as PerformanceEntry & { value?: number }).value ?? 0;
         }
       }
       setMetrics(prev => ({ ...prev, cls: clsValue }));

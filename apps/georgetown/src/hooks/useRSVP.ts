@@ -235,7 +235,7 @@ export function useEventRSVPList(eventId: string): UseEventRSVPListReturn {
 
         const formatted = data.map(r => ({
           ...r,
-          member_name: (r.members as any).name
+          member_name: (r.members as { name: string } | null)?.name ?? ''
         }))
 
         setRsvps(formatted)
@@ -278,7 +278,7 @@ export function useEventRSVPList(eventId: string): UseEventRSVPListReturn {
               if (data) {
                 const formatted = data.map(r => ({
                   ...r,
-                  member_name: (r.members as any).name
+                  member_name: (r.members as { name: string } | null)?.name ?? ''
                 }))
                 setRsvps(formatted)
               }

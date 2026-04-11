@@ -337,18 +337,18 @@ export default function KanbanBoard() {
     return a.position - b.position
   })
 
-  const handleRealtimeUpdate = (payload: any) => {
+  const handleRealtimeUpdate = (payload: { eventType: string; new: unknown; old: unknown }) => {
     if (payload.eventType === 'INSERT') {
       setSpeakers((prev) => [...prev, payload.new as Speaker])
     } else if (payload.eventType === 'UPDATE') {
       setSpeakers((prev) =>
         prev.map((speaker) =>
-          speaker.id === payload.new.id ? (payload.new as Speaker) : speaker
+          speaker.id === (payload.new as Speaker).id ? (payload.new as Speaker) : speaker
         )
       )
     } else if (payload.eventType === 'DELETE') {
       setSpeakers((prev) =>
-        prev.filter((speaker) => speaker.id !== payload.old.id)
+        prev.filter((speaker) => speaker.id !== (payload.old as Speaker).id)
       )
     }
   }

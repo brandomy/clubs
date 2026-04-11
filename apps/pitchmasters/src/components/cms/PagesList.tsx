@@ -30,8 +30,8 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
     setActionError(null);
     try {
       await onPublish(page.id, !page.published);
-    } catch (err: any) {
-      setActionError(err.message ?? 'Action failed');
+    } catch (err: unknown) {
+      setActionError(err instanceof Error ? err.message : 'Action failed');
     } finally {
       setLoadingId(null);
     }
@@ -43,8 +43,8 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
     setActionError(null);
     try {
       await onDelete(page.id);
-    } catch (err: any) {
-      setActionError(err.message ?? 'Delete failed');
+    } catch (err: unknown) {
+      setActionError(err instanceof Error ? err.message : 'Delete failed');
       setLoadingId(null);
     }
   };

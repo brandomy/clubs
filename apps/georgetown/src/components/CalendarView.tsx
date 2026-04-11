@@ -31,8 +31,8 @@ export default function CalendarView() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null)
-  const [selectedEvent, setSelectedEvent] = useState<any>(null)
-  const [selectedHoliday, setSelectedHoliday] = useState<any>(null)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [selectedHoliday, setSelectedHoliday] = useState<Event | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [isEventViewModalOpen, setIsEventViewModalOpen] = useState(false)
   const [isHolidayViewModalOpen, setIsHolidayViewModalOpen] = useState(false)
@@ -150,34 +150,34 @@ export default function CalendarView() {
     }
   }, [])
 
-  const handleRealtimeUpdate = (payload: any) => {
+  const handleRealtimeUpdate = (payload: { eventType: string; new: unknown; old: unknown }) => {
     if (payload.eventType === 'INSERT') {
       setSpeakers((prev) => [...prev, payload.new as Speaker])
     } else if (payload.eventType === 'UPDATE') {
       setSpeakers((prev) =>
         prev.map((speaker) =>
-          speaker.id === payload.new.id ? (payload.new as Speaker) : speaker
+          speaker.id === (payload.new as Speaker).id ? (payload.new as Speaker) : speaker
         )
       )
     } else if (payload.eventType === 'DELETE') {
       setSpeakers((prev) =>
-        prev.filter((speaker) => speaker.id !== payload.old.id)
+        prev.filter((speaker) => speaker.id !== (payload.old as Speaker).id)
       )
     }
   }
 
-  const handleEventRealtimeUpdate = (payload: any) => {
+  const handleEventRealtimeUpdate = (payload: { eventType: string; new: unknown; old: unknown }) => {
     if (payload.eventType === 'INSERT') {
       setEvents((prev) => [...prev, payload.new as Event])
     } else if (payload.eventType === 'UPDATE') {
       setEvents((prev) =>
         prev.map((event) =>
-          event.id === payload.new.id ? (payload.new as Event) : event
+          event.id === (payload.new as Event).id ? (payload.new as Event) : event
         )
       )
     } else if (payload.eventType === 'DELETE') {
       setEvents((prev) =>
-        prev.filter((event) => event.id !== payload.old.id)
+        prev.filter((event) => event.id !== (payload.old as Event).id)
       )
     }
   }
@@ -196,7 +196,7 @@ export default function CalendarView() {
     setIsAddEventModalOpen(true)
   }
 
-  const handleEventClick = (event: any) => {
+  const handleEventClick = (event: Event) => {
     if (event.type === 'holiday') {
       setSelectedHoliday(event)
       setIsHolidayViewModalOpen(true)
@@ -317,7 +317,7 @@ export default function CalendarView() {
 
       {isHolidayViewModalOpen && selectedHoliday && (
         <HolidayViewModal
-          holiday={selectedHoliday}
+          holiday={selectedHoliday as Event & { type: 'holiday' }}
           onClose={handleCloseHolidayViewModal}
           onHolidayUpdated={() => {
             // In production, this would refetch holidays or update state

@@ -1,5 +1,7 @@
 import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
+import { useToast } from '../contexts/ToastContext'
+import ConfirmModal from './ConfirmModal'
 import { X, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { AVAILABLE_FIELDS } from '../lib/database-config'
@@ -41,9 +43,11 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
     proposer_id: speaker?.proposer_id || '',
     social_media_links: speaker?.social_media_links || {} as Record<string, string>,
   })
+  const { showToast } = useToast()
   const [members, setMembers] = useState<Member[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoadingMembers, setIsLoadingMembers] = useState(true)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     loadMembers()
@@ -84,6 +88,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
     trackForm.attempt(formName)
 
     // Build database object with only available fields
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dbData: any = {
       name: formData.name,
       email: formData.email,
@@ -142,7 +147,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         if (error) {
           logger.error('Error updating speaker:', error)
           trackForm.error(formName, error.message)
-          alert('Error updating speaker. Please try again.')
+          showToast('Error updating speaker. Please try again.', 'error')
           return
         }
       } else {
@@ -157,7 +162,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         if (error) {
           logger.error('Error creating speaker:', error)
           trackForm.error(formName, error.message)
-          alert('Error creating speaker. Please try again.')
+          showToast('Error creating speaker. Please try again.', 'error')
           return
         }
       }
@@ -172,31 +177,34 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
     } catch (error) {
       logger.error('Error saving speaker:', error)
       trackForm.error(formName, error instanceof Error ? error.message : 'Unknown error')
-      alert(`Error ${isEditing ? 'updating' : 'creating'} speaker. Please try again.`)
+      showToast(`Error ${isEditing ? 'updating' : 'creating'} speaker. Please try again.`, 'error')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!speaker) return
+    setShowDeleteConfirm(true)
+  }
 
-    if (confirm(`Remove ${speaker.name} from speakers?`)) {
-      trackInteraction('speaker-delete-attempt', 'speaker-modal', speaker.id)
+  const handleDeleteConfirmed = async () => {
+    if (!speaker) return
+    setShowDeleteConfirm(false)
+    trackInteraction('speaker-delete-attempt', 'speaker-modal', speaker.id)
 
-      const { error } = await supabase
-        .from('speakers')
-        .delete()
-        .eq('id', speaker.id)
+    const { error } = await supabase
+      .from('speakers')
+      .delete()
+      .eq('id', speaker.id)
 
-      if (error) {
-        logger.error('Error deleting speaker:', error)
-        trackInteraction('speaker-delete-error', 'speaker-modal', error.message)
-        alert('Error deleting speaker. Please try again.')
-      } else {
-        trackInteraction('speaker-delete-success', 'speaker-modal', speaker.id)
-        onClose()
-      }
+    if (error) {
+      logger.error('Error deleting speaker:', error)
+      trackInteraction('speaker-delete-error', 'speaker-modal', error.message)
+      showToast('Error deleting speaker. Please try again.', 'error')
+    } else {
+      trackInteraction('speaker-delete-success', 'speaker-modal', speaker.id)
+      onClose()
     }
   }
 
@@ -786,6 +794,16 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
           </div>
         </form>
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title="Remove Speaker"
+        message={`Remove ${speaker?.name} from speakers? This action cannot be undone.`}
+        confirmLabel="Remove"
+        destructive
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   )
 }
