@@ -235,7 +235,7 @@ export default function Availability() {
               <h4 className="font-bold text-gray-900 mb-3">Under the following terms:</h4>
               <p>
                 <strong>Attribution</strong> — You must give appropriate credit to HuaQiao Foundation
-                and Brandmine.io, provide a link to the license, and indicate if changes were made.
+                and Brandmine, provide a link to the license, and indicate if changes were made.
               </p>
             </div>
           </div>
@@ -257,14 +257,6 @@ export default function Availability() {
             >
               <span>🌟</span> Join Waiting List
             </button>
-            <a
-              href="https://brandmine.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-[#f7a81b] text-white rounded-lg font-medium hover:bg-[#f4b000] transition-colors text-center"
-            >
-              Visit Brandmine.io
-            </a>
           </div>
         </div>
       </main>

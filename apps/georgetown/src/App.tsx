@@ -10,6 +10,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './contexts/ToastContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './components/LoginPage'
+import ResetPasswordPage from './components/ResetPasswordPage'
 import './App.css'
 
 // Eager load only the landing page for instant display
@@ -50,6 +51,7 @@ function App() {
                 <Routes>
                   {/* Public routes */}
                   <Route path="/login" element={<LoginPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                   {/* Protected routes */}
                   <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

@@ -11,12 +11,12 @@ export default function Footer() {
         <p className="text-center text-xs text-gray-600 leading-relaxed">
           v{APP_VERSION} • Built by{' '}
           <a
-            href="https://brandmine.io"
+            href="https://brandmine.ai"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-600 hover:text-gray-800 hover:underline transition-colors duration-200"
           >
-            Brandmine.io
+            Brandmine.ai
           </a>{' '}
           with ♡ for{' '}
           <Link
@@ -25,7 +25,7 @@ export default function Footer() {
           >
             HuaQiao.asia
           </Link>{' '}
-          • 2025 •{' '}
+          •{' '}
           <Link
             to="/availability"
             className="text-gray-600 hover:text-gray-800 hover:underline transition-colors duration-200"
