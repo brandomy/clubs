@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useRef } from 'react'
 import { LayoutGrid, List as ListIcon, Download, Settings, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -77,13 +78,13 @@ export default function PartnersPage() {
         .order('name', { ascending: true })
 
       if (error) {
-        console.error('Error loading partners:', error)
+        logger.error('Error loading partners:', error)
         setPartners([])
       } else {
         setPartners(data || [])
       }
     } catch (error) {
-      console.error('Error loading partners:', error)
+      logger.error('Error loading partners:', error)
       setPartners([])
     } finally {
       setIsLoading(false)

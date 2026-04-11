@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { Plus, Menu, X, Building2, Download, Pencil } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
@@ -59,13 +60,13 @@ export default function PartnersPage() {
         .order('name', { ascending: true })
 
       if (error) {
-        console.error('Error loading partners:', error)
+        logger.error('Error loading partners:', error)
         setPartners([])
       } else {
         setPartners(data || [])
       }
     } catch (error) {
-      console.error('Error loading partners:', error)
+      logger.error('Error loading partners:', error)
       setPartners([])
     } finally {
       setIsLoading(false)

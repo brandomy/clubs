@@ -1,3 +1,4 @@
+import { logger } from './logger'
 /**
  * Umami Analytics Integration
  *
@@ -65,12 +66,12 @@ export function initializeAnalytics(): void {
 
     // Add error handling
     script.onerror = () => {
-      console.warn('Umami analytics failed to load');
+      logger.warn('Umami analytics failed to load');
     };
 
     document.head.appendChild(script);
   } else {
-    console.log('Analytics disabled in development mode');
+    logger.log('Analytics disabled in development mode');
   }
 }
 
@@ -90,11 +91,11 @@ export function trackEvent(eventName: string, eventData?: EventData): void {
     if (window.umami) {
       window.umami.track(eventName, eventData);
     } else {
-      console.warn('Umami not loaded, event not tracked:', eventName);
+      logger.warn('Umami not loaded, event not tracked:', eventName);
     }
   } else {
     // Development: console log for debugging
-    console.log('[Analytics]', eventName, eventData || '');
+    logger.log('[Analytics]', eventName, eventData || '');
   }
 }
 

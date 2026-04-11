@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger'
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { useAttendance } from '../../hooks/useAttendance'
@@ -58,7 +59,7 @@ export function VisitorForm({ eventId, isOpen, onClose }: VisitorFormProps) {
         resetForm()
       }
     } catch (error) {
-      console.error('Failed to add visitor:', error)
+      logger.error('Failed to add visitor:', error)
       alert('Failed to add visitor. Please try again.')
     } finally {
       setIsSaving(false)

@@ -3,13 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { Loader, ArrowLeft } from 'lucide-react';
 import PublicPageView from '../components/cms/PublicPageView';
 import { usePublicPages } from '../hooks/usePublicPages';
+import { useAuth } from '../hooks/useAuth';
 import { PublicPage } from '../types';
-
-const DEMO_CLUB_ID = import.meta.env.VITE_DEMO_CLUB_ID ?? null;
 
 export default function PublicPageViewPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { getPage } = usePublicPages(DEMO_CLUB_ID);
+  const { user } = useAuth();
+  const { getPage } = usePublicPages(user?.club_id ?? null);
   const [page, setPage] = useState<PublicPage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -18,7 +18,7 @@ export default function PublicPageViewPage() {
     if (!slug) return;
     setIsLoading(true);
     getPage(slug).then((result) => {
-      if (!result || (!result.published)) {
+      if (!result || !result.published) {
         setNotFound(true);
       } else {
         setPage(result);

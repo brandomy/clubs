@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -81,7 +82,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
           .eq('id', member.id)
 
         if (error) {
-          console.error('Error updating member:', error) // eslint-disable-line no-console
+          logger.error('Error updating member:', error)
           alert('Error updating member. Please try again.')
           return
         }
@@ -93,7 +94,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
           .insert(saveData)
 
         if (error) {
-          console.error('Error creating member:', error) // eslint-disable-line no-console
+          logger.error('Error creating member:', error)
           alert('Error creating member. Please try again.')
           return
         }
@@ -104,7 +105,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
       // Force a page refresh to show updated data
       window.location.reload()
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
       alert(`Error ${isEditing ? 'updating' : 'creating'} member. Please try again.`)
     } finally {
       setIsSubmitting(false)
@@ -126,7 +127,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
         .eq('id', member.id)
 
       if (error) {
-        console.error('Error deleting member:', error)
+        logger.error('Error deleting member:', error)
         alert('Error deleting member. Please try again.')
         return
       }
@@ -134,7 +135,7 @@ export default function MemberModal({ member, onClose }: MemberModalProps) {
       onClose()
       window.location.reload()
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
       alert('Error deleting member. Please try again.')
     } finally {
       setIsSubmitting(false)

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
@@ -27,7 +28,7 @@ export default function SpeakerEditRoute() {
   const loadSpeaker = async () => {
     // Validate UUID format before making database query
     if (!speakerId || !validateUUID(speakerId)) {
-      console.warn('Invalid speaker ID format:', speakerId)
+      logger.warn('Invalid speaker ID format:', speakerId)
       navigate('/speakers')
       return
     }
@@ -43,7 +44,7 @@ export default function SpeakerEditRoute() {
         .single()
 
       if (error || !data) {
-        console.error('Error loading speaker for edit:', error)
+        logger.error('Error loading speaker for edit:', error)
         // Speaker not found - redirect to board
         navigate('/speakers')
         return
@@ -51,7 +52,7 @@ export default function SpeakerEditRoute() {
 
       setSpeaker(data)
     } catch (err) {
-      console.error('Error loading speaker:', err)
+      logger.error('Error loading speaker:', err)
       setError('Failed to load speaker')
       // On error, redirect to board after a moment
       setTimeout(() => navigate('/speakers'), 2000)

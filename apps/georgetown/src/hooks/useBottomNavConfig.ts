@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 /**
  * useBottomNavConfig Hook
  * Manages user's customizable bottom navigation preferences
@@ -60,7 +61,7 @@ export function useBottomNavConfig() {
         }
       }
     } catch (error) {
-      console.error('Failed to load bottom nav config:', error)
+      logger.error('Failed to load bottom nav config:', error)
     }
   }, [])
 
@@ -73,7 +74,7 @@ export function useBottomNavConfig() {
       const config: BottomNavConfig = { selectedItemIds: validIds }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
     } catch (error) {
-      console.error('Failed to save bottom nav config:', error)
+      logger.error('Failed to save bottom nav config:', error)
     }
   }
 

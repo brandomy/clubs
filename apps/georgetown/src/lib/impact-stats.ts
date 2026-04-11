@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { supabase } from './supabase'
 import type { AreaOfFocus } from '../utils/areaOfFocusColors'
 
@@ -101,7 +102,7 @@ export async function getLifetimeImpact(filters?: ImpactFilters): Promise<Lifeti
       totalProjects,
     }
   } catch (error) {
-    console.error('Error calculating lifetime impact:', error)
+    logger.error('Error calculating lifetime impact:', error)
     return {
       peopleServed: 0,
       projectValue: 0,
@@ -159,7 +160,7 @@ export async function getImpactByAreaOfFocus(filters?: ImpactFilters): Promise<A
       }))
       .sort((a, b) => b.projectValue - a.projectValue)
   } catch (error) {
-    console.error('Error calculating impact by area:', error)
+    logger.error('Error calculating impact by area:', error)
     return []
   }
 }
@@ -234,7 +235,7 @@ export async function getImpactOverTime(filters?: ImpactFilters): Promise<YearIm
       }))
       .sort((a, b) => parseInt(b.year) - parseInt(a.year))
   } catch (error) {
-    console.error('Error calculating impact over time:', error)
+    logger.error('Error calculating impact over time:', error)
     return []
   }
 }
@@ -255,7 +256,7 @@ export async function getAvailableRotaryYears(): Promise<string[]> {
     const uniqueYears = [...new Set(projects?.map(p => p.project_year) || [])]
     return uniqueYears.map(year => `${year}-${year + 1}`)
   } catch (error) {
-    console.error('Error fetching available years:', error)
+    logger.error('Error fetching available years:', error)
     return []
   }
 }

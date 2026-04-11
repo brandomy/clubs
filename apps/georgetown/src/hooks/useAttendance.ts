@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
@@ -49,7 +50,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         setRecords(data || [])
       } catch (err) {
-        console.error('Error fetching attendance records:', err)
+        logger.error('Error fetching attendance records:', err)
         setError(err as Error)
       } finally {
         setIsLoading(false)
@@ -77,7 +78,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         setSummary(data || null)
       } catch (err) {
-        console.error('Error fetching attendance summary:', err)
+        logger.error('Error fetching attendance summary:', err)
       }
     }
 
@@ -99,7 +100,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
           filter: `event_id=eq.${eventId}`
         },
         (payload) => {
-          console.log('Attendance update received:', payload)
+          logger.log('Attendance update received:', payload)
 
           if (payload.eventType === 'INSERT') {
             setRecords(prev => [payload.new as AttendanceRecord, ...prev])
@@ -121,13 +122,13 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
                 .single()
 
               if (error && error.code !== 'PGRST116') {
-                console.error('Failed to refresh attendance summary:', error)
+                logger.error('Failed to refresh attendance summary:', error)
                 return
               }
 
               if (data) setSummary(data)
             } catch (err) {
-              console.error('Unexpected error refreshing summary:', err)
+              logger.error('Unexpected error refreshing summary:', err)
             }
           })()
         }
@@ -164,7 +165,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         // Records will update via real-time subscription
       } catch (err) {
-        console.error('Error checking in member:', err)
+        logger.error('Error checking in member:', err)
         setError(err as Error)
         throw err
       }
@@ -199,7 +200,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         // Records will update via real-time subscription
       } catch (err) {
-        console.error('Error checking in visitor:', err)
+        logger.error('Error checking in visitor:', err)
         setError(err as Error)
         throw err
       }
@@ -241,7 +242,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         // Records will update via real-time subscription
       } catch (err) {
-        console.error('Error checking in guest:', err)
+        logger.error('Error checking in guest:', err)
         setError(err as Error)
         throw err
       }
@@ -273,7 +274,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         // Records will update via real-time subscription
       } catch (err) {
-        console.error('Error bulk checking in members:', err)
+        logger.error('Error bulk checking in members:', err)
         setError(err as Error)
         throw err
       }
@@ -300,7 +301,7 @@ export function useAttendance(eventId: string): UseAttendanceReturn {
 
         // Records will update via real-time subscription
       } catch (err) {
-        console.error('Error checking out member:', err)
+        logger.error('Error checking out member:', err)
         setError(err as Error)
         throw err
       }
@@ -360,7 +361,7 @@ export function useMemberAttendanceStats(memberId: string | null): UseMemberAtte
 
         setStats(data || null)
       } catch (err) {
-        console.error('Error fetching attendance stats:', err)
+        logger.error('Error fetching attendance stats:', err)
         setError(err as Error)
       } finally {
         setIsLoading(false)
@@ -385,7 +386,7 @@ export function useMemberAttendanceStats(memberId: string | null): UseMemberAtte
           filter: `member_id=eq.${memberId}`
         },
         (payload) => {
-          console.log('Stats update received:', payload)
+          logger.log('Stats update received:', payload)
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             setStats(payload.new as MemberAttendanceStats)
           }

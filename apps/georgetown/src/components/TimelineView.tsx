@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 /**
  * TimelineView Component
  * Main timeline interface for viewing Georgetown Rotary's institutional history by year
@@ -49,7 +50,7 @@ export default function TimelineView() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'rotary_years' },
         (payload) => {
-          console.log('Rotary year updated:', payload)
+          logger.log('Rotary year updated:', payload)
           // Refetch all years to get updated statistics
           fetchRotaryYears()
         }
@@ -75,7 +76,7 @@ export default function TimelineView() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'speakers' },
         (payload) => {
-          console.log('Speaker updated in timeline:', payload)
+          logger.log('Speaker updated in timeline:', payload)
           // Reload year data when speakers change
           if (selectedYearData) {
             loadYearSpeakers(selectedYearData.start_date, selectedYearData.end_date)
@@ -92,18 +93,18 @@ export default function TimelineView() {
   const fetchRotaryYears = async () => {
     try {
       setLoading(true)
-      console.log('=== FETCHING ROTARY YEARS FROM DATABASE ===')
+      logger.log('=== FETCHING ROTARY YEARS FROM DATABASE ===')
       const { data, error } = await supabase
         .from('rotary_years')
         .select('*')
         .order('rotary_year', { ascending: false })
 
       if (error) {
-        console.error('Error fetching rotary years:', error)
+        logger.error('Error fetching rotary years:', error)
         return
       }
 
-      console.log('Fetched rotary years:', data?.map(y => ({
+      logger.log('Fetched rotary years:', data?.map(y => ({
         year: y.rotary_year,
         speakers: y.stats?.speakers,
         meetings: y.stats?.meetings
@@ -118,7 +119,7 @@ export default function TimelineView() {
         }
       }
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }
@@ -140,7 +141,7 @@ export default function TimelineView() {
         .single()
 
       if (error) {
-        console.error('Error loading year data:', error)
+        logger.error('Error loading year data:', error)
       } else {
         setSelectedYearData(data)
         await loadYearProjects(data.id)
@@ -160,13 +161,13 @@ export default function TimelineView() {
         .order('completion_date', { ascending: false })
 
       if (error) {
-        console.error('Error loading year projects:', error)
+        logger.error('Error loading year projects:', error)
         return
       }
 
       setYearProjects(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 
@@ -181,13 +182,13 @@ export default function TimelineView() {
         .order('scheduled_date', { ascending: false })
 
       if (error) {
-        console.error('Error loading year speakers:', error)
+        logger.error('Error loading year speakers:', error)
         return
       }
 
       setYearSpeakers(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 
@@ -201,13 +202,13 @@ export default function TimelineView() {
         .order('photo_date', { ascending: false })
 
       if (error) {
-        console.error('Error loading year photos:', error)
+        logger.error('Error loading year photos:', error)
         return
       }
 
       setYearPhotos(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 
@@ -244,7 +245,7 @@ export default function TimelineView() {
 
       setCanEdit(hasPermission || false)
     } catch (error) {
-      console.error('Error checking permissions:', error)
+      logger.error('Error checking permissions:', error)
       setCanEdit(false)
     }
   }

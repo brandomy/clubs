@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
@@ -70,7 +71,7 @@ export default function Dashboard() {
         upcomingSpeakers: speakersCount || 0,
       })
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error)
+      logger.error('Error fetching dashboard stats:', error)
     } finally {
       setLoading(false)
     }

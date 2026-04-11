@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Speaker, Member } from '../types/database'
@@ -39,12 +40,12 @@ export default function SpeakerCard({ speaker, isDragging = false }: SpeakerCard
         .single()
 
       if (error) {
-        console.error('Error loading proposer:', error)
+        logger.error('Error loading proposer:', error)
       } else {
         setProposer(data)
       }
     } catch (error) {
-      console.error('Error loading proposer:', error)
+      logger.error('Error loading proposer:', error)
     }
   }
 

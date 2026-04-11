@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
@@ -53,7 +54,7 @@ export default function CalendarView() {
       .order('scheduled_date', { ascending: true, nullsFirst: false })
 
     if (error) {
-      console.error('Error fetching speakers:', error)
+      logger.error('Error fetching speakers:', error)
     } else {
       setSpeakers(data || [])
     }
@@ -70,7 +71,7 @@ export default function CalendarView() {
       .order('date', { ascending: true })
 
     if (error) {
-      console.error('Error fetching events:', error)
+      logger.error('Error fetching events:', error)
     } else {
       setEvents(data || [])
     }
@@ -84,7 +85,7 @@ export default function CalendarView() {
       .order('name', { ascending: true })
 
     if (error) {
-      console.error('Error fetching members:', error)
+      logger.error('Error fetching members:', error)
     } else {
       setMembers(data || [])
     }
@@ -96,7 +97,7 @@ export default function CalendarView() {
       .select('event_id, attending_count, total_headcount')
 
     if (error) {
-      console.error('Error fetching RSVP summaries:', error)
+      logger.error('Error fetching RSVP summaries:', error)
     } else if (data) {
       const summaries: Record<string, { attending: number; total: number }> = {}
       data.forEach(summary => {
@@ -320,7 +321,7 @@ export default function CalendarView() {
           onClose={handleCloseHolidayViewModal}
           onHolidayUpdated={() => {
             // In production, this would refetch holidays or update state
-            console.log('Holiday updated, refreshing calendar...')
+            logger.log('Holiday updated, refreshing calendar...')
           }}
         />
       )}

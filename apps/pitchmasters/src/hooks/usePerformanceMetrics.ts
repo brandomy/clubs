@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useEffect, useState } from 'react';
 
 interface PerformanceMetrics {
@@ -51,14 +52,14 @@ export function usePerformanceMetrics() {
       clsObserver.observe({ entryTypes: ['layout-shift'] });
       fcpObserver.observe({ entryTypes: ['paint'] });
     } catch (error) {
-      console.warn('Performance Observer not supported:', error);
+      logger.warn('Performance Observer not supported:', error);
     }
 
     // Track page load time
     const handleLoad = () => {
       const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       if (navigation) {
-        console.log('Page Load Metrics:', {
+        logger.log('Page Load Metrics:', {
           domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
           loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
           totalTime: navigation.loadEventEnd - navigation.fetchStart
@@ -78,7 +79,7 @@ export function usePerformanceMetrics() {
 
   // Function to log metrics for debugging
   const logMetrics = () => {
-    console.log('Performance Metrics:', {
+    logger.log('Performance Metrics:', {
       LCP: metrics.lcp ? `${metrics.lcp.toFixed(2)}ms` : 'Not measured',
       CLS: metrics.cls ? metrics.cls.toFixed(4) : 'Not measured',
       FCP: metrics.fcp ? `${metrics.fcp.toFixed(2)}ms` : 'Not measured',

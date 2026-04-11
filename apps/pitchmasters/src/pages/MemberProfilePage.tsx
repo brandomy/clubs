@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -78,7 +79,7 @@ export default function MemberProfilePage() {
         setMember(memberWithProfile);
 
       } catch (err: any) {
-        console.error('Error loading member profile:', err);
+        logger.error('Error loading member profile:', err);
         setError(err.message || 'Failed to load member profile');
       } finally {
         setIsLoading(false);
@@ -117,10 +118,10 @@ export default function MemberProfilePage() {
       if (updateError) throw updateError;
 
       setIsEditing(false);
-      console.log('Profile updated successfully');
+      logger.log('Profile updated successfully');
 
     } catch (err: any) {
-      console.error('Error saving profile:', err);
+      logger.error('Error saving profile:', err);
       setError(err.message || 'Failed to save profile');
     } finally {
       setIsSaving(false);
@@ -161,7 +162,7 @@ export default function MemberProfilePage() {
       navigate('/members');
 
     } catch (err: any) {
-      console.error('Error deleting member:', err);
+      logger.error('Error deleting member:', err);
       setError(err.message || 'Failed to delete member');
       setShowDeleteConfirm(false);
     } finally {

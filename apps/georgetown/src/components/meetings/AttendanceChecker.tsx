@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger'
 import { useState, useEffect } from 'react'
 import { X, UserCheck, Users, UserPlus } from 'lucide-react'
 import { useAttendance } from '../../hooks/useAttendance'
@@ -104,7 +105,7 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
       }
       // checkedInIds will update via real-time subscription
     } catch (error) {
-      console.error('Failed to toggle attendance:', error)
+      logger.error('Failed to toggle attendance:', error)
     } finally {
       setIsCheckingIn(false)
     }
@@ -118,7 +119,7 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
     try {
       await bulkCheckIn(idsToCheckIn)
     } catch (error) {
-      console.error('Failed to bulk check in:', error)
+      logger.error('Failed to bulk check in:', error)
     } finally {
       setIsCheckingIn(false)
     }
@@ -135,7 +136,7 @@ export function AttendanceChecker({ eventId, isOpen, onClose }: AttendanceChecke
     try {
       await bulkCheckIn(idsToCheckIn)
     } catch (error) {
-      console.error('Failed to bulk check in all:', error)
+      logger.error('Failed to bulk check in all:', error)
     } finally {
       setIsCheckingIn(false)
     }

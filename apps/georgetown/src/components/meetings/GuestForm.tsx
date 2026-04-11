@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useAttendance } from '../../hooks/useAttendance'
@@ -83,7 +84,7 @@ export function GuestForm({ eventId, isOpen, onClose }: GuestFormProps) {
         resetForm()
       }
     } catch (error) {
-      console.error('Failed to add guest:', error)
+      logger.error('Failed to add guest:', error)
       alert('Failed to add guest. Please try again.')
     } finally {
       setIsSaving(false)

@@ -1,24 +1,12 @@
 import { Loader } from 'lucide-react';
 import PagesList from '../components/cms/PagesList';
 import { usePublicPages } from '../hooks/usePublicPages';
-import { User } from '../types';
-
-// Demo admin user — matches simulated auth pattern used in MembersPage
-const DEMO_ADMIN: User = {
-  id: 'demo-admin',
-  email: 'admin@pitchmasters.club',
-  full_name: 'Demo Admin',
-  club_id: 'demo-club',
-  role: 'admin',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
-
-// Demo club ID — replace with real value once auth is wired up
-const DEMO_CLUB_ID = import.meta.env.VITE_DEMO_CLUB_ID ?? null;
+import { useAuth } from '../hooks/useAuth';
 
 export default function PagesListPage() {
-  const { pages, isLoading, error, publishPage, deletePage } = usePublicPages(DEMO_CLUB_ID);
+  const { user } = useAuth();
+  const clubId = user?.club_id ?? null;
+  const { pages, isLoading, error, publishPage, deletePage } = usePublicPages(clubId);
 
   if (isLoading) {
     return (
@@ -37,10 +25,12 @@ export default function PagesListPage() {
     );
   }
 
+  if (!user) return null;
+
   return (
     <PagesList
       pages={pages}
-      currentUser={DEMO_ADMIN}
+      currentUser={user}
       onPublish={publishPage}
       onDelete={deletePage}
     />

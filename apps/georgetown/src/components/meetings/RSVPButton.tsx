@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger'
 import { useState } from 'react'
 import { Check, X, HelpCircle } from 'lucide-react'
 import { useRSVP } from '../../hooks/useRSVP'
@@ -39,7 +40,7 @@ export function RSVPButton({ eventId, onDetailsClick, className = '' }: RSVPButt
     try {
       await updateRSVP(newStatus)
     } catch (error) {
-      console.error('Failed to update RSVP:', error)
+      logger.error('Failed to update RSVP:', error)
       // TODO: Show toast notification
     } finally {
       setIsUpdating(false)

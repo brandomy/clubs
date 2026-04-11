@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react';
 import { Shield, Eye, EyeOff, Info, Check, X, AlertCircle } from 'lucide-react';
 import { PrivacySettings as PrivacySettingsType, User } from '../types';
@@ -125,7 +126,7 @@ export default function PrivacySettings({ privacySettings, onSave }: PrivacySett
       await onSave(settings);
       setHasChanges(false);
     } catch (error) {
-      console.error('Error saving privacy settings:', error);
+      logger.error('Error saving privacy settings:', error);
     } finally {
       setIsSaving(false);
     }

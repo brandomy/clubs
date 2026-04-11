@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { TrendingUp, Users, DollarSign, CheckCircle, Target } from 'lucide-react'
 import AppLayout from './AppLayout'
@@ -87,7 +88,7 @@ export default function ImpactPage() {
       setAvailableYears(['all', ...yearsData])
       setProjects(projectsData)
     } catch (error) {
-      console.error('Error loading impact data:', error)
+      logger.error('Error loading impact data:', error)
     } finally {
       setIsLoading(false)
     }
@@ -119,7 +120,7 @@ export default function ImpactPage() {
       if (error) throw error
       return data || []
     } catch (error) {
-      console.error('Error loading projects:', error)
+      logger.error('Error loading projects:', error)
       return []
     }
   }

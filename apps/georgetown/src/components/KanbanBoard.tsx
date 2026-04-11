@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useRef } from 'react'
 import {
   DndContext,
@@ -147,7 +148,7 @@ export default function KanbanBoard() {
       .order('position', { ascending: true })
 
     if (error) {
-      console.error('Error fetching speakers:', error)
+      logger.error('Error fetching speakers:', error)
     } else {
       setSpeakers(data || [])
     }
@@ -413,7 +414,7 @@ export default function KanbanBoard() {
       .eq('id', speakerId)
 
     if (error) {
-      console.error('Error updating speaker status:', error)
+      logger.error('Error updating speaker status:', error)
       fetchSpeakers()
       return
     }
@@ -422,7 +423,7 @@ export default function KanbanBoard() {
     if (newStatus === 'spoken' && speaker?.scheduled_date) {
       try {
         const rotaryYear = getRotaryYearFromDate(speaker.scheduled_date)
-        console.log(`Speaker marked as spoken. Auto-linking to Rotary year: ${rotaryYear}`)
+        logger.log(`Speaker marked as spoken. Auto-linking to Rotary year: ${rotaryYear}`)
 
         // Find Rotary year record
         const { data: yearRecord, error: yearError } = await supabase
@@ -432,9 +433,9 @@ export default function KanbanBoard() {
           .single()
 
         if (yearError) {
-          console.warn('Rotary year record not found:', rotaryYear, yearError)
+          logger.warn('Rotary year record not found:', rotaryYear, yearError)
         } else if (yearRecord) {
-          console.log('Found Rotary year record:', yearRecord.id)
+          logger.log('Found Rotary year record:', yearRecord.id)
 
           // Link speaker to Rotary year
           const { error: linkError } = await supabase
@@ -443,17 +444,17 @@ export default function KanbanBoard() {
             .eq('id', speakerId)
 
           if (linkError) {
-            console.error('Error linking speaker to Rotary year:', linkError)
+            logger.error('Error linking speaker to Rotary year:', linkError)
           } else {
-            console.log('Speaker linked to Rotary year successfully')
+            logger.log('Speaker linked to Rotary year successfully')
 
             // Update statistics for this Rotary year
             await updateRotaryYearStats(yearRecord.id)
-            console.log('Rotary year statistics updated')
+            logger.log('Rotary year statistics updated')
           }
         }
       } catch (err) {
-        console.error('Error in speaker auto-linking:', err)
+        logger.error('Error in speaker auto-linking:', err)
       }
     }
   }

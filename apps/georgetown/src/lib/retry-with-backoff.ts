@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 interface RetryOptions {
   maxRetries?: number
   initialDelay?: number
@@ -49,7 +50,7 @@ export async function retryWithBackoff<T>(
 
       // Log retry attempt in development
       if (import.meta.env.DEV) {
-        console.log(`Retry attempt ${attempt + 1}/${opts.maxRetries} after ${delay}ms`)
+        logger.log(`Retry attempt ${attempt + 1}/${opts.maxRetries} after ${delay}ms`)
       }
 
       // Wait before retrying

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Calendar as CalendarIcon, MapPin, Mic, List, Download, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -139,7 +140,7 @@ export default function EventsListView() {
       .order('name', { ascending: true })
 
     if (error) {
-      console.error('Error fetching locations:', error)
+      logger.error('Error fetching locations:', error)
       return
     }
 
@@ -193,7 +194,7 @@ export default function EventsListView() {
       .order('date', { ascending: true })
 
     if (eventsError) {
-      console.error('Error fetching events:', eventsError)
+      logger.error('Error fetching events:', eventsError)
       setLoading(false)
       setIsInitialLoad(false)
       return
@@ -209,7 +210,7 @@ export default function EventsListView() {
       .order('scheduled_date', { ascending: true })
 
     if (speakersError) {
-      console.error('Error fetching speakers:', speakersError)
+      logger.error('Error fetching speakers:', speakersError)
       setLoading(false)
       setIsInitialLoad(false)
       return

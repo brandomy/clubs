@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -63,12 +64,12 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         .order('name')
 
       if (error) {
-        console.error('Error loading members:', error)
+        logger.error('Error loading members:', error)
       } else {
         setMembers(data || [])
       }
     } catch (error) {
-      console.error('Error loading members:', error)
+      logger.error('Error loading members:', error)
     } finally {
       setIsLoadingMembers(false)
     }
@@ -139,7 +140,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
           .eq('id', speaker.id)
 
         if (error) {
-          console.error('Error updating speaker:', error)
+          logger.error('Error updating speaker:', error)
           trackForm.error(formName, error.message)
           alert('Error updating speaker. Please try again.')
           return
@@ -154,7 +155,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
           .insert(dbData)
 
         if (error) {
-          console.error('Error creating speaker:', error)
+          logger.error('Error creating speaker:', error)
           trackForm.error(formName, error.message)
           alert('Error creating speaker. Please try again.')
           return
@@ -169,7 +170,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
 
       onClose()
     } catch (error) {
-      console.error('Error saving speaker:', error)
+      logger.error('Error saving speaker:', error)
       trackForm.error(formName, error instanceof Error ? error.message : 'Unknown error')
       alert(`Error ${isEditing ? 'updating' : 'creating'} speaker. Please try again.`)
     } finally {
@@ -189,7 +190,7 @@ export default function SpeakerModal({ speaker, onClose, defaultStatus, defaultS
         .eq('id', speaker.id)
 
       if (error) {
-        console.error('Error deleting speaker:', error)
+        logger.error('Error deleting speaker:', error)
         trackInteraction('speaker-delete-error', 'speaker-modal', error.message)
         alert('Error deleting speaker. Please try again.')
       } else {

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
@@ -51,7 +52,7 @@ export function usePermissions(): UsePermissionsReturn {
 
         setPermissions(data || [])
       } catch (error) {
-        console.error('Error fetching permissions:', error)
+        logger.error('Error fetching permissions:', error)
         setPermissions([])
       } finally {
         setIsLoading(false)

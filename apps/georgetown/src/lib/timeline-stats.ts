@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 /**
  * Timeline Statistics Utilities
  *
@@ -40,7 +41,7 @@ export async function calculateRotaryYearStats(
     .single()
 
   if (yearError) {
-    console.error('Error fetching rotary year data:', yearError)
+    logger.error('Error fetching rotary year data:', yearError)
     return {
       meetings: 0,
       speakers: 0,
@@ -61,7 +62,7 @@ export async function calculateRotaryYearStats(
     .lte('scheduled_date', rotaryYearData.end_date)
 
   if (speakersError) {
-    console.error('Error fetching speakers for stats:', speakersError) // eslint-disable-line no-console
+    logger.error('Error fetching speakers for stats:', speakersError)
   }
 
   // Fetch completed service projects for this year using BOTH methods
@@ -72,7 +73,7 @@ export async function calculateRotaryYearStats(
     .eq('status', 'Completed')
 
   if (projectsError) {
-    console.error('Error fetching projects for stats:', projectsError) // eslint-disable-line no-console
+    logger.error('Error fetching projects for stats:', projectsError)
   }
 
   // Calculate totals from service projects
@@ -114,7 +115,7 @@ export async function updateRotaryYearStats(
     .eq('id', rotaryYearId)
 
   if (error) {
-    console.error('Error updating rotary year stats:', error) // eslint-disable-line no-console
+    logger.error('Error updating rotary year stats:', error)
     return null
   }
 
@@ -133,7 +134,7 @@ export async function recalculateAllRotaryYearStats(): Promise<number> {
     .select('id')
 
   if (error) {
-    console.error('Error fetching rotary years:', error)
+    logger.error('Error fetching rotary years:', error)
     return 0
   }
 

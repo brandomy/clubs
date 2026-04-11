@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState } from 'react'
 import { X, Calendar, Edit, MapPin, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -72,12 +73,12 @@ export default function HolidayViewModal({ holiday, onClose, onHolidayUpdated }:
         if (error) throw error
       }
 
-      console.log('Holiday updated successfully')
+      logger.log('Holiday updated successfully')
       onHolidayUpdated?.()
       setIsEditing(false)
       onClose()
     } catch (error) {
-      console.error('Error updating holiday:', error)
+      logger.error('Error updating holiday:', error)
       alert('Failed to update holiday. Please try again.')
     } finally {
       setLoading(false)

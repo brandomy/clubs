@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { X, Trash2, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -85,7 +86,7 @@ export default function ServiceProjectModal({
       if (error) throw error
       setPartners(data || [])
     } catch (error) {
-      console.error('Error loading partners:', error)
+      logger.error('Error loading partners:', error)
     } finally {
       setIsLoadingPartners(false)
     }
@@ -102,7 +103,7 @@ export default function ServiceProjectModal({
       if (error) throw error
       setMembers(data || [])
     } catch (error) {
-      console.error('Error loading members:', error)
+      logger.error('Error loading members:', error)
     }
   }
 
@@ -118,7 +119,7 @@ export default function ServiceProjectModal({
       if (error) throw error
       setSelectedPartnerIds(data?.map((p) => p.partner_id) || [])
     } catch (error) {
-      console.error('Error loading project partners:', error)
+      logger.error('Error loading project partners:', error)
     }
   }
 
@@ -185,7 +186,7 @@ export default function ServiceProjectModal({
           .delete()
           .eq('project_id', projectId)
 
-        if (deleteError) console.error('Partner delete error:', deleteError) // eslint-disable-line no-console
+        if (deleteError) logger.error('Partner delete error:', deleteError)
       } else {
         const { data, error } = await supabase
           .from('service_projects')
@@ -246,7 +247,7 @@ export default function ServiceProjectModal({
       onClose()
     } catch (error: unknown) {
       const err = error as { message?: string; hint?: string }
-      console.error('Error saving project:', error) // eslint-disable-line no-console
+      logger.error('Error saving project:', error)
       const errorMessage = err?.message || 'Unknown error occurred'
       const errorHint = err?.hint ? `\n\nHint: ${err.hint}` : ''
       alert(`Failed to save project: ${errorMessage}${errorHint}`)
@@ -269,7 +270,7 @@ export default function ServiceProjectModal({
       if (error) throw error
       onClose()
     } catch (error) {
-      console.error('Error deleting project:', error)
+      logger.error('Error deleting project:', error)
       alert('Failed to delete project. Please try again.')
     } finally {
       setIsSubmitting(false)

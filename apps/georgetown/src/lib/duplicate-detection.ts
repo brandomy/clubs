@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { supabase } from './supabase'
 
 export async function checkDuplicateSpeaker(
@@ -20,7 +21,7 @@ export async function checkDuplicateSpeaker(
   const { data, error } = await query.maybeSingle()
 
   if (error) {
-    console.error('Error checking duplicate:', error)
+    logger.error('Error checking duplicate:', error)
     return { isDuplicate: false, existing: null }
   }
 
@@ -50,7 +51,7 @@ export async function checkDuplicateMember(
   const { data, error } = await query.maybeSingle()
 
   if (error) {
-    console.error('Error checking duplicate:', error)
+    logger.error('Error checking duplicate:', error)
     return { isDuplicate: false, existing: null }
   }
 

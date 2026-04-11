@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -76,6 +78,23 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </nav>
 
+            {/* User / Sign out (desktop) */}
+            {user && (
+              <div className="hidden md:flex items-center gap-3 ml-4">
+                <span className="text-sm text-white text-opacity-80 truncate max-w-[160px]">
+                  {user.full_name}
+                </span>
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm text-white hover:bg-white hover:bg-opacity-10 transition-colors min-h-touch"
+                  title="Sign out"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign out
+                </button>
+              </div>
+            )}
+
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
@@ -136,6 +155,15 @@ export default function Layout({ children }: LayoutProps) {
               >
                 Speeches (Sprint 2)
               </a>
+              {user && (
+                <button
+                  onClick={() => { signOut(); setIsMobileMenuOpen(false); }}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white hover:bg-opacity-10 min-h-touch mt-2 border-t border-white border-opacity-20 pt-3"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign out ({user.full_name})
+                </button>
+              )}
             </div>
           </div>
         )}

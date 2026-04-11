@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import { LayoutGrid, List, Columns3, Download, Settings, X } from 'lucide-react'
@@ -231,7 +232,7 @@ export default function ServiceProjectsPage() {
 
       if (projectsError) {
         // Table doesn't exist yet (before migration) - just show empty state
-        console.error('Service projects error:', projectsError)
+        logger.error('Service projects error:', projectsError)
         setProjects([])
         setIsLoading(false)
         return
@@ -260,7 +261,7 @@ export default function ServiceProjectsPage() {
 
       setProjects(projectsWithPartners)
     } catch (error) {
-      console.error('Error loading projects:', error)
+      logger.error('Error loading projects:', error)
       setProjects([])
     } finally {
       setIsLoading(false)
@@ -311,7 +312,7 @@ export default function ServiceProjectsPage() {
       .eq('id', projectId)
 
     if (error) {
-      console.error('Error updating project status:', error)
+      logger.error('Error updating project status:', error)
       // Revert on error
       loadProjects()
     }

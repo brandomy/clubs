@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { Plus, MapPin, X, Edit2, Trash2, Settings, Phone, Mail, MessageCircle, Globe, Facebook, Instagram, Youtube, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -56,7 +57,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
       .order('name', { ascending: true })
 
     if (error) {
-      console.error('Error fetching locations:', error)
+      logger.error('Error fetching locations:', error)
     } else {
       setLocations(data || [])
     }
@@ -102,7 +103,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
       .single()
 
     if (error) {
-      console.error('Error adding location:', error)
+      logger.error('Error adding location:', error)
       if (error.code === '23505') {
         alert('A location with this name already exists. Please use a different name.')
       } else {
@@ -157,7 +158,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
       .eq('id', editingLocation.id)
 
     if (error) {
-      console.error('Error updating location:', error)
+      logger.error('Error updating location:', error)
       if (error.code === '23505') {
         alert('A location with this name already exists. Please use a different name.')
       } else {
@@ -190,7 +191,7 @@ export default function LocationSelect({ value, onChange, required = false, clas
       .eq('id', location.id)
 
     if (error) {
-      console.error('Error deleting location:', error)
+      logger.error('Error deleting location:', error)
       alert('Failed to delete location. It may be in use by existing events.')
     }
     setSaving(false)

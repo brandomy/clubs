@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User } from '../types';
@@ -37,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async (authUserId: string) => {
     try {
       const { data, error } = await supabase
-        .from('users')
+        .from('pm_members')
         .select('*')
         .eq('id', authUserId)
         .single();
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       setUser(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      logger.error('Error fetching user profile:', error);
       setUser(null);
     }
   };

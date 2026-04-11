@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useEffect, useState } from 'react'
 
 export function OfflineIndicator() {
@@ -6,7 +7,7 @@ export function OfflineIndicator() {
 
   useEffect(() => {
     const handleOnline = () => {
-      console.log('[Offline Indicator] Connection restored')
+      logger.log('[Offline Indicator] Connection restored')
       setIsOffline(false)
 
       // Hide banner after brief delay
@@ -16,7 +17,7 @@ export function OfflineIndicator() {
     }
 
     const handleOffline = () => {
-      console.log('[Offline Indicator] Connection lost')
+      logger.log('[Offline Indicator] Connection lost')
       setIsOffline(true)
       setShowBanner(true)
     }

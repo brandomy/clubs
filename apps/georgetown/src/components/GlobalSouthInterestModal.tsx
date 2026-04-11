@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -61,7 +62,7 @@ export default function GlobalSouthInterestModal({ isOpen, onClose }: GlobalSout
         }, 500)
       }, 2000)
     } catch (err) {
-      console.error('Error submitting interest form:', err)
+      logger.error('Error submitting interest form:', err)
       setError('Failed to submit. Please try again.')
     } finally {
       setSubmitting(false)

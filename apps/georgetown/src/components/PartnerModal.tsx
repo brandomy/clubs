@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -121,7 +122,7 @@ export default function PartnerModal({ partner, onClose }: PartnerModalProps) {
 
       onClose()
     } catch (err) {
-      console.error('Error saving partner:', err)
+      logger.error('Error saving partner:', err)
       setError(err instanceof Error ? err.message : 'Failed to save partner')
     } finally {
       setIsSaving(false)

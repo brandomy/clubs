@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, lazy, Suspense } from 'react'
 import DOMPurify from 'dompurify'
 import { X, Edit, Calendar, Info, Trash2, MapPin, UserCheck, ChevronDown, ChevronUp, Phone, Mail, Globe, Facebook, Instagram, Youtube, MessageCircle, User } from 'lucide-react'
@@ -55,7 +56,7 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
       .single()
 
     if (error) {
-      console.error('Error fetching location:', error)
+      logger.error('Error fetching location:', error)
     } else {
       setLocation(data)
     }
@@ -106,12 +107,12 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
 
       if (error) throw error
 
-      console.log('Event updated successfully')
+      logger.log('Event updated successfully')
       onEventUpdated?.()
       setIsEditing(false)
       onClose()
     } catch (error) {
-      console.error('Error updating event:', error)
+      logger.error('Error updating event:', error)
       alert('Failed to update event. Please try again.')
     } finally {
       setLoading(false)
@@ -135,11 +136,11 @@ export default function EventViewModal({ event, onClose, onEventUpdated, onOpenR
 
       if (error) throw error
 
-      console.log('Event deleted successfully')
+      logger.log('Event deleted successfully')
       onEventUpdated?.()
       onClose()
     } catch (error) {
-      console.error('Error deleting event:', error)
+      logger.error('Error deleting event:', error)
       alert('Failed to delete event. Please try again.')
     } finally {
       setLoading(false)

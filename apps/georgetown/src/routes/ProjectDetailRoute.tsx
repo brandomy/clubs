@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
@@ -26,7 +27,7 @@ export default function ProjectDetailRoute() {
   const loadProject = async () => {
     // Validate UUID format before making database query
     if (!projectId || !validateUUID(projectId)) {
-      console.warn('Invalid project ID format:', projectId)
+      logger.warn('Invalid project ID format:', projectId)
       navigate('/projects')
       return
     }
@@ -43,7 +44,7 @@ export default function ProjectDetailRoute() {
         .single()
 
       if (projectError || !projectData) {
-        console.error('Error loading project:', projectError)
+        logger.error('Error loading project:', projectError)
         // Project not found - redirect to projects page
         navigate('/projects')
         return
@@ -66,7 +67,7 @@ export default function ProjectDetailRoute() {
         setProject({ ...projectData, partners: [] })
       }
     } catch (err) {
-      console.error('Error loading project:', err)
+      logger.error('Error loading project:', err)
       setError('Failed to load project')
       // On error, redirect to projects page after a moment
       setTimeout(() => navigate('/projects'), 2000)

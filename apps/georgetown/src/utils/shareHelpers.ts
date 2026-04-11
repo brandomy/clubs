@@ -1,3 +1,4 @@
+import { logger } from './logger'
 /**
  * Web Share API utilities for Georgetown Rotary Club
  * Handles native sharing with clipboard fallback
@@ -27,7 +28,7 @@ export async function shareContent(
 ): Promise<{ success: boolean; method?: 'native' | 'clipboard'; error?: Error }> {
   // Prevent multiple simultaneous share operations
   if (isShareInProgress) {
-    console.warn('Share already in progress, ignoring duplicate request')
+    logger.warn('Share already in progress, ignoring duplicate request')
     return { success: false }
   }
 
@@ -59,7 +60,7 @@ export async function shareContent(
     }
 
     // Actual error - try clipboard fallback
-    console.error('Share failed:', err)
+    logger.error('Share failed:', err)
     return await copyToClipboard(data.url, contentType, onSuccess, onError)
   } finally {
     // Always reset the flag when share completes or fails

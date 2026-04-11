@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger'
 import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { useRSVP } from '../../hooks/useRSVP'
@@ -99,7 +100,7 @@ export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RS
 
   const handleSave = async () => {
     if (!memberId) {
-      console.error('Cannot save RSVP: memberId is missing')
+      logger.error('Cannot save RSVP: memberId is missing')
       alert('Authentication error. Please refresh the page and try again.')
       return
     }
@@ -120,7 +121,7 @@ export function RSVPModal({ eventId, eventType, eventDate, isOpen, onClose }: RS
 
       onClose()
     } catch (error) {
-      console.error('Failed to save RSVP:', error)
+      logger.error('Failed to save RSVP:', error)
       alert('Failed to save RSVP. Please try again.')
     } finally {
       setIsSaving(false)

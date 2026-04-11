@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
 import type { UserRole } from '../types/database'
@@ -59,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserRole(data)
       setMemberId(data.member_id || null)
     } catch (error) {
-      console.error('Error fetching user role:', error)
+      logger.error('Error fetching user role:', error)
       setUserRole(null)
       setMemberId(null)
     }

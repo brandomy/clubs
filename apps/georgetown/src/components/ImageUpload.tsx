@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useRef, useEffect } from 'react'
 import { Upload, X, Image as ImageIcon, Move, Link } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -87,7 +88,7 @@ export default function ImageUpload({
 
       // Compress image
       const compressedBlob = await compressImage(file)
-      console.log(`Compressed: ${formatFileSize(file.size)} → ${formatFileSize(compressedBlob.size)}`)
+      logger.log(`Compressed: ${formatFileSize(file.size)} → ${formatFileSize(compressedBlob.size)}`)
 
       // Generate file name
       const fileExt = 'jpg' // Always save as JPG after compression
@@ -103,7 +104,7 @@ export default function ImageUpload({
         })
 
       if (uploadError) {
-        console.error('Upload error:', uploadError)
+        logger.error('Upload error:', uploadError)
         setError('Failed to upload image. Please try again.')
         return
       }
@@ -119,7 +120,7 @@ export default function ImageUpload({
       setPreviewUrl(cacheBustedUrl)
       onImageChange(cacheBustedUrl)
     } catch (err) {
-      console.error('Image upload error:', err)
+      logger.error('Image upload error:', err)
       setError('Failed to process image. Please try again.')
     } finally {
       setIsUploading(false)
@@ -195,7 +196,7 @@ export default function ImageUpload({
         await supabase.storage.from(bucketName).remove([filePath])
       }
     } catch (err) {
-      console.error('Error removing image:', err)
+      logger.error('Error removing image:', err)
     }
 
     setPreviewUrl(null)

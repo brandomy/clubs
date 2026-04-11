@@ -3,27 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
 import PageEditor from '../components/cms/PageEditor';
 import { usePublicPages } from '../hooks/usePublicPages';
-import { PublicPage, User } from '../types';
-
-// Demo admin user — matches simulated auth pattern
-const DEMO_ADMIN: User = {
-  id: 'demo-admin',
-  email: 'admin@pitchmasters.club',
-  full_name: 'Demo Admin',
-  club_id: 'demo-club',
-  role: 'admin',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-};
-
-const DEMO_CLUB_ID = import.meta.env.VITE_DEMO_CLUB_ID ?? null;
+import { useAuth } from '../hooks/useAuth';
+import { PublicPage } from '../types';
 
 export default function PageEditorPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const isNew = !slug;
 
-  const { getPage, savePage, publishPage, deletePage } = usePublicPages(DEMO_CLUB_ID);
+  const { user } = useAuth();
+  const clubId = user?.club_id ?? null;
+
+  const { getPage, savePage, publishPage, deletePage } = usePublicPages(clubId);
   const [page, setPage] = useState<PublicPage | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(!isNew);
 
@@ -37,9 +28,8 @@ export default function PageEditorPage() {
   }, [slug, isNew, getPage]);
 
   const handleSave = async (data: Partial<PublicPage> & { title: string; content: any }) => {
-    const result = await savePage({ ...data, club_id: DEMO_CLUB_ID ?? '' });
+    const result = await savePage({ ...data, club_id: clubId ?? '' });
     if (result && !page) {
-      // New page saved — redirect to its edit URL
       navigate(`/pages/${result.slug}/edit`, { replace: true });
     }
     return result;
@@ -58,11 +48,13 @@ export default function PageEditorPage() {
     );
   }
 
+  if (!user) return null;
+
   return (
     <div className="max-w-4xl mx-auto">
       <PageEditor
         page={page}
-        currentUser={DEMO_ADMIN}
+        currentUser={user}
         onSave={handleSave}
         onPublish={publishPage}
         onDelete={handleDelete}

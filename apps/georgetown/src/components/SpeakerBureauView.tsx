@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Speaker, Member } from '../types/database'
@@ -30,7 +31,7 @@ export default function SpeakerBureauView() {
         .eq('active', true)
 
       if (error) {
-        console.error('Error fetching members:', error)
+        logger.error('Error fetching members:', error)
         return
       }
 
@@ -41,7 +42,7 @@ export default function SpeakerBureauView() {
 
       setMembers(membersMap)
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 
@@ -55,13 +56,13 @@ export default function SpeakerBureauView() {
         .order('recommendation_date', { ascending: false })
 
       if (error) {
-        console.error('Error fetching recommended speakers:', error)
+        logger.error('Error fetching recommended speakers:', error)
         return
       }
 
       setRecommendedSpeakers(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 /**
  * PhotoGallery Component
  * Displays club photos in responsive grid with filtering and lightbox view
@@ -41,7 +42,7 @@ export default function PhotoGallery() {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'photos' },
         () => {
-          console.log('Photo updated, refetching...')
+          logger.log('Photo updated, refetching...')
           fetchPhotos()
         }
       )
@@ -62,13 +63,13 @@ export default function PhotoGallery() {
         .order('photo_date', { ascending: false })
 
       if (error) {
-        console.error('Error fetching photos:', error)
+        logger.error('Error fetching photos:', error)
         return
       }
 
       setPhotos(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }
@@ -82,13 +83,13 @@ export default function PhotoGallery() {
         .order('rotary_year', { ascending: false })
 
       if (error) {
-        console.error('Error fetching rotary years:', error)
+        logger.error('Error fetching rotary years:', error)
         return
       }
 
       setRotaryYears(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 
@@ -124,7 +125,7 @@ export default function PhotoGallery() {
 
       setCanEdit(hasPermission || false)
     } catch (error) {
-      console.error('Error checking permissions:', error)
+      logger.error('Error checking permissions:', error)
       setCanEdit(false)
     }
   }

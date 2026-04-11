@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -46,7 +47,7 @@ export default function NarrativeEditor({
         setSaveStatus('saved')
         setHasChanges(false)
       } catch (error) {
-        console.error('Error auto-saving narrative:', error)
+        logger.error('Error auto-saving narrative:', error)
         setSaveStatus('error')
       }
     }, 2000)
@@ -350,7 +351,7 @@ export default function NarrativeEditor({
                     // Close after successful save
                     setTimeout(onClose, 300)
                   } catch (error) {
-                    console.error('Error saving narrative:', error)
+                    logger.error('Error saving narrative:', error)
                     setSaveStatus('error')
                     // Don't close if save failed
                   }

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState } from 'react'
 import { X, Edit, Trash2, Building2, Calendar, Mail, Phone, Globe, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -25,7 +26,7 @@ export default function PartnerDetailModal({ partner, onClose, onEdit }: Partner
       if (error) throw error
       onClose()
     } catch (err) {
-      console.error('Error deleting partner:', err)
+      logger.error('Error deleting partner:', err)
       alert('Failed to delete partner. Please try again.')
     } finally {
       setIsDeleting(false)

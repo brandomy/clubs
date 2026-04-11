@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Member, MemberAttendanceStats } from '../types/database'
@@ -80,13 +81,13 @@ export default function MemberDirectory() {
         .order('name', { ascending: true })
 
       if (error) {
-        console.error('Error fetching members:', error)
+        logger.error('Error fetching members:', error)
         return
       }
 
       setMembers(data || [])
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }
@@ -99,7 +100,7 @@ export default function MemberDirectory() {
         .select('*')
 
       if (error) {
-        console.error('Error fetching attendance stats:', error)
+        logger.error('Error fetching attendance stats:', error)
         return
       }
 
@@ -110,7 +111,7 @@ export default function MemberDirectory() {
       })
       setAttendanceStats(statsMap)
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     }
   }
 

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
@@ -49,7 +50,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
 
         setRsvp(data || null)
       } catch (err) {
-        console.error('Error fetching RSVP:', err)
+        logger.error('Error fetching RSVP:', err)
         setError(err as Error)
       } finally {
         setIsLoading(false)
@@ -77,7 +78,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
 
         setSummary(data || null)
       } catch (err) {
-        console.error('Error fetching RSVP summary:', err)
+        logger.error('Error fetching RSVP summary:', err)
       }
     }
 
@@ -99,7 +100,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
           filter: `event_id=eq.${eventId},member_id=eq.${memberId}`
         },
         (payload) => {
-          console.log('RSVP update received:', payload)
+          logger.log('RSVP update received:', payload)
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             setRsvp(payload.new as MeetingRSVP)
           } else if (payload.eventType === 'DELETE') {
@@ -178,7 +179,7 @@ export function useRSVP(eventId: string): UseRSVPReturn {
 
         setRsvp(result)
       } catch (err) {
-        console.error('Error updating RSVP:', err)
+        logger.error('Error updating RSVP:', err)
         setError(err as Error)
         throw err
       }
@@ -239,7 +240,7 @@ export function useEventRSVPList(eventId: string): UseEventRSVPListReturn {
 
         setRsvps(formatted)
       } catch (err) {
-        console.error('Error fetching RSVP list:', err)
+        logger.error('Error fetching RSVP list:', err)
         setError(err as Error)
       } finally {
         setIsLoading(false)

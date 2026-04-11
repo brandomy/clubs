@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, useEffect } from 'react'
 import { X, Edit, User, Mail, Phone, Calendar, ExternalLink, Settings, FileText, Award } from 'lucide-react'
 import type { Speaker, Member } from '../types/database'
@@ -40,12 +41,12 @@ export default function SpeakerDetailModal({ speaker, onClose, onEdit }: Speaker
         .single()
 
       if (error) {
-        console.error('Error loading proposer:', error)
+        logger.error('Error loading proposer:', error)
       } else {
         setProposer(data)
       }
     } catch (error) {
-      console.error('Error loading proposer:', error)
+      logger.error('Error loading proposer:', error)
     }
   }
 

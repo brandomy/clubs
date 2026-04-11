@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 /**
  * PhotoUploadModal Component
  * Modal for uploading photos to the club photo gallery
@@ -122,7 +123,7 @@ export default function PhotoUploadModal({
 
         // Handle "no rows found" error gracefully - optional field during development
         if (memberError && memberError.code !== 'PGRST116') {
-          console.error('Error fetching member:', memberError)
+          logger.error('Error fetching member:', memberError)
           throw memberError
         }
 
@@ -131,7 +132,7 @@ export default function PhotoUploadModal({
 
       // Compress image
       const compressedBlob = await compressImage(selectedFile)
-      console.log(`Compressed: ${formatFileSize(selectedFile.size)} → ${formatFileSize(compressedBlob.size)}`)
+      logger.log(`Compressed: ${formatFileSize(selectedFile.size)} → ${formatFileSize(compressedBlob.size)}`)
 
       // Generate file name with timestamp and sanitized title
       const timestamp = Date.now()
@@ -150,7 +151,7 @@ export default function PhotoUploadModal({
         })
 
       if (uploadError) {
-        console.error('Upload error:', uploadError)
+        logger.error('Upload error:', uploadError)
         setError('Failed to upload image. Please try again.')
         return
       }
@@ -194,7 +195,7 @@ export default function PhotoUploadModal({
         .single()
 
       if (dbError) {
-        console.error('Database error:', dbError)
+        logger.error('Database error:', dbError)
         // Try to clean up uploaded file
         await supabase.storage.from('club-photos').remove([fileName])
         setError('Failed to save photo details. Please try again.')
@@ -205,7 +206,7 @@ export default function PhotoUploadModal({
       onPhotoUploaded(photoData)
       onClose()
     } catch (err) {
-      console.error('Photo upload error:', err)
+      logger.error('Photo upload error:', err)
       setError('Failed to upload photo. Please try again.')
     } finally {
       setIsUploading(false)

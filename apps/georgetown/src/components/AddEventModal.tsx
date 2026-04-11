@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger'
 import { useState, lazy, Suspense } from 'react'
 import { X, Calendar, Info } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -48,11 +49,11 @@ export default function AddEventModal({ onClose, onEventAdded, defaultDate }: Ad
 
       if (error) throw error
 
-      console.log('Event created successfully:', data)
+      logger.log('Event created successfully:', data)
       onEventAdded?.()
       onClose()
     } catch (error) {
-      console.error('Error creating event:', error)
+      logger.error('Error creating event:', error)
       alert('Failed to create event. Please try again.')
     } finally {
       setLoading(false)

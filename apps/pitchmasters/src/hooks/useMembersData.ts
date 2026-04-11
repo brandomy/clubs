@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
 import type { MemberWithProfile } from '../types';
 
 interface UseMembersDataResult {
@@ -9,12 +10,19 @@ interface UseMembersDataResult {
 }
 
 export function useMembersData(): UseMembersDataResult {
+  const { user } = useAuth();
   const [members, setMembers] = useState<MemberWithProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadMembers() {
+    async function loadMembers(): Promise<void> {
+      if (!user?.club_id) {
+        setMembers([]);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
@@ -23,9 +31,10 @@ export function useMembersData(): UseMembersDataResult {
           .from('pm_members')
           .select(`
             *,
-            profile:member_profiles(*),
-            privacy_settings:privacy_settings(*)
-          `);
+            profile:pm_member_profiles(*),
+            privacy_settings:pm_privacy_settings(*)
+          `)
+          .eq('club_id', user.club_id);
 
         if (usersError) throw usersError;
 
@@ -45,7 +54,7 @@ export function useMembersData(): UseMembersDataResult {
     }
 
     loadMembers();
-  }, []);
+  }, [user?.club_id]);
 
   return { members, isLoading, error };
 }
