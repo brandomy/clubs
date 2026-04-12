@@ -73,7 +73,7 @@ function AppRoutes() {
         <Route path="/favicon-test" element={<Layout><FaviconTestPage /></Layout>} />
       )}
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/pages/about" replace />} />
     </Routes>
   );
 }
