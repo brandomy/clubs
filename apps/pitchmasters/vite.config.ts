@@ -63,8 +63,8 @@ export default defineConfig(({ command }) => ({
         // Clean up old caches automatically
         cleanupOutdatedCaches: true,
 
-        // Offline fallback page
-        navigateFallback: '/offline.html',
+        // SPA fallback — serve app shell for all navigation (React Router handles routing)
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [
           /^\/api/,           // Don't cache API routes
           /^\/auth/,          // Don't cache auth routes
