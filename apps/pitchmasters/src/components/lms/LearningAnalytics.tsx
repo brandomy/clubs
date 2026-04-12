@@ -14,13 +14,13 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import {
-  listPaths,
+  listSkills,
   getPendingApprovals,
   approveCompletion,
-  getProjectsByPath,
+  getProjectsBySkill,
 } from '../../hooks/useLearning';
 import type {
-  LearningPath,
+  LearningSkill,
   LearningProject,
   MemberProjectCompletion,
 } from '../../types';
@@ -28,8 +28,8 @@ import type {
 interface EnrollmentRow {
   member_id: string;
   member_name: string;
-  path_id: string;
-  path_title: string;
+  skill_id: string;
+  skill_title: string;
   current_level_id: string | null;
   enrolled_at: string;
   completed_at: string | null;
@@ -39,7 +39,7 @@ interface EnrollmentRow {
 interface StallAlert {
   member_id: string;
   member_name: string;
-  path_title: string;
+  skill_title: string;
   last_activity: string;
   days_stalled: number;
 }
@@ -49,13 +49,13 @@ export default function LearningAnalytics() {
   const { user } = useAuth();
   const clubId = user?.club_id ?? '';
 
-  const [paths, setPaths] = useState<LearningPath[]>([]);
+  const [skills, setSkills] = useState<LearningSkill[]>([]);
   const [enrollments, setEnrollments] = useState<EnrollmentRow[]>([]);
   const [completions, setCompletions] = useState<MemberProjectCompletion[]>([]);
   const [pendingApprovals, setPendingApprovals] = useState<MemberProjectCompletion[]>([]);
   const [projects, setProjects] = useState<Record<string, LearningProject[]>>({});
   const [loading, setLoading] = useState(true);
-  const [selectedPath, setSelectedPath] = useState<string>('all');
+  const [selectedSkill, setSelectedSkill] = useState<string>('all');
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [expandedApproval, setExpandedApproval] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,17 +69,17 @@ export default function LearningAnalytics() {
     setLoading(true);
     setError(null);
     try {
-      const [pathList, pending] = await Promise.all([
-        listPaths(clubId),
+      const [skillList, pending] = await Promise.all([
+        listSkills(clubId),
         getPendingApprovals(clubId),
       ]);
-      setPaths(pathList);
+      setSkills(skillList);
       setPendingApprovals(pending);
 
       // Load enrollments with member names
       const { data: enrollData, error: enrollErr } = await supabase
-        .from('pm_member_path_enrollments')
-        .select('*, member:pm_members(full_name), path:pm_learning_paths(title)')
+        .from('pm_member_skill_enrollments')
+        .select('*, member:pm_members(full_name), skill:pm_learning_skills(title)')
         .eq('club_id', clubId)
         .order('enrolled_at', { ascending: false });
 
@@ -97,30 +97,30 @@ export default function LearningAnalytics() {
       setCompletions(compList);
 
       // Enrich enrollment rows
-      const compCountByMemberPath: Record<string, number> = {};
+      const compCountByMemberSkill: Record<string, number> = {};
       for (const c of compList) {
-        const key = `${c.member_id}:${c.path_id}`;
-        compCountByMemberPath[key] = (compCountByMemberPath[key] ?? 0) + 1;
+        const key = `${c.member_id}:${c.skill_id}`;
+        compCountByMemberSkill[key] = (compCountByMemberSkill[key] ?? 0) + 1;
       }
 
       const rows: EnrollmentRow[] = (enrollData ?? []).map((e: any) => ({
         member_id: e.member_id,
         member_name: e.member?.full_name ?? 'Unknown',
-        path_id: e.path_id,
-        path_title: e.path?.title ?? 'Unknown',
+        skill_id: e.skill_id,
+        skill_title: e.skill?.title ?? 'Unknown',
         current_level_id: e.current_level_id,
         enrolled_at: e.enrolled_at,
         completed_at: e.completed_at,
-        completion_count: compCountByMemberPath[`${e.member_id}:${e.path_id}`] ?? 0,
+        completion_count: compCountByMemberSkill[`${e.member_id}:${e.skill_id}`] ?? 0,
       }));
       setEnrollments(rows);
 
-      // Load projects for all paths
+      // Load projects for all skills
       const projMap: Record<string, LearningProject[]> = {};
       await Promise.all(
-        pathList.map(async (p) => {
-          const projs = await getProjectsByPath(p.id);
-          projMap[p.id] = projs;
+        skillList.map(async (s) => {
+          const projs = await getProjectsBySkill(s.id);
+          projMap[s.id] = projs;
         })
       );
       setProjects(projMap);
@@ -146,7 +146,7 @@ export default function LearningAnalytics() {
     .filter((e) => !e.completed_at)
     .filter((e) => {
       const lastComp = completions
-        .filter((c) => c.member_id === e.member_id && c.path_id === e.path_id)
+        .filter((c) => c.member_id === e.member_id && c.skill_id === e.skill_id)
         .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
       const referenceDate = lastComp
         ? new Date(lastComp.completed_at)
@@ -158,7 +158,7 @@ export default function LearningAnalytics() {
     })
     .map((e) => {
       const lastComp = completions
-        .filter((c) => c.member_id === e.member_id && c.path_id === e.path_id)
+        .filter((c) => c.member_id === e.member_id && c.skill_id === e.skill_id)
         .sort((a, b) => b.completed_at.localeCompare(a.completed_at))[0];
       const referenceDate = lastComp
         ? new Date(lastComp.completed_at)
@@ -166,7 +166,7 @@ export default function LearningAnalytics() {
       return {
         member_id: e.member_id,
         member_name: e.member_name,
-        path_title: e.path_title,
+        skill_title: e.skill_title,
         last_activity: referenceDate.toLocaleDateString(),
         days_stalled: Math.floor(
           (Date.now() - referenceDate.getTime()) / (1000 * 60 * 60 * 24)
@@ -177,9 +177,9 @@ export default function LearningAnalytics() {
     .slice(0, 10);
 
   const filteredEnrollments =
-    selectedPath === 'all'
+    selectedSkill === 'all'
       ? enrollments
-      : enrollments.filter((e) => e.path_id === selectedPath);
+      : enrollments.filter((e) => e.skill_id === selectedSkill);
 
   if (loading) {
     return (
@@ -217,7 +217,7 @@ export default function LearningAnalytics() {
             icon: <Users className="w-5 h-5 text-tm-blue" />,
           },
           {
-            label: 'Completed paths',
+            label: 'Completed skills',
             value: enrollments.filter((e) => e.completed_at).length,
             icon: <CheckCircle className="w-5 h-5 text-green-500" />,
           },
@@ -333,18 +333,18 @@ export default function LearningAnalytics() {
               <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
                 <tr>
                   <th className="px-4 py-2 text-left">Member</th>
-                  <th className="px-4 py-2 text-left">Path</th>
+                  <th className="px-4 py-2 text-left">Skill</th>
                   <th className="px-4 py-2 text-left">Last activity</th>
                   <th className="px-4 py-2 text-right">Days stalled</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {stallAlerts.map((alert) => (
-                  <tr key={`${alert.member_id}-${alert.path_title}`}>
+                  <tr key={`${alert.member_id}-${alert.skill_title}`}>
                     <td className="px-4 py-3 font-medium text-gray-900">
                       {alert.member_name}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{alert.path_title}</td>
+                    <td className="px-4 py-3 text-gray-600">{alert.skill_title}</td>
                     <td className="px-4 py-3 text-gray-500">{alert.last_activity}</td>
                     <td className="px-4 py-3 text-right text-red-600 font-medium">
                       {alert.days_stalled}d
@@ -365,13 +365,13 @@ export default function LearningAnalytics() {
             Member Progress
           </h3>
           <select
-            value={selectedPath}
-            onChange={(e) => setSelectedPath(e.target.value)}
+            value={selectedSkill}
+            onChange={(e) => setSelectedSkill(e.target.value)}
             className="text-sm rounded-lg border border-gray-300 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-tm-blue"
           >
-            <option value="all">All paths</option>
-            {paths.map((p) => (
-              <option key={p.id} value={p.id}>{p.title}</option>
+            <option value="all">All skills</option>
+            {skills.map((s) => (
+              <option key={s.id} value={s.id}>{s.title}</option>
             ))}
           </select>
         </div>
@@ -386,24 +386,24 @@ export default function LearningAnalytics() {
               <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
                 <tr>
                   <th className="px-4 py-2 text-left">Member</th>
-                  <th className="px-4 py-2 text-left hidden sm:table-cell">Path</th>
+                  <th className="px-4 py-2 text-left hidden sm:table-cell">Skill</th>
                   <th className="px-4 py-2 text-right">Projects done</th>
                   <th className="px-4 py-2 text-right">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredEnrollments.map((row) => {
-                  const pathProjects = projects[row.path_id] ?? [];
-                  const total = pathProjects.filter((p) => !p.is_elective).length;
+                  const skillProjects = projects[row.skill_id] ?? [];
+                  const total = skillProjects.filter((p) => !p.is_elective).length;
                   const pct = total > 0 ? Math.round((row.completion_count / total) * 100) : 0;
 
                   return (
-                    <tr key={`${row.member_id}-${row.path_id}`}>
+                    <tr key={`${row.member_id}-${row.skill_id}`}>
                       <td className="px-4 py-3 font-medium text-gray-900">
                         {row.member_name}
                       </td>
                       <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">
-                        {row.path_title}
+                        {row.skill_title}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className="text-gray-700">

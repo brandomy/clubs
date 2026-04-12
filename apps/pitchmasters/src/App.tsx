@@ -12,9 +12,10 @@ import PageEditorPage from './pages/PageEditorPage';
 import LearningDashboard from './pages/LearningDashboard';
 import ProjectView from './pages/ProjectView';
 import LearningAdmin from './pages/LearningAdmin';
-import PathEditorPage from './pages/PathEditorPage';
+import SkillEditorPage from './pages/SkillEditorPage';
 import EvaluationTemplates from './pages/EvaluationTemplates';
 import LearningAnalyticsPage from './pages/LearningAnalyticsPage';
+import LevelContentEditorPage from './pages/LevelContentEditorPage';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from './contexts/AuthContext';
@@ -53,13 +54,14 @@ function AppRoutes() {
 
       {/* LMS — member-facing */}
       <Route path="/learn" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />
-      <Route path="/learn/:pathSlug" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />
-      <Route path="/learn/:pathSlug/project/:projectId" element={<ProtectedRoute><Layout><ProjectView /></Layout></ProtectedRoute>} />
+      <Route path="/learn/:skillSlug" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />
+      <Route path="/learn/:skillSlug/project/:projectId" element={<ProtectedRoute><Layout><ProjectView /></Layout></ProtectedRoute>} />
 
       {/* LMS — officer/admin */}
       <Route path="/learn/admin" element={<ProtectedRoute><Layout><LearningAdmin /></Layout></ProtectedRoute>} />
-      <Route path="/learn/admin/paths/new" element={<ProtectedRoute><Layout><PathEditorPage /></Layout></ProtectedRoute>} />
-      <Route path="/learn/admin/paths/:pathId" element={<ProtectedRoute><Layout><PathEditorPage /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/skills/new" element={<ProtectedRoute><Layout><SkillEditorPage /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/skills/:skillId" element={<ProtectedRoute><Layout><SkillEditorPage /></Layout></ProtectedRoute>} />
+      <Route path="/learn/admin/levels/:levelId/content" element={<ProtectedRoute><Layout><LevelContentEditorPage /></Layout></ProtectedRoute>} />
       <Route path="/learn/admin/templates" element={<ProtectedRoute><Layout><EvaluationTemplates /></Layout></ProtectedRoute>} />
       <Route path="/learn/admin/analytics" element={<ProtectedRoute><Layout><LearningAnalyticsPage /></Layout></ProtectedRoute>} />
 

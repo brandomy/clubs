@@ -1,26 +1,124 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, BarChart2, ClipboardList, BookOpen, Lock } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Plus, Edit, BarChart2, ClipboardList, BookOpen, Lock, GripVertical } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { listPaths } from '../hooks/useLearning';
-import type { LearningPath } from '../types';
+import { listSkills, reorderSkills } from '../hooks/useLearning';
+import type { LearningSkill } from '../types';
+
+// ── Sortable skill row ────────────────────────────────────────────────────────
+
+function SortableSkillRow({
+  skill,
+  onEdit,
+}: {
+  skill: LearningSkill;
+  onEdit: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: skill.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3"
+    >
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing flex-shrink-0 touch-none"
+        aria-label="Drag to reorder"
+      >
+        <GripVertical className="w-5 h-5" />
+      </button>
+
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-900 truncate">{skill.title}</p>
+        <p className="text-xs text-gray-500 mt-0.5 truncate">
+          {skill.description?.replace(/<[^>]+>/g, ' ').trim()}
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full ${
+              skill.published
+                ? 'bg-green-50 text-green-600'
+                : 'bg-gray-100 text-gray-500'
+            }`}
+          >
+            {skill.published ? 'Published' : 'Draft'}
+          </span>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-700 hover:border-tm-blue hover:text-tm-blue transition-colors flex-shrink-0"
+      >
+        <Edit className="w-3.5 h-3.5" />
+        Edit
+      </button>
+    </div>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function LearningAdmin() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [paths, setPaths] = useState<LearningPath[]>([]);
+  const [skills, setSkills] = useState<LearningSkill[]>([]);
   const [loading, setLoading] = useState(true);
 
   const clubId = user?.club_id ?? '';
   const isOfficer = user?.role === 'officer' || user?.role === 'admin';
 
+  const sensors = useSensors(useSensor(PointerSensor));
+
   useEffect(() => {
     if (!clubId || !isOfficer) return;
-    listPaths(clubId)
-      .then(setPaths)
+    listSkills(clubId)
+      .then(setSkills)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [clubId, isOfficer]);
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = skills.findIndex((s) => s.id === active.id);
+    const newIndex = skills.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(skills, oldIndex, newIndex).map((s, i) => ({
+      ...s,
+      order_index: i,
+    }));
+
+    setSkills(reordered);
+    await reorderSkills(reordered.map((s) => ({ id: s.id, order_index: s.order_index })));
+  };
 
   if (!isOfficer) {
     return (
@@ -48,9 +146,9 @@ export default function LearningAdmin() {
       <div className="grid grid-cols-2 gap-3">
         {[
           {
-            label: 'New Learning Path',
+            label: 'New Learning Skill',
             icon: <Plus className="w-5 h-5" />,
-            onClick: () => navigate('/learn/admin/paths/new'),
+            onClick: () => navigate('/learn/admin/skills/new'),
             accent: true,
           },
           {
@@ -80,60 +178,48 @@ export default function LearningAdmin() {
         ))}
       </div>
 
-      {/* Path list */}
+      {/* Skill list */}
       <section>
         <h2 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <BookOpen className="w-4 h-4" />
-          Learning Paths ({paths.length})
+          Learning Skills ({skills.length})
         </h2>
 
         {loading ? (
           <p className="text-sm text-gray-400">Loading…</p>
-        ) : paths.length === 0 ? (
+        ) : skills.length === 0 ? (
           <div className="text-center py-10 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
             <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-40" />
-            <p className="text-sm">No learning paths yet.</p>
+            <p className="text-sm">No learning skills yet.</p>
             <button
               type="button"
-              onClick={() => navigate('/learn/admin/paths/new')}
+              onClick={() => navigate('/learn/admin/skills/new')}
               className="mt-3 text-sm text-tm-blue hover:underline"
             >
-              Create the first path →
+              Create the first skill →
             </button>
           </div>
         ) : (
-          <div className="space-y-2">
-            {paths.map((p) => (
-              <div
-                key={p.id}
-                className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{p.title}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">{p.description}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        p.published
-                          ? 'bg-green-50 text-green-600'
-                          : 'bg-gray-100 text-gray-500'
-                      }`}
-                    >
-                      {p.published ? 'Published' : 'Draft'}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate(`/learn/admin/paths/${p.id}`)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-700 hover:border-tm-blue hover:text-tm-blue transition-colors flex-shrink-0"
-                >
-                  <Edit className="w-3.5 h-3.5" />
-                  Edit
-                </button>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={skills.map((s) => s.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-2">
+                {skills.map((s) => (
+                  <SortableSkillRow
+                    key={s.id}
+                    skill={s}
+                    onEdit={() => navigate(`/learn/admin/skills/${s.id}`)}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+          </DndContext>
         )}
       </section>
     </div>

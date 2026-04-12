@@ -266,7 +266,7 @@ export default function MemberProfilePage() {
                     {member?.full_name || 'Member Profile'}
                   </h1>
                   <p className="text-sm text-gray-500 truncate">
-                    {member?.profile?.path_level || 'Level 1'} • {member?.profile?.current_path || 'Dynamic Leadership'}
+                    {member?.profile?.skill_level || 'Level 1'} • {member?.profile?.current_skill || 'Dynamic Leadership'}
                   </p>
                 </div>
               </div>
@@ -356,7 +356,7 @@ export default function MemberProfilePage() {
                   </div>
                 )}
                 <h2 className="text-xl font-semibold text-gray-900">{member?.full_name}</h2>
-                <p className="text-gray-600">{member?.profile?.path_level || 'Level 1'} • {member?.profile?.current_path || 'Dynamic Leadership'}</p>
+                <p className="text-gray-600">{member?.profile?.skill_level || 'Level 1'} • {member?.profile?.current_skill || 'Dynamic Leadership'}</p>
                 {member?.profile?.industry && (
                   <p className="text-sm text-gray-500 mt-1">{member.profile.industry}</p>
                 )}

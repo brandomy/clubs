@@ -43,8 +43,8 @@ export const createTestMemberProfile = (userId: string): MemberWithProfile => {
       club_id: 'club-1',
       // Public tier
       photo_url: `https://example.com/photo-${userId}.jpg`,
-      path_level: 'Level 2',
-      current_path: 'Dynamic Leadership',
+      skill_level: 'Level 2',
+      current_skill: 'Dynamic Leadership',
       venture_name: `Startup ${userId}`,
       venture_description: `An innovative startup by user ${userId}`,
       venture_stage: 'mvp',
@@ -62,7 +62,7 @@ export const createTestMemberProfile = (userId: string): MemberWithProfile => {
       evaluation_count: 3,
       leadership_roles: ['VP Marketing'],
       // Additional required fields
-      completed_pathways: [],
+      completed_skills: [],
       dtm: false,
       is_founder: true,
       is_rotarian: false,

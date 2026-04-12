@@ -1,10 +1,10 @@
 import { supabase } from '../lib/supabase';
 import type {
-  LearningPath,
+  LearningSkill,
   LearningLevel,
   LearningProject,
   EvaluationTemplate,
-  MemberPathEnrollment,
+  MemberSkillEnrollment,
   MemberProjectCompletion,
   MemberBadge,
   EvaluationSubmission,
@@ -16,22 +16,22 @@ import type {
 
 export async function getMyEnrollment(
   memberId: string,
-  pathId: string
-): Promise<MemberPathEnrollment | null> {
+  skillId: string
+): Promise<MemberSkillEnrollment | null> {
   const { data, error } = await supabase
-    .from('pm_member_path_enrollments')
+    .from('pm_member_skill_enrollments')
     .select('*')
     .eq('member_id', memberId)
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .maybeSingle();
 
   if (error) throw error;
   return data;
 }
 
-export async function getMyEnrollments(memberId: string): Promise<MemberPathEnrollment[]> {
+export async function getMyEnrollments(memberId: string): Promise<MemberSkillEnrollment[]> {
   const { data, error } = await supabase
-    .from('pm_member_path_enrollments')
+    .from('pm_member_skill_enrollments')
     .select('*')
     .eq('member_id', memberId)
     .order('enrolled_at', { ascending: false });
@@ -42,13 +42,13 @@ export async function getMyEnrollments(memberId: string): Promise<MemberPathEnro
 
 export async function getMyCompletions(
   memberId: string,
-  pathId: string
+  skillId: string
 ): Promise<MemberProjectCompletion[]> {
   const { data, error } = await supabase
     .from('pm_member_project_completions')
     .select('*')
     .eq('member_id', memberId)
-    .eq('path_id', pathId);
+    .eq('skill_id', skillId);
 
   if (error) throw error;
   return data ?? [];
@@ -65,14 +65,14 @@ export async function getMyBadges(memberId: string): Promise<MemberBadge[]> {
   return data ?? [];
 }
 
-export async function enrollInPath(
+export async function enrollInSkill(
   memberId: string,
-  pathId: string,
+  skillId: string,
   clubId: string
-): Promise<MemberPathEnrollment> {
+): Promise<MemberSkillEnrollment> {
   const { data, error } = await supabase
-    .from('pm_member_path_enrollments')
-    .insert({ member_id: memberId, path_id: pathId, club_id: clubId })
+    .from('pm_member_skill_enrollments')
+    .insert({ member_id: memberId, skill_id: skillId, club_id: clubId })
     .select()
     .single();
 
@@ -83,7 +83,7 @@ export async function enrollInPath(
 export async function submitProjectCompletion(
   memberId: string,
   projectId: string,
-  pathId: string,
+  skillId: string,
   clubId: string,
   speechId?: string
 ): Promise<MemberProjectCompletion> {
@@ -92,7 +92,7 @@ export async function submitProjectCompletion(
     .insert({
       member_id: memberId,
       project_id: projectId,
-      path_id: pathId,
+      skill_id: skillId,
       club_id: clubId,
       speech_id: speechId ?? null,
       status: 'pending_evaluation',
@@ -125,34 +125,44 @@ export async function submitEvaluation(
 // Shared read operations
 // ============================================================
 
-export async function listPaths(clubId: string): Promise<LearningPath[]> {
+export async function listSkills(clubId: string): Promise<LearningSkill[]> {
   const { data, error } = await supabase
-    .from('pm_learning_paths')
+    .from('pm_learning_skills')
     .select('*')
     .eq('club_id', clubId)
-    .order('created_at', { ascending: true });
+    .order('order_index', { ascending: true });
 
   if (error) throw error;
   return data ?? [];
 }
 
-export async function getPath(pathId: string): Promise<LearningPath | null> {
+export async function reorderSkills(
+  skills: Array<{ id: string; order_index: number }>
+): Promise<void> {
+  await Promise.all(
+    skills.map(({ id, order_index }) =>
+      supabase.from('pm_learning_skills').update({ order_index }).eq('id', id)
+    )
+  );
+}
+
+export async function getSkill(skillId: string): Promise<LearningSkill | null> {
   const { data, error } = await supabase
-    .from('pm_learning_paths')
+    .from('pm_learning_skills')
     .select('*')
-    .eq('id', pathId)
+    .eq('id', skillId)
     .maybeSingle();
 
   if (error) throw error;
   return data;
 }
 
-export async function getPathBySlug(
+export async function getSkillBySlug(
   clubId: string,
   slug: string
-): Promise<LearningPath | null> {
+): Promise<LearningSkill | null> {
   const { data, error } = await supabase
-    .from('pm_learning_paths')
+    .from('pm_learning_skills')
     .select('*')
     .eq('club_id', clubId)
     .eq('slug', slug)
@@ -162,15 +172,26 @@ export async function getPathBySlug(
   return data;
 }
 
-export async function getLevels(pathId: string): Promise<LearningLevel[]> {
+export async function getLevels(skillId: string): Promise<LearningLevel[]> {
   const { data, error } = await supabase
     .from('pm_learning_levels')
     .select('*')
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .order('order_index', { ascending: true });
 
   if (error) throw error;
   return data ?? [];
+}
+
+export async function getLevel(levelId: string): Promise<LearningLevel | null> {
+  const { data, error } = await supabase
+    .from('pm_learning_levels')
+    .select('*')
+    .eq('id', levelId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 }
 
 export async function getProjects(levelId: string): Promise<LearningProject[]> {
@@ -195,11 +216,11 @@ export async function getProject(projectId: string): Promise<LearningProject | n
   return data;
 }
 
-export async function getProjectsByPath(pathId: string): Promise<LearningProject[]> {
+export async function getProjectsBySkill(skillId: string): Promise<LearningProject[]> {
   const { data, error } = await supabase
     .from('pm_learning_projects')
     .select('*')
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .order('order_index', { ascending: true });
 
   if (error) throw error;
@@ -210,20 +231,20 @@ export async function getProjectsByPath(pathId: string): Promise<LearningProject
 // Officer / Admin operations
 // ============================================================
 
-export async function savePath(
-  path: Partial<LearningPath> & { club_id: string; title: string; slug: string }
-): Promise<LearningPath> {
-  if (path.id) {
+export async function saveSkill(
+  skill: Partial<LearningSkill> & { club_id: string; title: string; slug: string }
+): Promise<LearningSkill> {
+  if (skill.id) {
     const { data, error } = await supabase
-      .from('pm_learning_paths')
+      .from('pm_learning_skills')
       .update({
-        title: path.title,
-        description: path.description,
-        slug: path.slug,
-        published: path.published,
-        cover_image_url: path.cover_image_url,
+        title: skill.title,
+        description: skill.description,
+        slug: skill.slug,
+        published: skill.published,
+        cover_image_url: skill.cover_image_url,
       })
-      .eq('id', path.id)
+      .eq('id', skill.id)
       .select()
       .single();
     if (error) throw error;
@@ -231,14 +252,14 @@ export async function savePath(
   }
 
   const { data, error } = await supabase
-    .from('pm_learning_paths')
+    .from('pm_learning_skills')
     .insert({
-      club_id: path.club_id,
-      title: path.title,
-      description: path.description ?? '',
-      slug: path.slug,
-      published: path.published ?? false,
-      cover_image_url: path.cover_image_url ?? null,
+      club_id: skill.club_id,
+      title: skill.title,
+      description: skill.description ?? '',
+      slug: skill.slug,
+      published: skill.published ?? false,
+      cover_image_url: skill.cover_image_url ?? null,
     })
     .select()
     .single();
@@ -248,7 +269,7 @@ export async function savePath(
 }
 
 export async function saveLevel(
-  level: Partial<LearningLevel> & { path_id: string; club_id: string; title: string }
+  level: Partial<LearningLevel> & { skill_id: string; club_id: string; title: string }
 ): Promise<LearningLevel> {
   if (level.id) {
     const { data, error } = await supabase
@@ -258,6 +279,7 @@ export async function saveLevel(
         description: level.description,
         order_index: level.order_index,
         required_projects: level.required_projects,
+        content: level.content ?? null,
       })
       .eq('id', level.id)
       .select()
@@ -269,7 +291,7 @@ export async function saveLevel(
   const { data, error } = await supabase
     .from('pm_learning_levels')
     .insert({
-      path_id: level.path_id,
+      skill_id: level.skill_id,
       club_id: level.club_id,
       title: level.title,
       description: level.description ?? '',
@@ -294,7 +316,7 @@ export async function deleteLevel(levelId: string): Promise<void> {
 export async function saveProject(
   project: Partial<LearningProject> & {
     level_id: string;
-    path_id: string;
+    skill_id: string;
     club_id: string;
     title: string;
   }
@@ -323,7 +345,7 @@ export async function saveProject(
     .from('pm_learning_projects')
     .insert({
       level_id: project.level_id,
-      path_id: project.path_id,
+      skill_id: project.skill_id,
       club_id: project.club_id,
       title: project.title,
       description: project.description ?? '',
@@ -382,8 +404,8 @@ export async function approveCompletion(
 export async function getClubAnalytics(clubId: string) {
   const [enrollmentsResult, completionsResult] = await Promise.all([
     supabase
-      .from('pm_member_path_enrollments')
-      .select('*, path:pm_learning_paths(title)')
+      .from('pm_member_skill_enrollments')
+      .select('*, skill:pm_learning_skills(title)')
       .eq('club_id', clubId),
     supabase
       .from('pm_member_project_completions')

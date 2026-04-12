@@ -5,34 +5,34 @@ import { useAuth } from '../hooks/useAuth';
 import { downloadCertificate } from '../lib/certificate';
 import { supabase } from '../lib/supabase';
 import {
-  listPaths,
-  getPathBySlug,
+  listSkills,
+  getSkillBySlug,
   getLevels,
-  getProjectsByPath,
+  getProjectsBySkill,
   getMyEnrollment,
   getMyCompletions,
   getMyBadges,
-  enrollInPath,
+  enrollInSkill,
 } from '../hooks/useLearning';
 import type {
-  LearningPath,
+  LearningSkill,
   LearningLevel,
   LearningProject,
-  MemberPathEnrollment,
+  MemberSkillEnrollment,
   MemberProjectCompletion,
   MemberBadge,
 } from '../types';
 
 export default function LearningDashboard() {
-  const { pathSlug } = useParams<{ pathSlug?: string }>();
+  const { skillSlug } = useParams<{ skillSlug?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [paths, setPaths] = useState<LearningPath[]>([]);
-  const [activePath, setActivePath] = useState<LearningPath | null>(null);
+  const [skills, setSkills] = useState<LearningSkill[]>([]);
+  const [activeSkill, setActiveSkill] = useState<LearningSkill | null>(null);
   const [levels, setLevels] = useState<LearningLevel[]>([]);
   const [projects, setProjects] = useState<LearningProject[]>([]);
-  const [enrollment, setEnrollment] = useState<MemberPathEnrollment | null>(null);
+  const [enrollment, setEnrollment] = useState<MemberSkillEnrollment | null>(null);
   const [completions, setCompletions] = useState<MemberProjectCompletion[]>([]);
   const [badges, setBadges] = useState<MemberBadge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,8 +46,8 @@ export default function LearningDashboard() {
   // Load paths and club name on mount
   useEffect(() => {
     if (!clubId) return;
-    listPaths(clubId)
-      .then(setPaths)
+    listSkills(clubId)
+      .then(setSkills)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
     supabase
@@ -58,49 +58,49 @@ export default function LearningDashboard() {
       .then(({ data }) => { if (data?.name) setClubName(data.name); });
   }, [clubId]);
 
-  // When pathSlug changes, load that path's data
+  // When skillSlug changes, load that skill's data
   useEffect(() => {
-    if (!pathSlug || !clubId || !user) return;
+    if (!skillSlug || !clubId || !user) return;
 
     setLoading(true);
     setError(null);
 
     Promise.all([
-      getPathBySlug(clubId, pathSlug),
+      getSkillBySlug(clubId, skillSlug),
       getMyBadges(user.id),
     ])
-      .then(async ([path, earnedBadges]) => {
-        if (!path) {
-          setError('Learning path not found.');
+      .then(async ([skill, earnedBadges]) => {
+        if (!skill) {
+          setError('Learning skill not found.');
           return;
         }
-        setActivePath(path);
+        setActiveSkill(skill);
         setBadges(earnedBadges);
 
         const [lvls, projs, enroll] = await Promise.all([
-          getLevels(path.id),
-          getProjectsByPath(path.id),
-          getMyEnrollment(user.id, path.id),
+          getLevels(skill.id),
+          getProjectsBySkill(skill.id),
+          getMyEnrollment(user.id, skill.id),
         ]);
         setLevels(lvls);
         setProjects(projs);
         setEnrollment(enroll);
 
         if (enroll) {
-          const done = await getMyCompletions(user.id, path.id);
+          const done = await getMyCompletions(user.id, skill.id);
           setCompletions(done);
         }
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [pathSlug, clubId, user]);
+  }, [skillSlug, clubId, user]);
 
   const handleEnroll = async () => {
-    if (!activePath || !user) return;
+    if (!activeSkill || !user) return;
     setEnrolling(true);
     setError(null);
     try {
-      const enroll = await enrollInPath(user.id, activePath.id, clubId);
+      const enroll = await enrollInSkill(user.id, activeSkill.id, clubId);
       setEnrollment(enroll);
       setCompletions([]);
     } catch (e) {
@@ -111,12 +111,12 @@ export default function LearningDashboard() {
   };
 
   const handleDownloadCertificate = async () => {
-    if (!activePath || !user) return;
+    if (!activeSkill || !user) return;
     setDownloadingCert(true);
     try {
       await downloadCertificate({
         memberName: user.full_name || user.email || 'Member',
-        pathTitle: activePath.title,
+        skillTitle: activeSkill.title,
         completedDate: enrollment?.completed_at
           ? new Date(enrollment.completed_at).toLocaleDateString('en-US', {
               year: 'numeric',
@@ -164,50 +164,50 @@ export default function LearningDashboard() {
     );
   }
 
-  // ---- Path selection screen ----
-  if (!pathSlug) {
+  // ---- Skill selection screen ----
+  if (!skillSlug) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Learning</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Custom curriculum built for startup founders — no Pathways login required.
+            Practical skills for startup founders — built in-house, just for Pitchmasters.
           </p>
         </div>
 
-        {paths.filter((p) => p.published || user?.role !== 'member').length === 0 && (
+        {skills.filter((s) => s.published || user?.role !== 'member').length === 0 && (
           <div className="text-center py-12 text-gray-400">
             <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No learning paths published yet.</p>
+            <p className="text-sm">No learning skills published yet.</p>
             {user?.role !== 'member' && (
               <button
                 type="button"
-                onClick={() => navigate('/learn/admin/paths/new')}
+                onClick={() => navigate('/learn/admin/skills/new')}
                 className="mt-4 text-sm text-tm-blue hover:underline"
               >
-                Create the first path →
+                Create the first skill →
               </button>
             )}
           </div>
         )}
 
         <div className="grid gap-4">
-          {paths
-            .filter((p) => p.published || user?.role !== 'member')
-            .map((p) => (
+          {skills
+            .filter((s) => s.published || user?.role !== 'member')
+            .map((s) => (
               <button
-                key={p.id}
+                key={s.id}
                 type="button"
-                onClick={() => navigate(`/learn/${p.slug}`)}
+                onClick={() => navigate(`/learn/${s.slug}`)}
                 className="w-full text-left bg-white border border-gray-200 rounded-xl p-5 hover:border-tm-blue hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{p.title}</h3>
-                    {p.description && (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{p.description}</p>
+                    <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                    {s.description && (
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{s.description.replace(/<[^>]+>/g, ' ').trim()}</p>
                     )}
-                    {!p.published && (
+                    {!s.published && (
                       <span className="inline-flex items-center gap-1 mt-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                         <Lock className="w-3 h-3" />
                         Draft
@@ -223,11 +223,11 @@ export default function LearningDashboard() {
     );
   }
 
-  // ---- No path found ----
-  if (!activePath) {
+  // ---- No skill found ----
+  if (!activeSkill) {
     return (
       <div className="max-w-2xl mx-auto py-8 text-center text-gray-400">
-        <p>Path not found.</p>
+        <p>Skill not found.</p>
       </div>
     );
   }
@@ -245,9 +245,9 @@ export default function LearningDashboard() {
         </button>
         <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{activePath.title}</h1>
-            {activePath.description && (
-              <p className="text-sm text-gray-600 mt-2">{activePath.description}</p>
+            <h1 className="text-xl font-bold text-gray-900">{activeSkill.title}</h1>
+            {activeSkill.description && (
+              <div className="text-sm text-gray-600 mt-2 [&_strong]:font-semibold [&_em]:italic [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mt-0.5" dangerouslySetInnerHTML={{ __html: activeSkill.description }} />
             )}
           </div>
           <div className="text-sm text-gray-600 space-y-1">
@@ -259,7 +259,7 @@ export default function LearningDashboard() {
             disabled={enrolling}
             className="w-full py-3 rounded-lg bg-tm-blue text-white font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors min-h-touch"
           >
-            {enrolling ? 'Enrolling…' : 'Enroll in this path'}
+            {enrolling ? 'Enrolling…' : 'Enroll in this skill'}
           </button>
         </div>
       </div>
@@ -281,7 +281,7 @@ export default function LearningDashboard() {
           >
             ← Learning
           </button>
-          <h1 className="text-xl font-bold text-gray-900">{activePath.title}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{activeSkill.title}</h1>
         </div>
         {badges.length > 0 && (
           <div className="flex items-center gap-1.5 text-sm text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full">
@@ -290,6 +290,65 @@ export default function LearningDashboard() {
           </div>
         )}
       </div>
+
+      {/* Level node tracker */}
+      {levels.length > 0 && (() => {
+        const levelStatuses = levels.map((level) => {
+          const { done, total } = progressForLevel(level);
+          return total > 0 && done === total;
+        });
+        const completedCount = levelStatuses.filter(Boolean).length;
+        const currentIndex = levelStatuses.findIndex((done) => !done);
+
+        return (
+          <div className="bg-white border border-gray-200 rounded-xl px-5 py-4">
+            <div className="flex items-center gap-1 overflow-x-auto pb-1">
+              {levels.map((level, i) => {
+                const isComplete = levelStatuses[i];
+                const isCurrent = i === currentIndex;
+
+                return (
+                  <div key={level.id} className="flex items-center flex-shrink-0">
+                    {/* Connector line */}
+                    {i > 0 && (
+                      <div
+                        className={`h-0.5 w-8 flex-shrink-0 ${
+                          levelStatuses[i - 1] ? 'bg-green-400' : 'bg-gray-200'
+                        }`}
+                      />
+                    )}
+
+                    {/* Node */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${
+                          isComplete
+                            ? 'bg-green-500 text-white'
+                            : isCurrent
+                            ? 'bg-tm-blue text-white'
+                            : 'bg-gray-100 text-gray-400'
+                        }`}
+                      >
+                        {isComplete ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          i + 1
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500 text-center max-w-[72px] leading-tight line-clamp-2">
+                        {level.title}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              {completedCount} of {levels.length} level{levels.length !== 1 ? 's' : ''} complete
+            </p>
+          </div>
+        );
+      })()}
 
       {/* Level progress */}
       {levels.map((level) => {
@@ -325,7 +384,7 @@ export default function LearningDashboard() {
                     type="button"
                     onClick={() =>
                       navigate(
-                        `/learn/${activePath.slug}/project/${project.id}`
+                        `/learn/${activeSkill.slug}/project/${project.id}`
                       )
                     }
                     className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors text-left"
@@ -363,7 +422,7 @@ export default function LearningDashboard() {
       {enrollment.completed_at && (
         <div className="flex flex-col items-center gap-3 py-8 text-center bg-white border border-green-200 rounded-xl">
           <CheckCircle className="w-12 h-12 text-green-500" />
-          <p className="font-semibold text-gray-900">Path complete!</p>
+          <p className="font-semibold text-gray-900">Skill complete!</p>
           <p className="text-sm text-gray-500">
             Completed {new Date(enrollment.completed_at).toLocaleDateString()}
           </p>

@@ -3,8 +3,8 @@ import { MemberWithProfile, PrivacySettings, User } from '../types';
 export interface VisibleMemberData {
   // Always visible
   name: string;
-  pathLevel: string;
-  currentPath: string;
+  skillLevel: string;
+  currentSkill: string;
   industry?: string;
 
   // Public tier (controlled by privacy settings)
@@ -66,8 +66,8 @@ export function getVisibleMemberData(
   return {
     // Always visible data
     name: member.full_name,
-    pathLevel: profile.path_level,
-    currentPath: profile.current_path,
+    skillLevel: profile.skill_level,
+    currentSkill: profile.current_skill,
     industry: profile.industry,
 
     // Public tier data (controlled by privacy settings)
@@ -129,8 +129,8 @@ export function memberMatchesSearch(
 
   // Always searchable fields
   if (visibleData.name.toLowerCase().includes(searchLower)) return true;
-  if (visibleData.pathLevel.toLowerCase().includes(searchLower)) return true;
-  if (visibleData.currentPath.toLowerCase().includes(searchLower)) return true;
+  if (visibleData.skillLevel.toLowerCase().includes(searchLower)) return true;
+  if (visibleData.currentSkill.toLowerCase().includes(searchLower)) return true;
   if (visibleData.industry?.toLowerCase().includes(searchLower)) return true;
 
   // Public tier searchable fields (if visible)

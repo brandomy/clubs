@@ -2,32 +2,32 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2, Lock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { getPath } from '../hooks/useLearning';
-import PathEditor from '../components/lms/PathEditor';
-import type { LearningPath } from '../types';
+import { getSkill } from '../hooks/useLearning';
+import SkillEditor from '../components/lms/SkillEditor';
+import type { LearningSkill } from '../types';
 
-export default function PathEditorPage() {
-  const { pathId } = useParams<{ pathId?: string }>();
+export default function SkillEditorPage() {
+  const { skillId } = useParams<{ skillId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const clubId = user?.club_id ?? '';
 
-  const [path, setPath] = useState<LearningPath | undefined>(undefined);
-  const [loading, setLoading] = useState(!!pathId);
+  const [skill, setSkill] = useState<LearningSkill | undefined>(undefined);
+  const [loading, setLoading] = useState(!!skillId);
   const [error, setError] = useState<string | null>(null);
 
   const isOfficer = user?.role === 'officer' || user?.role === 'admin';
 
   useEffect(() => {
-    if (!pathId) return;
-    getPath(pathId)
-      .then((p) => {
-        if (!p) setError('Path not found.');
-        else setPath(p);
+    if (!skillId) return;
+    getSkill(skillId)
+      .then((s) => {
+        if (!s) setError('Skill not found.');
+        else setSkill(s);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [pathId]);
+  }, [skillId]);
 
   if (!isOfficer) {
     return (
@@ -58,7 +58,7 @@ export default function PathEditorPage() {
     <div className="max-w-3xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900">
-          {path ? `Edit: ${path.title}` : 'New Learning Path'}
+          {skill ? `Edit: ${skill.title}` : 'New Learning Skill'}
         </h1>
         <button
           type="button"
@@ -68,14 +68,13 @@ export default function PathEditorPage() {
           ← Admin
         </button>
       </div>
-      <PathEditor
-        path={path}
+      <SkillEditor
+        skill={skill}
         clubId={clubId}
         onSaved={(saved) => {
-          setPath(saved);
-          // Update URL to edit URL once created
-          if (!pathId) {
-            navigate(`/learn/admin/paths/${saved.id}`, { replace: true });
+          setSkill(saved);
+          if (!skillId) {
+            navigate(`/learn/admin/skills/${saved.id}`, { replace: true });
           }
         }}
         onCancel={() => navigate('/learn/admin')}

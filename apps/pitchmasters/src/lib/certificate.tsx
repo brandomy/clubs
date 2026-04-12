@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     color: '#666666',
     textAlign: 'center',
   },
-  pathTitle: {
+  skillTitle: {
     fontSize: 20,
     color: '#E31F26',
     fontFamily: 'Helvetica-Bold',
@@ -97,14 +97,14 @@ const styles = StyleSheet.create({
 
 interface CertificateData {
   memberName: string;
-  pathTitle: string;
+  skillTitle: string;
   completedDate: string;
   clubName: string;
 }
 
-function CertificateDocument({ memberName, pathTitle, completedDate, clubName }: CertificateData) {
+function CertificateDocument({ memberName, skillTitle, completedDate, clubName }: CertificateData) {
   return (
-    <Document title={`${memberName} — ${pathTitle} Certificate`}>
+    <Document title={`${memberName} — ${skillTitle} Certificate`}>
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={styles.border}>
           <View style={styles.header}>
@@ -119,9 +119,9 @@ function CertificateDocument({ memberName, pathTitle, completedDate, clubName }:
             <Text style={styles.presentsTo}>This certifies that</Text>
             <Text style={styles.memberName}>{memberName}</Text>
             <Text style={styles.completedText}>
-              has successfully completed the learning path
+              has successfully completed the learning skill
             </Text>
-            <Text style={styles.pathTitle}>{pathTitle}</Text>
+            <Text style={styles.skillTitle}>{skillTitle}</Text>
           </View>
 
           <View style={styles.footer}>
@@ -157,7 +157,7 @@ export async function downloadCertificate(data: CertificateData): Promise<void> 
   const url = await generateCertificate(data);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${data.memberName.replace(/\s+/g, '-')}-${data.pathTitle.replace(/\s+/g, '-')}-Certificate.pdf`;
+  a.download = `${data.memberName.replace(/\s+/g, '-')}-${data.skillTitle.replace(/\s+/g, '-')}-Certificate.pdf`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

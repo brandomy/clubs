@@ -5,8 +5,8 @@
  *
  * Usage:
  *   await awardBadgesForCompletion(memberId, projectId, clubId);
- *   await awardBadgesForLevelCompletion(memberId, levelId, pathId, clubId);
- *   await awardBadgesForPathCompletion(memberId, pathId, clubId);
+ *   await awardBadgesForLevelCompletion(memberId, levelId, skillId, clubId);
+ *   await awardBadgesForSkillCompletion(memberId, skillId, clubId);
  */
 
 import { supabase } from './supabase';
@@ -52,7 +52,7 @@ export async function awardBadgesForCompletion(
 export async function awardBadgesForLevelCompletion(
   memberId: string,
   levelId: string,
-  pathId: string,
+  skillId: string,
   clubId: string
 ): Promise<void> {
   // Check if the member has completed all required projects in this level
@@ -76,7 +76,7 @@ export async function awardBadgesForLevelCompletion(
     .from('pm_member_project_completions')
     .select('project_id')
     .eq('member_id', memberId)
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .in(
       'project_id',
       levelProjects.map((p) => p.id)
@@ -109,7 +109,7 @@ export async function awardBadgesForLevelCompletion(
     }
   }
 
-  // Find the next level in this path (higher order_index)
+  // Find the next level in this skill (higher order_index)
   const { data: currentLevel } = await supabase
     .from('pm_learning_levels')
     .select('order_index')
@@ -120,7 +120,7 @@ export async function awardBadgesForLevelCompletion(
     const { data: nextLevel } = await supabase
       .from('pm_learning_levels')
       .select('id')
-      .eq('path_id', pathId)
+      .eq('skill_id', skillId)
       .gt('order_index', currentLevel.order_index)
       .order('order_index', { ascending: true })
       .limit(1)
@@ -128,27 +128,27 @@ export async function awardBadgesForLevelCompletion(
 
     // Update enrollment to point to next level
     await supabase
-      .from('pm_member_path_enrollments')
+      .from('pm_member_skill_enrollments')
       .update({ current_level_id: nextLevel?.id ?? null })
       .eq('member_id', memberId)
-      .eq('path_id', pathId);
+      .eq('skill_id', skillId);
   }
 }
 
 // ============================================================
-// Award badges and mark path complete
-// Called when all required levels/projects in a path are done
+// Award badges and mark skill complete
+// Called when all required levels/projects in a skill are done
 // ============================================================
-export async function awardBadgesForPathCompletion(
+export async function awardBadgesForSkillCompletion(
   memberId: string,
-  pathId: string,
+  skillId: string,
   clubId: string
 ): Promise<void> {
   // Verify all required projects across all levels are complete
   const { data: allProjects } = await supabase
     .from('pm_learning_projects')
     .select('id')
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .eq('is_elective', false);
 
   if (!allProjects?.length) return;
@@ -157,7 +157,7 @@ export async function awardBadgesForPathCompletion(
     .from('pm_member_project_completions')
     .select('project_id')
     .eq('member_id', memberId)
-    .eq('path_id', pathId);
+    .eq('skill_id', skillId);
 
   const completedIds = new Set(completions?.map((c) => c.project_id) ?? []);
   const allDone = allProjects.every((p) => completedIds.has(p.id));
@@ -166,19 +166,19 @@ export async function awardBadgesForPathCompletion(
   // Mark enrollment as complete
   const now = new Date().toISOString();
   await supabase
-    .from('pm_member_path_enrollments')
+    .from('pm_member_skill_enrollments')
     .update({ completed_at: now })
     .eq('member_id', memberId)
-    .eq('path_id', pathId)
+    .eq('skill_id', skillId)
     .is('completed_at', null);
 
-  // Award path-level badges
+  // Award skill-level badges
   const { data: badges } = await supabase
     .from('pm_learning_badges')
     .select('id')
     .eq('club_id', clubId)
-    .eq('trigger_type', 'path_complete')
-    .eq('trigger_ref_id', pathId);
+    .eq('trigger_type', 'skill_complete')
+    .eq('trigger_ref_id', skillId);
 
   if (badges?.length) {
     for (const badge of badges) {
@@ -204,10 +204,10 @@ export async function runBadgeChecks(
   memberId: string,
   projectId: string,
   levelId: string,
-  pathId: string,
+  skillId: string,
   clubId: string
 ): Promise<void> {
   await awardBadgesForCompletion(memberId, projectId, clubId);
-  await awardBadgesForLevelCompletion(memberId, levelId, pathId, clubId);
-  await awardBadgesForPathCompletion(memberId, pathId, clubId);
+  await awardBadgesForLevelCompletion(memberId, levelId, skillId, clubId);
+  await awardBadgesForSkillCompletion(memberId, skillId, clubId);
 }

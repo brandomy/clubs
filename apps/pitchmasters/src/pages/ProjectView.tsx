@@ -38,7 +38,7 @@ interface SpeechOption {
 }
 
 export default function ProjectView() {
-  const { pathSlug, projectId } = useParams<{ pathSlug: string; projectId: string }>();
+  const { skillSlug, projectId } = useParams<{ skillSlug: string; projectId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -127,9 +127,9 @@ export default function ProjectView() {
     if (!project || !user) return;
 
     // Need enrollment to submit completion
-    const enroll = await getMyEnrollment(user.id, project.path_id);
+    const enroll = await getMyEnrollment(user.id, project.skill_id);
     if (!enroll) {
-      setError('You are not enrolled in this path.');
+      setError('You are not enrolled in this skill.');
       return;
     }
 
@@ -139,7 +139,7 @@ export default function ProjectView() {
       const completion = await submitProjectCompletion(
         user.id,
         project.id,
-        project.path_id,
+        project.skill_id,
         project.club_id,
         selectedSpeechId || undefined
       );
@@ -148,7 +148,7 @@ export default function ProjectView() {
 
       // Award any badges earned by this completion (fire-and-forget)
       if (project.level_id) {
-        runBadgeChecks(user.id, project.id, project.level_id, project.path_id, project.club_id).catch(
+        runBadgeChecks(user.id, project.id, project.level_id, project.skill_id, project.club_id).catch(
           (err) => logger.error('Badge check failed silently:', err)
         );
       }
@@ -198,11 +198,11 @@ export default function ProjectView() {
       {/* Back link */}
       <button
         type="button"
-        onClick={() => navigate(`/learn/${pathSlug}`)}
+        onClick={() => navigate(`/learn/${skillSlug}`)}
         className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to path
+        Back to skill
       </button>
 
       {/* Project header */}

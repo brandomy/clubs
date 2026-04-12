@@ -58,8 +58,8 @@ export interface MemberProfile {
   club_id: string;
   // Public tier data
   photo_url?: string;
-  path_level: string;
-  current_path: string;
+  skill_level: string;
+  current_skill: string;
   venture_name?: string;
   venture_description?: string;
   venture_stage?: 'idea' | 'mvp' | 'growth' | 'scale' | 'exit';
@@ -86,7 +86,7 @@ export interface MemberProfile {
   officer_role?: string;
   team?: string;
   level?: string;
-  completed_pathways: string[];
+  completed_skills: string[];
   dtm: boolean;
   // Professional/founder fields
   organization?: string;
@@ -180,7 +180,7 @@ export interface PublicPage {
 
 export type ProjectType = 'speech' | 'assignment' | 'evaluation_exercise' | 'elective';
 export type CompletionStatus = 'pending_evaluation' | 'completed' | 'approved_by_officer';
-export type BadgeTriggerType = 'project_complete' | 'level_complete' | 'path_complete';
+export type BadgeTriggerType = 'project_complete' | 'level_complete' | 'skill_complete';
 
 export interface EvaluationField {
   id: string;
@@ -192,7 +192,7 @@ export interface EvaluationField {
   placeholder?: string;
 }
 
-export interface LearningPath {
+export interface LearningSkill {
   id: string;
   club_id: string;
   title: string;
@@ -200,6 +200,7 @@ export interface LearningPath {
   slug: string;
   published: boolean;
   cover_image_url: string | null;
+  order_index: number;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -207,12 +208,13 @@ export interface LearningPath {
 
 export interface LearningLevel {
   id: string;
-  path_id: string;
+  skill_id: string;
   club_id: string;
   title: string;
   description: string;
   order_index: number;
   required_projects: number;
+  content?: any | null; // BlockNote JSON — learning materials for this level
 }
 
 export interface EvaluationTemplate {
@@ -228,7 +230,7 @@ export interface EvaluationTemplate {
 export interface LearningProject {
   id: string;
   level_id: string;
-  path_id: string;
+  skill_id: string;
   club_id: string;
   title: string;
   description: string;
@@ -242,10 +244,10 @@ export interface LearningProject {
   updated_at: string;
 }
 
-export interface MemberPathEnrollment {
+export interface MemberSkillEnrollment {
   id: string;
   member_id: string;
-  path_id: string;
+  skill_id: string;
   club_id: string;
   current_level_id: string | null;
   enrolled_at: string;
@@ -260,7 +262,7 @@ export interface MemberProjectCompletion {
   id: string;
   member_id: string;
   project_id: string;
-  path_id: string;
+  skill_id: string;
   club_id: string;
   speech_id: string | null;
   status: CompletionStatus;

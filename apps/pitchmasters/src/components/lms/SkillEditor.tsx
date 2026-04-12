@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -30,9 +31,9 @@ import {
   Layers,
   FileText,
 } from 'lucide-react';
-import type { LearningPath, LearningLevel, LearningProject, EvaluationTemplate, ProjectType } from '../../types';
+import type { LearningSkill, LearningLevel, LearningProject, EvaluationTemplate, ProjectType } from '../../types';
 import {
-  savePath,
+  saveSkill,
   saveLevel,
   saveProject,
   deleteLevel,
@@ -54,10 +55,10 @@ function generateSlug(title: string): string {
     .slice(0, 80);
 }
 
-interface PathEditorProps {
-  path?: LearningPath;
+interface SkillEditorProps {
+  skill?: LearningSkill;
   clubId: string;
-  onSaved: (path: LearningPath) => void;
+  onSaved: (skill: LearningSkill) => void;
   onCancel: () => void;
 }
 
@@ -71,11 +72,13 @@ function SortableLevelRow({
   isSelected,
   onSelect,
   onDelete,
+  onEditContent,
 }: {
   level: LearningLevel;
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onEditContent: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: level.id });
@@ -90,7 +93,7 @@ function SortableLevelRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer border transition-colors ${
+      className={`group flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
         isSelected
           ? 'border-tm-blue bg-blue-50'
           : 'border-transparent hover:bg-gray-50'
@@ -108,19 +111,29 @@ function SortableLevelRow({
       <button
         type="button"
         onClick={onSelect}
-        className="flex-1 text-left text-sm text-gray-800 font-medium truncate"
+        className="flex-1 text-left min-w-0"
       >
-        {level.title || 'Untitled Level'}
+        <p className="text-sm text-gray-800 font-medium truncate">{level.title || 'Untitled Level'}</p>
+        {level.description && (
+          <p className="text-xs text-gray-400 truncate">{level.description}</p>
+        )}
       </button>
-      <ChevronRight
-        className={`w-4 h-4 flex-shrink-0 transition-colors ${
-          isSelected ? 'text-tm-blue' : 'text-gray-400'
-        }`}
-      />
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+        onClick={(e) => { e.stopPropagation(); onEditContent(); }}
+        className="text-gray-400 hover:text-tm-blue transition-colors flex-shrink-0"
+        title="Edit learning materials"
+        aria-label="Edit learning materials"
+      >
+        <ChevronRight className="w-4 h-4" />
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm(`Delete "${level.title}"? This cannot be undone.`)) onDelete();
+        }}
+        className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
         aria-label="Delete level"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -156,7 +169,7 @@ function SortableProjectRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer border transition-colors ${
+      className={`group flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
         isSelected
           ? 'border-tm-blue bg-blue-50'
           : 'border-transparent hover:bg-gray-50'
@@ -180,8 +193,11 @@ function SortableProjectRow({
       </button>
       <button
         type="button"
-        onClick={(e) => { e.stopPropagation(); onDelete(); }}
-        className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm(`Delete "${project.title}"? This cannot be undone.`)) onDelete();
+        }}
+        className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
         aria-label="Delete project"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -191,19 +207,21 @@ function SortableProjectRow({
 }
 
 // ============================================================
-// Main PathEditor
+// Main SkillEditor
 // ============================================================
-export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEditorProps) {
+export default function SkillEditor({ skill, clubId, onSaved, onCancel }: SkillEditorProps) {
+  const navigate = useNavigate();
   const [activePanel, setActivePanel] = useState<Panel>('settings');
 
-  // Path settings state
-  const [title, setTitle] = useState(path?.title ?? '');
-  const [description, setDescription] = useState(path?.description ?? '');
-  const [slug, setSlug] = useState(path?.slug ?? '');
-  const [slugEdited, setSlugEdited] = useState(!!path?.slug);
-  const [published, setPublished] = useState(path?.published ?? false);
-  const [pathSaving, setPathSaving] = useState(false);
-  const [savedPath, setSavedPath] = useState<LearningPath | undefined>(path);
+  // Skill settings state
+  const [title, setTitle] = useState(skill?.title ?? '');
+  const [description, setDescription] = useState(skill?.description ?? '');
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [slug, setSlug] = useState(skill?.slug ?? '');
+  const [slugEdited, setSlugEdited] = useState(!!skill?.slug);
+  const [published, setPublished] = useState(skill?.published ?? false);
+  const [skillSaving, setSkillSaving] = useState(false);
+  const [savedSkill, setSavedSkill] = useState<LearningSkill | undefined>(skill);
 
   // Levels state
   const [levels, setLevels] = useState<LearningLevel[]>([]);
@@ -233,12 +251,19 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // Load levels when path is saved
+  // Sync description HTML into contenteditable on mount
   useEffect(() => {
-    if (!savedPath) return;
-    getLevels(savedPath.id).then(setLevels).catch(console.error);
+    if (descriptionRef.current && skill?.description) {
+      descriptionRef.current.innerHTML = skill.description;
+    }
+  }, [skill?.description]);
+
+  // Load levels when skill is saved
+  useEffect(() => {
+    if (!savedSkill) return;
+    getLevels(savedSkill.id).then(setLevels).catch(console.error);
     listEvaluationTemplates(clubId).then(setEvalTemplates).catch(console.error);
-  }, [savedPath, clubId]);
+  }, [savedSkill, clubId]);
 
   // Load projects when a level is selected
   useEffect(() => {
@@ -275,31 +300,31 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
     if (!slugEdited) setSlug(generateSlug(val));
   };
 
-  // ---- Save path settings ----
-  const handleSavePath = async () => {
+  // ---- Save skill settings ----
+  const handleSaveSkill = async () => {
     if (!title.trim()) return;
-    setPathSaving(true);
+    setSkillSaving(true);
     try {
-      const saved = await savePath({
-        id: savedPath?.id,
+      const saved = await saveSkill({
+        id: savedSkill?.id,
         club_id: clubId,
         title: title.trim(),
         description: description.trim(),
         slug: slug.trim() || generateSlug(title),
         published,
       });
-      setSavedPath(saved);
+      setSavedSkill(saved);
       onSaved(saved);
     } finally {
-      setPathSaving(false);
+      setSkillSaving(false);
     }
   };
 
   // ---- Add / save level ----
   const handleAddLevel = async () => {
-    if (!savedPath) return;
+    if (!savedSkill) return;
     const newLevel = await saveLevel({
-      path_id: savedPath.id,
+      skill_id: savedSkill.id,
       club_id: clubId,
       title: `Level ${levels.length + 1}`,
       order_index: levels.length,
@@ -324,7 +349,7 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
     try {
       const updated = await saveLevel({
         id: selectedLevel.id,
-        path_id: selectedLevel.path_id,
+        skill_id: selectedLevel.skill_id,
         club_id: clubId,
         title: levelTitle,
         description: levelDescription,
@@ -362,10 +387,10 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
 
   // ---- Add / save project ----
   const handleAddProject = async () => {
-    if (!selectedLevel || !savedPath) return;
+    if (!selectedLevel || !savedSkill) return;
     const newProject = await saveProject({
       level_id: selectedLevel.id,
-      path_id: savedPath.id,
+      skill_id: savedSkill.id,
       club_id: clubId,
       title: 'New Project',
       order_index: projects.length,
@@ -376,14 +401,14 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
   };
 
   const handleSaveProject = useCallback(async () => {
-    if (!selectedLevel || !savedPath) return;
+    if (!selectedLevel || !savedSkill) return;
     setProjectSaving(true);
     try {
       const content = editor.document;
       const updated = await saveProject({
         id: selectedProject?.id,
         level_id: selectedLevel.id,
-        path_id: savedPath.id,
+        skill_id: savedSkill.id,
         club_id: clubId,
         title: projectTitle,
         description: projectDescription,
@@ -404,7 +429,7 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
       setProjectSaving(false);
     }
   }, [
-    selectedLevel, savedPath, clubId, editor, selectedProject,
+    selectedLevel, savedSkill, clubId, editor, selectedProject,
     projectTitle, projectDescription, projectType, evalTemplateId,
     isElective, timeEstimate, projects.length,
   ]);
@@ -431,28 +456,53 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
   };
 
   // ============================================================
-  // Panel: Path Settings
+  // Panel: Skill Settings
   // ============================================================
   const renderSettingsPanel = () => (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
         <BookOpen className="w-4 h-4" />
-        Path Settings
+        Skill Settings
       </h3>
       <input
         type="text"
-        placeholder="Path title (e.g., Pitchmasters Fundamentals)"
+        placeholder="Skill title (e.g., Pitchmasters Fundamentals)"
         value={title}
         onChange={(e) => handleTitleChange(e.target.value)}
         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tm-blue"
       />
-      <textarea
-        rows={3}
-        placeholder="Short description shown on the enrollment screen"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-tm-blue"
-      />
+      <div className="rounded-lg border border-gray-300 focus-within:ring-2 focus-within:ring-tm-blue overflow-hidden">
+        <div className="flex gap-1 px-2 py-1 border-b border-gray-200 bg-gray-50">
+          {[
+            { cmd: 'bold',                label: 'B', cls: 'font-bold' },
+            { cmd: 'italic',              label: 'I', cls: 'italic' },
+            { cmd: 'insertUnorderedList', label: '• List', cls: '' },
+            { cmd: 'insertOrderedList',   label: '1. List', cls: '' },
+          ].map(({ cmd, label, cls }) => (
+            <button
+              key={cmd}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); document.execCommand(cmd); }}
+              className={`px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-200 rounded ${cls}`}
+              title={label}
+            >{label}</button>
+          ))}
+        </div>
+        <div className="relative">
+          <div
+            ref={descriptionRef}
+            contentEditable
+            suppressContentEditableWarning
+            onInput={() => setDescription(descriptionRef.current?.innerHTML ?? '')}
+            className="w-full min-h-[80px] px-3 py-2 text-sm text-gray-900 outline-none [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
+          />
+          {!description && (
+            <span className="absolute top-2 left-3 text-sm text-gray-400 pointer-events-none select-none">
+              Short description shown on the enrollment screen
+            </span>
+          )}
+        </div>
+      </div>
       <div>
         <label className="block text-xs font-medium text-gray-500 mb-1">URL slug</label>
         <input
@@ -470,23 +520,23 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
           onChange={(e) => setPublished(e.target.checked)}
           className="rounded border-gray-300 text-tm-blue"
         />
-        <span className="text-sm text-gray-700 flex items-center gap-1">
+        <span className="text-sm flex items-center gap-1">
           {published ? (
-            <><Globe className="w-4 h-4 text-green-600" /> Published (members can enroll)</>
+            <span className="text-green-700 flex items-center gap-1"><Globe className="w-4 h-4" /> Published — visible to all members</span>
           ) : (
-            <><GlobeLock className="w-4 h-4 text-gray-400" /> Draft (only visible to officers)</>
+            <span className="text-gray-500 flex items-center gap-1"><GlobeLock className="w-4 h-4" /> Check to publish — currently draft (officers only)</span>
           )}
         </span>
       </label>
       <div className="flex gap-2 pt-2">
         <button
           type="button"
-          onClick={handleSavePath}
-          disabled={pathSaving || !title.trim()}
+          onClick={handleSaveSkill}
+          disabled={skillSaving || !title.trim()}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-tm-blue text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {pathSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {pathSaving ? 'Saving…' : 'Save Path'}
+          {skillSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {skillSaving ? 'Saving…' : 'Save Skill'}
         </button>
         <button
           type="button"
@@ -509,7 +559,7 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
           <Layers className="w-4 h-4" />
           Levels
         </h3>
-        {savedPath && (
+        {savedSkill && (
           <button
             type="button"
             onClick={handleAddLevel}
@@ -521,19 +571,19 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
         )}
       </div>
 
-      {!savedPath && (
+      {!savedSkill && (
         <p className="text-xs text-gray-400 text-center py-4">
-          Save the path settings first to add levels.
+          Save the skill settings first to add levels.
         </p>
       )}
 
-      {savedPath && levels.length === 0 && (
+      {savedSkill && levels.length === 0 && (
         <p className="text-xs text-gray-400 text-center py-4">
           No levels yet. Add one above.
         </p>
       )}
 
-      {savedPath && (
+      {savedSkill && (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -551,6 +601,7 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
                   isSelected={selectedLevel?.id === level.id}
                   onSelect={() => selectLevel(level)}
                   onDelete={() => handleDeleteLevel(level.id)}
+                  onEditContent={() => navigate(`/learn/admin/levels/${level.id}/content`)}
                 />
               ))}
             </div>
@@ -578,6 +629,17 @@ export default function PathEditor({ path, clubId, onSaved, onCancel }: PathEdit
             onChange={(e) => setLevelDescription(e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tm-blue"
           />
+          <button
+            type="button"
+            onClick={() => navigate(`/learn/admin/levels/${selectedLevel.id}/content`)}
+            className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg border border-gray-300 hover:border-tm-blue hover:bg-blue-50 text-sm text-gray-700 hover:text-tm-blue transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
+              Edit Learning Materials
+            </span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
           <label className="flex items-center gap-2 text-sm text-gray-700">
             Projects required to complete:
             <input
