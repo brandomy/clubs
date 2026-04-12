@@ -58,7 +58,7 @@ export default function PageEditorPage() {
       : null;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto overflow-x-hidden">
       {/* Editor nav bar */}
       <div className="flex items-center justify-between mb-4">
         <Link

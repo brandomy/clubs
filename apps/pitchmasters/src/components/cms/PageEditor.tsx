@@ -305,7 +305,7 @@ export default function PageEditor({
       </div>
 
       {/* BlockNote Editor */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden min-h-[400px]">
+      <div className="pm-page-view w-full border border-gray-200 rounded-lg overflow-hidden min-h-[400px]">
         <BlockNoteView editor={editor} theme="light" filePanel={false}>
           <FilePanelController filePanel={CustomFilePanel} />
         </BlockNoteView>

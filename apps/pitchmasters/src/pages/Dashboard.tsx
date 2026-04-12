@@ -6,10 +6,10 @@ export default function Dashboard() {
       {/* Welcome Section */}
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-jakarta font-semibold text-tm-blue mb-2">
+          <h1 className="text-2xl sm:text-[2rem] font-bold text-gray-900 mb-2">
             Welcome to Pitchmasters
           </h1>
-          <p className="text-tm-gray">
+          <p className="text-gray-500">
             Asia's first startup-focused Toastmasters club. Accelerate your communication skills
             and build your network with fellow entrepreneurs.
           </p>
@@ -27,10 +27,10 @@ export default function Dashboard() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-tm-gray truncate">
+                  <dt className="text-sm font-medium text-gray-500 truncate">
                     Next Meeting
                   </dt>
-                  <dd className="text-lg font-medium text-tm-blue">
+                  <dd className="text-lg font-medium text-gray-900">
                     Nov 15, 2024
                   </dd>
                 </dl>
@@ -48,10 +48,10 @@ export default function Dashboard() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-tm-gray truncate">
+                  <dt className="text-sm font-medium text-gray-500 truncate">
                     Active Members
                   </dt>
-                  <dd className="text-lg font-medium text-tm-blue">
+                  <dd className="text-lg font-medium text-gray-900">
                     24
                   </dd>
                 </dl>
@@ -69,10 +69,10 @@ export default function Dashboard() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-tm-gray truncate">
+                  <dt className="text-sm font-medium text-gray-500 truncate">
                     Speeches This Month
                   </dt>
-                  <dd className="text-lg font-medium text-tm-blue">
+                  <dd className="text-lg font-medium text-gray-900">
                     18
                   </dd>
                 </dl>
@@ -90,10 +90,10 @@ export default function Dashboard() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-tm-gray truncate">
+                  <dt className="text-sm font-medium text-gray-500 truncate">
                     Avg Meeting Length
                   </dt>
-                  <dd className="text-lg font-medium text-tm-blue">
+                  <dd className="text-lg font-medium text-gray-900">
                     75 min
                   </dd>
                 </dl>
@@ -106,10 +106,10 @@ export default function Dashboard() {
       {/* Recent Activity */}
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-jakarta font-medium text-tm-blue">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
             Recent Activity
           </h3>
-          <p className="mt-1 max-w-2xl text-sm text-tm-gray">
+          <p className="mt-1 max-w-2xl text-gray-500">
             Latest updates from your club
           </p>
         </div>
@@ -123,10 +123,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-tm-blue">
+                  <div className="text-sm font-medium text-gray-900">
                     Sarah Chen completed Speech #3
                   </div>
-                  <div className="text-sm text-tm-gray">
+                  <div className="text-sm text-gray-500">
                     "Mastering Your Elevator Pitch" - 2 hours ago
                   </div>
                 </div>
@@ -142,10 +142,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-tm-blue">
+                  <div className="text-sm font-medium text-gray-900">
                     Meeting #47 scheduled
                   </div>
-                  <div className="text-sm text-tm-gray">
+                  <div className="text-sm text-gray-500">
                     November 15, 2024 at 7:00 PM - 1 day ago
                   </div>
                 </div>
@@ -161,10 +161,10 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="ml-4">
-                  <div className="text-sm font-medium text-tm-blue">
+                  <div className="text-sm font-medium text-gray-900">
                     New member joined
                   </div>
-                  <div className="text-sm text-tm-gray">
+                  <div className="text-sm text-gray-500">
                     Alex Kim - Welcome to Pitchmasters! - 3 days ago
                   </div>
                 </div>

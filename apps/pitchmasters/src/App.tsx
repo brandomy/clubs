@@ -17,6 +17,7 @@ import SkillEditorPage from './pages/SkillEditorPage';
 import EvaluationTemplates from './pages/EvaluationTemplates';
 import LearningAnalyticsPage from './pages/LearningAnalyticsPage';
 import LevelContentEditorPage from './pages/LevelContentEditorPage';
+import MeetingsPage from './pages/MeetingsPage';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import { AuthProvider } from './contexts/AuthContext';
@@ -49,6 +50,7 @@ function AppRoutes() {
 
       {/* Protected routes — members only */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+      <Route path="/meetings" element={<ProtectedRoute><Layout><MeetingsPage /></Layout></ProtectedRoute>} />
       <Route path="/members" element={<ProtectedRoute><Layout><MembersPage /></Layout></ProtectedRoute>} />
       <Route path="/members/:memberId" element={<ProtectedRoute><Layout><MemberProfilePage /></Layout></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Layout><CommunityPage /></Layout></ProtectedRoute>} />

@@ -46,9 +46,9 @@ export default function MembersPage() {
           <div className="py-6">
             <div className="flex items-center gap-3 mb-4">
               <Users className="w-8 h-8 text-tm-blue" />
-              <h1 className="text-3xl font-bold text-gray-900">Member Directory</h1>
+              <h1 className="text-2xl sm:text-[2rem] font-bold text-gray-900">Member Directory</h1>
             </div>
-            <p className="text-gray-600 max-w-3xl">
+            <p className="text-gray-500 max-w-3xl">
               Connect with fellow entrepreneurs and club members. All member information shown
               respects individual privacy settings and visibility preferences.
             </p>

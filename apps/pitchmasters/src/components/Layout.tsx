@@ -139,21 +139,21 @@ export default function Layout({ children }: LayoutProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-base font-semibold text-tm-blue mb-3">Pitchmasters</h3>
-              <p className="text-sm text-gray-600 mb-2">Asia's first startup-focused Toastmasters club</p>
+              <h3 className="text-base font-semibold text-gray-900 mb-3">Pitchmasters</h3>
+              <p className="text-sm text-gray-700 mb-2">Asia's first startup-focused Toastmasters club</p>
               <p className="text-sm text-gray-500">Building communication excellence for entrepreneurs</p>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-tm-blue mb-3">Quick Links</h3>
+              <h3 className="text-base font-semibold text-gray-900 mb-3">Quick Links</h3>
               <ul className="space-y-2">
-                <li><Link to="/pages/about"   className="text-sm text-gray-600 hover:text-tm-blue transition-colors">About</Link></li>
-                <li><Link to="/pages/join-us" className="text-sm text-gray-600 hover:text-tm-blue transition-colors">Join Us</Link></li>
-                {!user && <li><Link to="/login" className="text-sm text-gray-600 hover:text-tm-blue transition-colors">Member Sign In</Link></li>}
+                <li><Link to="/pages/about"   className="text-sm text-gray-500 hover:text-gray-900 transition-colors">About</Link></li>
+                <li><Link to="/pages/join-us" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Join Us</Link></li>
+                {!user && <li><Link to="/login" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Member Sign In</Link></li>}
               </ul>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-tm-blue mb-3">Club Details</h3>
-              <p className="text-sm text-gray-600 mb-3">CB-28679395</p>
+              <h3 className="text-base font-semibold text-gray-900 mb-3">Club Details</h3>
+              <p className="text-sm text-gray-700 mb-3">CB-28679395</p>
               <p className="text-xs text-gray-500 leading-relaxed">
                 This website is maintained by club members for club business only.
                 Content is not endorsed by Toastmasters International.

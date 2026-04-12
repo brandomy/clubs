@@ -159,7 +159,7 @@ export default function LearningDashboard() {
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto py-8">
+      <div className="max-w-4xl mx-auto py-8">
         <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>
       </div>
     );
@@ -168,10 +168,10 @@ export default function LearningDashboard() {
   // ---- Skill selection screen ----
   if (!skillSlug) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Learning</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl sm:text-[2rem] font-bold text-gray-900">Learning</h1>
+          <p className="text-gray-500 mt-1">
             Practical skills for startup founders — built in-house, just for Pitchmasters.
           </p>
         </div>
@@ -204,9 +204,9 @@ export default function LearningDashboard() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{s.title}</h3>
                     {s.description && (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{s.description.replace(/<[^>]+>/g, ' ').trim()}</p>
+                      <p className="text-gray-500 mt-1 line-clamp-2">{s.description.replace(/<[^>]+>/g, ' ').trim()}</p>
                     )}
                     {!s.published && (
                       <span className="inline-flex items-center gap-1 mt-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
@@ -227,7 +227,7 @@ export default function LearningDashboard() {
   // ---- No skill found ----
   if (!activeSkill) {
     return (
-      <div className="max-w-2xl mx-auto py-8 text-center text-gray-400">
+      <div className="max-w-4xl mx-auto py-8 text-center text-gray-400">
         <p>Skill not found.</p>
       </div>
     );
@@ -236,7 +236,7 @@ export default function LearningDashboard() {
   // ---- Enrollment screen ----
   if (!enrollment) {
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <button
           type="button"
           onClick={() => navigate('/learn')}
@@ -271,7 +271,7 @@ export default function LearningDashboard() {
   const next = nextProject();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
