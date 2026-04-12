@@ -7,8 +7,8 @@ const makeProfile = (overrides: Partial<MemberProfile> = {}): MemberProfile => (
   id: 'profile-1',
   user_id: 'user-1',
   club_id: 'club-1',
-  path_level: 'Level 1',
-  current_path: 'Presentation Mastery',
+  skill_level: 'Level 1',
+  current_skill: 'Presentation Mastery',
   expertise_areas: ['Sales', 'Marketing'],
   networking_interests: [],
   looking_for: ['Investors'],
@@ -16,7 +16,7 @@ const makeProfile = (overrides: Partial<MemberProfile> = {}): MemberProfile => (
   speech_count: 3,
   evaluation_count: 2,
   leadership_roles: ['Timer'],
-  completed_pathways: [],
+  completed_skills: [],
   dtm: false,
   is_founder: true,
   is_rotarian: false,
@@ -76,11 +76,11 @@ describe('getVisibleMemberData', () => {
     expect(getVisibleMemberData(member)).toBeNull()
   })
 
-  it('always exposes name, pathLevel, currentPath', () => {
+  it('always exposes name, skillLevel, currentSkill', () => {
     const result = getVisibleMemberData(makeMember())
     expect(result?.name).toBe('Alice Chen')
-    expect(result?.pathLevel).toBe('Level 1')
-    expect(result?.currentPath).toBe('Presentation Mastery')
+    expect(result?.skillLevel).toBe('Level 1')
+    expect(result?.currentSkill).toBe('Presentation Mastery')
   })
 
   it('hides contact info for unauthenticated users even if privacy allows it', () => {

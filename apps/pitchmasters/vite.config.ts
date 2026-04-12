@@ -58,6 +58,7 @@ export default defineConfig(({ command }) => ({
         globPatterns: [
           '**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}'
         ],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MB — main bundle exceeds default 2 MB limit
 
         // Clean up old caches automatically
         cleanupOutdatedCaches: true,

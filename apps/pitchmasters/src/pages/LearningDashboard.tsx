@@ -298,7 +298,6 @@ export default function LearningDashboard() {
           const { done, total } = progressForLevel(level);
           return total > 0 && done === total;
         });
-        const completedCount = levelStatuses.filter(Boolean).length;
         const currentIndex = levelStatuses.findIndex((done) => !done);
 
         return (

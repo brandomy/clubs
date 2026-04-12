@@ -1,5 +1,6 @@
 // Shared BlockNote schema for the CMS — used by both the editor and the public viewer.
 // Keeping it in one place ensures saved content always renders correctly on both sides.
+/* eslint-disable react-refresh/only-export-components */
 
 import { useCallback, useRef } from 'react';
 import {

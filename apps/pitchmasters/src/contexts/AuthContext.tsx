@@ -143,6 +143,7 @@ async function fetchUserFromDb(authUserId: string): Promise<User | null> {
   return Promise.race([fetchPromise, timeoutPromise]);
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuthContext(): AuthContextType {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuthContext must be used within AuthProvider');

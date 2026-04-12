@@ -47,7 +47,7 @@ export default function MemberDirectory({ members, currentUser, isAuthenticated 
     members.forEach(member => {
       const visibleData = getVisibleMemberData(member, currentUser, isAuthenticated);
       if (visibleData) {
-        pathLevels.add(visibleData.pathLevel);
+        pathLevels.add(visibleData.skillLevel);
       }
 
       // Location from CSV fields (city, country)
@@ -90,7 +90,7 @@ export default function MemberDirectory({ members, currentUser, isAuthenticated 
       if (filters.industry && visibleData.industry !== filters.industry) return false;
 
       // Filter by path level (always visible)
-      if (filters.pathLevel && visibleData.pathLevel !== filters.pathLevel) return false;
+      if (filters.pathLevel && visibleData.skillLevel !== filters.pathLevel) return false;
 
       // Filter by venture stage (using visible data)
       if (filters.ventureStage && visibleData.venture?.stage !== filters.ventureStage) return false;

@@ -32,7 +32,7 @@ const MemberCard = memo(function MemberCard({ member, visibleData }: MemberCardP
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate leading-tight">{visibleData.name}</h3>
-          <p className="text-sm text-gray-600 leading-tight">{visibleData.pathLevel} • {visibleData.currentPath}</p>
+          <p className="text-sm text-gray-600 leading-tight">{visibleData.skillLevel} • {visibleData.currentSkill}</p>
           {visibleData.industry && (
             <p className="text-sm text-gray-500 leading-tight">{visibleData.industry}</p>
           )}
