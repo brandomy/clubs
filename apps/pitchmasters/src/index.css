@@ -151,6 +151,40 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ── Public page view — BlockNote typography overrides ───────────────────────
+   Mantine's default heading scale is designed for app UIs (large/bold).
+   These overrides bring it down to readable editorial proportions for
+   public-facing content pages, mobile-first.
+   ─────────────────────────────────────────────────────────────────────────── */
+.pm-page-view .bn-editor h1 {
+  font-size: 1.5rem;      /* 24px — fits one line on most phones */
+  line-height: 1.3;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+.pm-page-view .bn-editor h2 {
+  font-size: 1.2rem;      /* 19.2px */
+  line-height: 1.35;
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+.pm-page-view .bn-editor h3 {
+  font-size: 1.05rem;     /* 16.8px */
+  line-height: 1.4;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+.pm-page-view .bn-editor p,
+.pm-page-view .bn-editor li {
+  font-size: 1rem;        /* 16px */
+  line-height: 1.7;
+}
+@media (min-width: 640px) {
+  .pm-page-view .bn-editor h1 { font-size: 1.75rem; }
+  .pm-page-view .bn-editor h2 { font-size: 1.3rem; }
+  .pm-page-view .bn-editor h3 { font-size: 1.1rem; }
+}
+
 /* Touch targets minimum 44px */
 button, .btn, .touch-target {
   min-height: 44px;
