@@ -157,39 +157,55 @@ h1, h2, h3, h4, h5, h6 {
    public-facing content pages, mobile-first.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* Strip internal drag-handle padding — not needed in read-only mode */
+/* Strip left drag-handle indent, constrain width to prevent overflow */
+.pm-page-view {
+  overflow-x: hidden;
+}
 .pm-page-view .bn-editor {
   padding-left: 0 !important;
   padding-right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 .pm-page-view .bn-block-outer,
 .pm-page-view .bn-block,
 .pm-page-view .bn-block-content {
   padding-left: 0 !important;
   margin-left: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
+/* Remove block hover/selection highlight in read-only mode */
+.pm-page-view .bn-block-outer:hover,
+.pm-page-view .bn-block-outer:focus-within {
+  background-color: transparent !important;
+  outline: none !important;
+}
+
+/* Heading sizes and spacing — mobile-first */
 .pm-page-view .bn-editor h1 {
-  font-size: 1.5rem;      /* 24px — fits one line on most phones */
+  font-size: 1.5rem;
   line-height: 1.3;
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.4rem;
 }
 .pm-page-view .bn-editor h2 {
-  font-size: 1.2rem;      /* 19.2px */
+  font-size: 1.2rem;
   line-height: 1.35;
-  margin-top: 1.25rem;
-  margin-bottom: 0.35rem;
+  padding-top: 1.5rem;
+  padding-bottom: 0.3rem;
 }
 .pm-page-view .bn-editor h3 {
-  font-size: 1.05rem;     /* 16.8px */
+  font-size: 1.05rem;
   line-height: 1.4;
-  margin-top: 1rem;
-  margin-bottom: 0.25rem;
+  padding-top: 1.25rem;
+  padding-bottom: 0.25rem;
 }
 .pm-page-view .bn-editor p,
 .pm-page-view .bn-editor li {
-  font-size: 1rem;        /* 16px */
+  font-size: 1rem;
   line-height: 1.7;
 }
 @media (min-width: 640px) {
