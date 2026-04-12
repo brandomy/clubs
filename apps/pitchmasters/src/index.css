@@ -156,6 +156,19 @@ h1, h2, h3, h4, h5, h6 {
    These overrides bring it down to readable editorial proportions for
    public-facing content pages, mobile-first.
    ─────────────────────────────────────────────────────────────────────────── */
+
+/* Strip internal drag-handle padding — not needed in read-only mode */
+.pm-page-view .bn-editor {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.pm-page-view .bn-block-outer,
+.pm-page-view .bn-block,
+.pm-page-view .bn-block-content {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
 .pm-page-view .bn-editor h1 {
   font-size: 1.5rem;      /* 24px — fits one line on most phones */
   line-height: 1.3;
