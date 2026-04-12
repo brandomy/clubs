@@ -22,14 +22,10 @@ export default function PublicPageView({ page }: PublicPageViewProps) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-jakarta font-bold text-tm-blue mb-2">{page.title}</h1>
-        <p className="text-sm text-gray-500">Last updated {updatedDate}</p>
-      </div>
-
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         <BlockNoteView editor={editor} editable={false} theme="light" />
       </div>
+      <p className="text-xs text-gray-400 mt-3 text-right">Last updated {updatedDate}</p>
     </div>
   );
 }
