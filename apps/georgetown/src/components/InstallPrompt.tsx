@@ -62,7 +62,7 @@ export default function InstallPrompt() {
           <div className="flex items-center gap-2">
             <div className="bg-[#0067c8] rounded-lg p-2">
               <img
-                src="/assets/images/icons/favicon-32x32.png"
+                src="/icons/favicon-32x32.png"
                 alt="Georgetown Rotary"
                 className="w-6 h-6"
               />
