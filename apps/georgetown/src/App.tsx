@@ -86,6 +86,9 @@ function App() {
 
                   {/* Development-only route for testing error boundary */}
                   {import.meta.env.DEV && ErrorTest && <Route path="/error-test" element={<ErrorTest />} />}
+
+                  {/* Fallback — send unknown URLs to public home */}
+                  <Route path="*" element={<Navigate to="/about" replace />} />
                 </Routes>
               </Suspense>
             </div>

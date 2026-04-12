@@ -11,6 +11,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth()
 
   if (isLoading) return <LoadingFallback />
-  if (!user) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/about" replace />
   return <>{children}</>
 }
