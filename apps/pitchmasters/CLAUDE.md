@@ -136,6 +136,44 @@ OR
 - **Community-focused** - Cross-club guest system, recognition features
 - **PWA with offline support** - Installable, user-controlled updates, intelligent caching strategies
 
+## Mobile-First Design
+
+This application is built **mobile-first**. The primary user is a startup founder checking the app on their phone between meetings — not sitting at a desktop.
+
+### What mobile-first means in practice
+
+**CSS approach**: Tailwind breakpoints are additive. Base styles target mobile, then `md:` and `lg:` prefixes layer in desktop refinements on top. Never write desktop styles first and then try to undo them for mobile.
+
+```tsx
+// ✅ Correct — mobile base, desktop enhancement
+<div className="block md:flex">
+
+// ❌ Wrong — desktop first, mobile override
+<div className="flex md:flex">
+```
+
+**Touch targets**: All interactive elements (buttons, links, inputs) must meet the 44×44px minimum recommended by Apple HIG and Google Material. Use the `min-h-touch` and `min-w-touch` utility classes, which are defined in Tailwind config.
+
+**Viewport targets**:
+- Primary: 375px–414px (iPhone SE → iPhone Pro Max)
+- Secondary: 360px–412px (Android mid-range)
+- Desktop: 1024px+ (officer admin tasks)
+
+**Test at 390px** (iPhone 14) as the default dev viewport in Chrome DevTools.
+
+### Checklist for every new component
+- [ ] Readable and usable at 375px width without horizontal scroll
+- [ ] All tap targets ≥ 44px (`min-h-touch`)
+- [ ] Text legible without zooming (minimum 14px body, 16px inputs)
+- [ ] No hover-only interactions (touch has no hover state)
+- [ ] Test in Chrome DevTools mobile emulation before marking done
+
+### Key Tailwind classes in use
+- `min-h-touch` — 44px minimum height for touch targets
+- `min-w-touch` — 44px minimum width for touch targets
+- `font-jakarta` — Plus Jakarta Sans, self-hosted (China-safe)
+- `text-tm-blue` / `text-tm-red` — Toastmasters brand colours
+
 ## PWA Implementation Notes
 **Completed**: 2025-12-17 (replicated from Georgetown Rotary Club app)
 
