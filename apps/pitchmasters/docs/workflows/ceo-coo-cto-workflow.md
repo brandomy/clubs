@@ -113,7 +113,7 @@ CEO: [Tests functionality]
 
 **Purpose**: Capture future ideas without CEO needing to track them.
 
-**File**: `docs/BACKLOG.md`
+**File**: `BACKLOG.md`
 
 ### Usage Pattern
 

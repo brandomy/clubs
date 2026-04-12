@@ -2,3 +2,6 @@ node_modules/
 dist/
 .env
 .env.local
+
+# Member data — contains real personal data, never commit
+docs/reference/member-data.csv

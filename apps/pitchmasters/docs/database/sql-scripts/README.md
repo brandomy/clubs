@@ -24,6 +24,9 @@ This folder contains SQL commands prepared by Claude Code for manual entry in Su
 ### Data Structure Updates
 - **add-csv-fields.sql** - CSV import field additions
 
+## Migration Numbering Note
+There is a known numbering conflict at sequence `009`: both `009-fix-rls-recursion.sql` and `009-lms-schema.sql` exist. These were already applied to production so the filenames were not changed. **Next migration must start at `016-`**.
+
 ## Best Practices
 - Always backup before running schema changes
 - Test in development environment first

@@ -82,10 +82,10 @@ Claude Code generates structured documentation using standard Pitchmasters forma
 
 ### Session Startup Checklist for Claude Code
 1. Read CLAUDE.md (business context + quality gates)
-2. Read docs/expert-standards.md (full-stack verification requirements)
+2. Read docs/governance/expert-standards.md (full-stack verification requirements)
 3. Read docs/database/database-protocol.md (multi-club architecture standards)
-4. Read docs/tech-constraints.md (stability rules)
-5. Read docs/toastmasters-brand-guide.md (brand compliance requirements)
+4. Read docs/governance/tech-constraints.md (stability rules)
+5. Read docs/governance/toastmasters-brand-guide.md (brand compliance requirements)
 6. Confirm understanding before proceeding
 
 ## Tech Stack (from TIS Section 1)
@@ -104,7 +104,7 @@ React 19.1.1 + TypeScript + Vite 7.1.6 | Supabase PostgreSQL | Cloudflare Pages 
 ### Backlog System
 **Purpose**: Capture future ideas without CEO needing to track them
 
-**File**: `docs/BACKLOG.md`
+**File**: `BACKLOG.md`
 
 **CEO adds items:**
 ```
@@ -255,6 +255,19 @@ This application is built **mobile-first**. The primary user is a startup founde
 - ✅ Use naming: `topic-workflow.md`
 - Add when process is repeated 3+ times with clear steps
 
+### Governance (docs/governance/)
+**Standing rules and standards**:
+- ✅ Expert standards, tech constraints, management protocols
+- ✅ Brand guides (Toastmasters brand guide)
+- ✅ Dev charter
+
+### Reference (docs/reference/)
+**Static reference data and external content**:
+- ✅ Toastmasters curriculum docs (Competent Communication, etc.)
+- ✅ Manifesto translations
+- ✅ Member data CSVs
+- ✅ Tech stack reference notes
+
 ### Archive (docs/archive/)
 **Completed/superseded documentation**:
 - ✅ Sprint completion reports after review
@@ -278,6 +291,6 @@ This application is built **mobile-first**. The primary user is a startup founde
 - **TIS**: docs/TIS.md (technical architecture, database schema, implementation)
 - **Documentation Guide**: docs/README.md (navigation and organization)
 - **Database Protocol**: docs/database/database-protocol.md
-- **Brand Guidelines**: docs/toastmasters-brand-guide.md
-- **Governance**: docs/expert-standards.md, docs/tech-constraints.md, docs/management-protocols.md
+- **Brand Guidelines**: docs/governance/toastmasters-brand-guide.md
+- **Governance**: docs/governance/expert-standards.md, docs/governance/tech-constraints.md, docs/governance/management-protocols.md
 - **Workflows**: docs/workflows/ (deployment, security, asset management)
