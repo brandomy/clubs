@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BookOpen, CheckCircle, Circle, ArrowRight, Award, Download, Loader2, Lock } from 'lucide-react';
+import { BookOpen, CheckCircle, Circle, ArrowRight, Award, Download, Flag, Loader2, Lock } from 'lucide-react';
+
 import { useAuth } from '../hooks/useAuth';
 import { downloadCertificate } from '../lib/certificate';
 import { supabase } from '../lib/supabase';
@@ -302,17 +303,17 @@ export default function LearningDashboard() {
 
         return (
           <div className="bg-white border border-gray-200 rounded-xl px-5 py-4">
-            <div className="flex items-center gap-1 overflow-x-auto pb-1">
+            <div className="flex items-start w-full">
               {levels.map((level, i) => {
                 const isComplete = levelStatuses[i];
                 const isCurrent = i === currentIndex;
 
                 return (
-                  <div key={level.id} className="flex items-center flex-shrink-0">
-                    {/* Connector line */}
+                  <div key={level.id} className={`flex items-center ${i > 0 ? 'flex-1' : ''}`}>
+                    {/* Connector line — grows to fill space between nodes */}
                     {i > 0 && (
                       <div
-                        className={`h-0.5 w-8 flex-shrink-0 ${
+                        className={`flex-1 h-0.5 mt-4 ${
                           levelStatuses[i - 1] ? 'bg-green-400' : 'bg-gray-200'
                         }`}
                       />
@@ -325,7 +326,7 @@ export default function LearningDashboard() {
                           isComplete
                             ? 'bg-green-500 text-white'
                             : isCurrent
-                            ? 'bg-tm-blue text-white'
+                            ? 'bg-gray-200 text-gray-600 ring-2 ring-gray-400 ring-offset-1'
                             : 'bg-gray-100 text-gray-400'
                         }`}
                       >
@@ -335,17 +336,15 @@ export default function LearningDashboard() {
                           i + 1
                         )}
                       </div>
-                      <span className="text-xs text-gray-500 text-center max-w-[72px] leading-tight line-clamp-2">
+                      <span className="text-xs text-gray-500 text-center w-24 leading-tight line-clamp-2">
                         {level.title}
                       </span>
                     </div>
                   </div>
                 );
               })}
+
             </div>
-            <p className="text-xs text-gray-500 mt-3">
-              {completedCount} of {levels.length} level{levels.length !== 1 ? 's' : ''} complete
-            </p>
           </div>
         );
       })()}
@@ -362,7 +361,7 @@ export default function LearningDashboard() {
             <div className="px-5 pt-4 pb-3">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="font-semibold text-gray-900 text-sm">{level.title}</h2>
-                <span className="text-xs text-gray-500">{done}/{total}</span>
+                {total > 0 && <span className="text-xs text-gray-500">{done}/{total}</span>}
               </div>
               <div className="w-full bg-gray-100 rounded-full h-2">
                 <div
@@ -417,6 +416,13 @@ export default function LearningDashboard() {
           </div>
         );
       })}
+
+      {/* End of skill marker */}
+      <div className="flex items-center gap-3 text-gray-200">
+        <div className="flex-1 h-px bg-gray-200" />
+        <Flag className="w-3.5 h-3.5 text-gray-300" />
+        <div className="flex-1 h-px bg-gray-200" />
+      </div>
 
       {/* Path complete */}
       {enrollment.completed_at && (
