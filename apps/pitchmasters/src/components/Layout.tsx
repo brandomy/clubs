@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link to="/" className="flex items-center">
-                <h1 className="text-xl font-montserrat font-semibold text-white">
+                <h1 className="text-xl font-jakarta font-semibold text-white">
                   Pitchmasters
                 </h1>
               </Link>
@@ -206,23 +206,11 @@ export default function Layout({ children }: LayoutProps) {
             {/* Quick Links */}
             <div>
               <h3 className="text-base font-semibold text-tm-blue mb-3">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a href="https://www.toastmasters.org" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-tm-blue transition-colors">
-                    Toastmasters International
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.toastmasters.org/pathways-overview" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-tm-blue transition-colors">
-                    Pathways Learning Experience
-                  </a>
-                </li>
-              </ul>
             </div>
 
             {/* Toastmasters Branding */}
             <div>
-              <h3 className="text-base font-semibold text-tm-blue mb-3">Official Club</h3>
+              <h3 className="text-base font-semibold text-tm-blue mb-3">Club Details</h3>
               <p className="text-sm text-gray-600 mb-3">
                 CB-28679395
               </p>

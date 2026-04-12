@@ -67,7 +67,8 @@ When multiple options exist, always choose the stable, proven option unless clea
 ### Specific Pitchmasters Constraints
 
 **Font Strategy:**
-- Self-hosted Montserrat and Source Sans 3 (no external CDN dependencies)
+- Self-hosted Plus Jakarta Sans (headings) and Source Sans 3 (body) — no external CDN dependencies
+- Both fonts are variable fonts: subsetted woff2 files served from `/public/assets/fonts/`, covering Latin, Latin-ext, and Vietnamese subsets
 - System font fallbacks for reliability
 - Professional typography hierarchy matching Toastmasters brand
 
@@ -93,7 +94,7 @@ When multiple options exist, always choose the stable, proven option unless clea
 - **Blocked services avoidance** - Google Fonts, Maps, Analytics, Facebook services
 
 **Asset Self-Hosting Requirements:**
-- **Fonts**: Complete Montserrat and Source Sans 3 families hosted in /public/assets/fonts/
+- **Fonts**: Plus Jakarta Sans and Source Sans 3 (variable, subsetted woff2) hosted in /public/assets/fonts/
 - **Icons**: All visual assets served from local filesystem
 - **Scripts**: No external JavaScript dependencies beyond npm packages
 - **Images**: All brand assets and graphics self-contained

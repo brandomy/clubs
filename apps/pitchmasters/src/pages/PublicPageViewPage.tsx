@@ -38,7 +38,7 @@ export default function PublicPageViewPage() {
   if (notFound || !page) {
     return (
       <div className="max-w-2xl mx-auto mt-24 text-center">
-        <h1 className="text-3xl font-montserrat font-bold text-tm-blue mb-4">Page Not Found</h1>
+        <h1 className="text-3xl font-jakarta font-bold text-tm-blue mb-4">Page Not Found</h1>
         <p className="text-gray-500 mb-8">
           This page doesn't exist or hasn't been published yet.
         </p>

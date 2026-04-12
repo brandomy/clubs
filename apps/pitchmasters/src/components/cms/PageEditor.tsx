@@ -6,67 +6,13 @@ import {
   EmbedTab,
   UploadTab,
   FilePanelController,
-  createReactBlockSpec,
-  ResizableFileBlockWrapper,
-  type ReactCustomBlockRenderProps,
 } from '@blocknote/react';
-import {
-  BlockNoteSchema,
-  defaultBlockSpecs,
-  createVideoBlockConfig,
-  videoParse,
-} from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
-import { Save, Globe, GlobeLock, Trash2, CheckCircle, Video } from 'lucide-react';
+import { Save, Globe, GlobeLock, Trash2, CheckCircle } from 'lucide-react';
 import { PublicPage, User } from '../../types';
 import { supabase } from '../../lib/supabase';
-
-// ── Custom video block: YouTube/Vimeo iframe + S/M/L size picker ──────────────
-
-function getEmbedInfo(url: string): { kind: 'iframe'; src: string } | { kind: 'video'; src: string } | null {
-  if (!url) return null;
-  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?#]+)/);
-  if (ytMatch) return { kind: 'iframe', src: `https://www.youtube.com/embed/${ytMatch[1]}` };
-  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeoMatch) return { kind: 'iframe', src: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
-  return { kind: 'video', src: url };
-}
-
-function CustomVideoBlock(props: ReactCustomBlockRenderProps<typeof createVideoBlockConfig>) {
-  const url = props.block.props.url;
-  const embed = url ? getEmbedInfo(url) : null;
-
-  return (
-    <ResizableFileBlockWrapper {...(props as any)} buttonIcon={<Video size={24} />}>
-      {embed?.kind === 'iframe' ? (
-        <iframe
-          src={embed.src}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          style={{ width: '100%', aspectRatio: '16/9', border: 'none', display: 'block' }}
-        />
-      ) : embed?.kind === 'video' ? (
-        <video className="bn-visual-media" src={embed.src} controls draggable={false} />
-      ) : null}
-    </ResizableFileBlockWrapper>
-  );
-}
-
-const customVideoBlockSpec = createReactBlockSpec(
-  createVideoBlockConfig,
-  (config) => ({
-    render: CustomVideoBlock,
-    parse: videoParse(config),
-  }),
-);
-
-const schema = BlockNoteSchema.create({
-  blockSpecs: {
-    ...defaultBlockSpecs,
-    video: customVideoBlockSpec(),
-  },
-});
+import { cmsSchema } from './cmsSchema';
 
 // ── Image upload ──────────────────────────────────────────────────────────────
 
@@ -160,7 +106,7 @@ export default function PageEditor({
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const editor = useCreateBlockNote({
-    schema,
+    schema: cmsSchema,
     initialContent: page?.content?.length ? page.content : undefined,
     uploadFile: uploadImage,
   });
@@ -268,7 +214,7 @@ export default function PageEditor({
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="Page title"
-          className="w-full text-2xl font-montserrat font-semibold text-tm-blue border-0 border-b-2 border-gray-200 focus:border-tm-blue focus:outline-none pb-2 bg-transparent"
+          className="w-full text-2xl font-jakarta font-semibold text-tm-blue border-0 border-b-2 border-gray-200 focus:border-tm-blue focus:outline-none pb-2 bg-transparent"
         />
       </div>
 

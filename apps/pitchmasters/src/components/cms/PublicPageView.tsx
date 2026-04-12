@@ -2,6 +2,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { PublicPage } from '../../types';
+import { cmsSchema } from './cmsSchema';
 
 interface PublicPageViewProps {
   page: PublicPage;
@@ -9,6 +10,7 @@ interface PublicPageViewProps {
 
 export default function PublicPageView({ page }: PublicPageViewProps) {
   const editor = useCreateBlockNote({
+    schema: cmsSchema,
     initialContent: page.content?.length ? page.content : undefined,
   });
 
@@ -21,7 +23,7 @@ export default function PublicPageView({ page }: PublicPageViewProps) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-montserrat font-bold text-tm-blue mb-2">{page.title}</h1>
+        <h1 className="text-3xl font-jakarta font-bold text-tm-blue mb-2">{page.title}</h1>
         <p className="text-sm text-gray-500">Last updated {updatedDate}</p>
       </div>
 

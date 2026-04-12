@@ -53,7 +53,7 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-montserrat font-semibold text-tm-blue">Club Pages</h1>
+        <h1 className="text-2xl font-jakarta font-semibold text-tm-blue">Club Pages</h1>
         {isOfficerOrAdmin && (
           <Link
             to="/pages/new"

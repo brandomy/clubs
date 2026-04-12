@@ -64,9 +64,9 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-tm-red rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-xl font-montserrat">PM</span>
+            <span className="text-white font-bold text-xl font-jakarta">PM</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 font-montserrat">Pitchmasters</h1>
+          <h1 className="text-2xl font-bold text-gray-900 font-jakarta">Pitchmasters</h1>
           <p className="text-gray-500 mt-1 text-sm">Set your password</p>
         </div>
 

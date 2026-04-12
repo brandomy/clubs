@@ -6,7 +6,7 @@ export default function Dashboard() {
       {/* Welcome Section */}
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-montserrat font-semibold text-tm-blue mb-2">
+          <h1 className="text-2xl font-jakarta font-semibold text-tm-blue mb-2">
             Welcome to Pitchmasters
           </h1>
           <p className="text-tm-gray">
@@ -106,7 +106,7 @@ export default function Dashboard() {
       {/* Recent Activity */}
       <div className="bg-white shadow overflow-hidden sm:rounded-md">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-montserrat font-medium text-tm-blue">
+          <h3 className="text-lg leading-6 font-jakarta font-medium text-tm-blue">
             Recent Activity
           </h3>
           <p className="mt-1 max-w-2xl text-sm text-tm-gray">

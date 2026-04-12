@@ -68,13 +68,13 @@ export function runSprintValidation(): ValidationResults {
   console.log('\n🔧 Technical Standards Verification\n');
 
   const technicalStandards = {
-    toastmastersBrandCompliance: true, // Using tm-blue, Montserrat fonts, official disclaimer
+    toastmastersBrandCompliance: true, // Using tm-blue, Plus Jakarta Sans fonts, official disclaimer
     mobileFirstResponsive: true, // 320px-414px primary, scales to 1920px
     selfHostedAssets: true, // No external CDNs, fonts hosted locally
     chinaFriendly: true // No blocked services, complete network independence
   };
 
-  console.log('✅ Toastmasters Brand Compliance: Using tm-blue colors, Montserrat fonts, official disclaimer');
+  console.log('✅ Toastmasters Brand Compliance: Using tm-blue colors, Plus Jakarta Sans fonts, official disclaimer');
   console.log('✅ Mobile-First Responsive: 320px-414px primary target, responsive grid layouts');
   console.log('✅ Self-Hosted Assets: No Google Fonts/CDNs, local font serving');
   console.log('✅ China-Friendly Design: No external dependencies, complete offline capability');
@@ -180,7 +180,7 @@ export function validateMobileResponsiveness(): boolean {
   });
 
   console.log('\nTypography Scaling:');
-  console.log('✅ Montserrat headings scale appropriately');
+  console.log('✅ Plus Jakarta Sans headings scale appropriately');
   console.log('✅ Source Sans 3 body text remains readable');
   console.log('✅ Minimum 16px font size on mobile');
 

@@ -14,7 +14,7 @@ export default {
         }
       },
       fontFamily: {
-        'montserrat': ['Montserrat', 'sans-serif'],
+        'jakarta': ['Plus Jakarta Sans', 'sans-serif'],
         'source': ['Source Sans 3', 'sans-serif'],
       },
       spacing: {
