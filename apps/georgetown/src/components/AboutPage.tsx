@@ -54,8 +54,9 @@ export default function AboutPage() {
               <div>
                 <p className="font-medium text-gray-900">Where</p>
                 <p className="text-gray-600">
-                  Penang Island City Council Building<br />
-                  George Town, Penang, Malaysia
+                  Gurney Bay Hotel<br />
+                  53, Persiaran Gurney<br />
+                  10250 Penang, Malaysia
                 </p>
               </div>
             </div>
@@ -67,18 +68,18 @@ export default function AboutPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Us</h2>
           <div className="space-y-3">
             <a
-              href="mailto:info@georgetown-rotary.org"
+              href="mailto:rcgeorgetown.pg@gmail.com"
               className="flex items-center gap-3 text-gray-700 hover:text-[#0067c8] transition-colors"
             >
               <Mail className="w-5 h-5" />
-              <span>info@georgetown-rotary.org</span>
+              <span>rcgeorgetown.pg@gmail.com</span>
             </a>
             <a
-              href="tel:+60412345678"
+              href="tel:+60194705857"
               className="flex items-center gap-3 text-gray-700 hover:text-[#0067c8] transition-colors"
             >
               <Phone className="w-5 h-5" />
-              <span>+60 4 123 4567</span>
+              <span>+60 19 470 5857</span>
             </a>
           </div>
         </div>

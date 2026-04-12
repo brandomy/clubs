@@ -14,7 +14,7 @@ export default function JoinUsPage() {
           Become part of a global network of professionals committed to service, fellowship, and positive change in our community.
         </p>
         <a
-          href="mailto:info@georgetown-rotary.org?subject=Membership%20Enquiry"
+          href="mailto:rcgeorgetown.pg@gmail.com?subject=Membership%20Enquiry"
           className="inline-flex items-center gap-2 px-6 py-3 bg-[#f7a81b] hover:bg-[#f4b000] text-[#0067c8] rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
         >
           <Mail className="w-5 h-5" />
@@ -66,7 +66,7 @@ export default function JoinUsPage() {
             <div>
               <p className="font-medium text-gray-900">Weekly Meetings</p>
               <p className="text-gray-600">Every Wednesday at 7:00 PM</p>
-              <p className="text-gray-500 text-sm">Penang Island City Council Building, George Town</p>
+              <p className="text-gray-500 text-sm">Gurney Bay Hotel, 53, Persiaran Gurney, 10250 Penang</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -137,7 +137,7 @@ export default function JoinUsPage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="mailto:info@georgetown-rotary.org?subject=Membership%20Enquiry"
+            href="mailto:rcgeorgetown.pg@gmail.com?subject=Membership%20Enquiry"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#0067c8] hover:bg-[#004a8a] text-white rounded-lg font-semibold transition-all shadow-md"
           >
             <Mail className="w-5 h-5" />
