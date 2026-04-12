@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { PublicPage } from '../types';
+import { PublicPage, PageVisibility } from '../types';
 
 function generateSlug(title: string): string {
   return title
@@ -12,13 +12,18 @@ function generateSlug(title: string): string {
     .slice(0, 80);
 }
 
+// Fall back to the env-configured club ID so unauthenticated visitors can
+// still read public pages via the RLS "pm_public_pages_read_public" policy.
+const FALLBACK_CLUB_ID = import.meta.env.VITE_DEMO_CLUB_ID as string | undefined;
+
 export function usePublicPages(clubId: string | null) {
+  const resolvedClubId = clubId ?? FALLBACK_CLUB_ID ?? null;
   const [pages, setPages] = useState<PublicPage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPages = useCallback(async () => {
-    if (!clubId) {
+    if (!resolvedClubId) {
       setPages([]);
       setIsLoading(false);
       return;
@@ -31,7 +36,7 @@ export function usePublicPages(clubId: string | null) {
       const { data, error: fetchError } = await supabase
         .from('pm_public_pages')
         .select('*')
-        .eq('club_id', clubId)
+        .eq('club_id', resolvedClubId)
         .order('updated_at', { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -41,19 +46,19 @@ export function usePublicPages(clubId: string | null) {
     } finally {
       setIsLoading(false);
     }
-  }, [clubId]);
+  }, [resolvedClubId]);
 
   useEffect(() => {
     fetchPages();
   }, [fetchPages]);
 
   const getPage = useCallback(async (slug: string): Promise<PublicPage | null> => {
-    if (!clubId) return null;
+    if (!resolvedClubId) return null;
 
     const fetchPromise = supabase
       .from('pm_public_pages')
       .select('*')
-      .eq('club_id', clubId)
+      .eq('club_id', resolvedClubId)
       .eq('slug', slug)
       .single()
       .then(({ data, error }) => (error ? null : (data as PublicPage)));
@@ -63,25 +68,25 @@ export function usePublicPages(clubId: string | null) {
     );
 
     return Promise.race([fetchPromise, timeoutPromise]);
-  }, [clubId]);
+  }, [resolvedClubId]);
 
   const savePage = useCallback(async (
     page: Partial<PublicPage> & { title: string; content: any }
   ): Promise<PublicPage | null> => {
+    // Write operations require an authenticated club member — don't use fallback
     if (!clubId) return null;
 
     const slug = page.slug || generateSlug(page.title);
 
     try {
       if (page.id) {
-        // Update existing page
         const { data, error: updateError } = await supabase
           .from('pm_public_pages')
           .update({
             title: page.title,
             slug,
             content: page.content,
-            published: page.published ?? false,
+            visibility: page.visibility ?? 'draft',
           })
           .eq('id', page.id)
           .select()
@@ -91,7 +96,6 @@ export function usePublicPages(clubId: string | null) {
         await fetchPages();
         return data;
       } else {
-        // Insert new page
         const { data, error: insertError } = await supabase
           .from('pm_public_pages')
           .insert({
@@ -99,7 +103,7 @@ export function usePublicPages(clubId: string | null) {
             title: page.title,
             slug,
             content: page.content,
-            published: page.published ?? false,
+            visibility: page.visibility ?? 'draft',
             author_id: page.author_id ?? null,
           })
           .select()
@@ -114,10 +118,10 @@ export function usePublicPages(clubId: string | null) {
     }
   }, [clubId, fetchPages]);
 
-  const publishPage = useCallback(async (pageId: string, published: boolean): Promise<void> => {
+  const setVisibility = useCallback(async (pageId: string, visibility: PageVisibility): Promise<void> => {
     const { error: updateError } = await supabase
       .from('pm_public_pages')
-      .update({ published })
+      .update({ visibility })
       .eq('id', pageId);
 
     if (updateError) throw new Error(updateError.message);
@@ -140,7 +144,7 @@ export function usePublicPages(clubId: string | null) {
     error,
     getPage,
     savePage,
-    publishPage,
+    setVisibility,
     deletePage,
     refetch: fetchPages,
   };

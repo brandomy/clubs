@@ -14,7 +14,7 @@ export default function PageEditorPage() {
   const { user } = useAuth();
   const clubId = user?.club_id ?? null;
 
-  const { getPage, savePage, publishPage, deletePage } = usePublicPages(clubId);
+  const { getPage, savePage, setVisibility, deletePage } = usePublicPages(clubId);
   const [page, setPage] = useState<PublicPage | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(!isNew);
 
@@ -32,6 +32,7 @@ export default function PageEditorPage() {
     if (result && !page) {
       navigate(`/pages/${result.slug}/edit`, { replace: true });
     }
+    if (result) setPage(result);
     return result;
   };
 
@@ -50,6 +51,12 @@ export default function PageEditorPage() {
 
   if (!user) return null;
 
+  const viewLink = page?.visibility === 'public'
+    ? `/p/${page.slug}`
+    : page?.visibility === 'members'
+      ? `/pages/${page.slug}`
+      : null;
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Editor nav bar */}
@@ -60,13 +67,13 @@ export default function PageEditorPage() {
         >
           ← All Pages
         </Link>
-        {page?.published && page.slug && (
+        {viewLink && (
           <Link
-            to={`/pages/${page.slug}`}
+            to={viewLink}
             className="flex items-center gap-1.5 text-sm text-tm-blue hover:underline"
           >
             <Eye className="w-4 h-4" />
-            View published page
+            View page
           </Link>
         )}
       </div>
@@ -75,7 +82,7 @@ export default function PageEditorPage() {
         page={page}
         currentUser={user}
         onSave={handleSave}
-        onPublish={publishPage}
+        onSetVisibility={setVisibility}
         onDelete={handleDelete}
         onCancel={() => navigate('/pages')}
       />

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit2, Eye, Globe, GlobeLock, Trash2, FileText } from 'lucide-react';
-import { PublicPage, User } from '../../types';
+import { Plus, Edit2, Eye, Globe, Lock, FileText, Trash2 } from 'lucide-react';
+import { PublicPage, PageVisibility, User } from '../../types';
 
 interface PagesListProps {
   pages: PublicPage[];
   currentUser: User | null;
-  onPublish: (pageId: string, published: boolean) => Promise<void>;
+  onSetVisibility: (pageId: string, visibility: PageVisibility) => Promise<void>;
   onDelete: (pageId: string) => Promise<void>;
 }
 
@@ -18,18 +18,37 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function PagesList({ pages, currentUser, onPublish, onDelete }: PagesListProps) {
+const VISIBILITY_BADGE: Record<PageVisibility, { label: string; classes: string; Icon: typeof Globe }> = {
+  draft:   { label: 'Draft',        classes: 'bg-gray-100 text-gray-600',   Icon: FileText },
+  members: { label: 'Members only', classes: 'bg-blue-100 text-blue-800',   Icon: Lock },
+  public:  { label: 'Public',       classes: 'bg-green-100 text-green-800', Icon: Globe },
+};
+
+// Cycle: draft → members → public → draft
+const NEXT_VISIBILITY: Record<PageVisibility, PageVisibility> = {
+  draft: 'members',
+  members: 'public',
+  public: 'draft',
+};
+
+const NEXT_VISIBILITY_LABEL: Record<PageVisibility, string> = {
+  draft: 'Make members-only',
+  members: 'Make public',
+  public: 'Make draft',
+};
+
+export default function PagesList({ pages, currentUser, onSetVisibility, onDelete }: PagesListProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const isOfficerOrAdmin = currentUser?.role === 'officer' || currentUser?.role === 'admin';
   const isAdmin = currentUser?.role === 'admin';
 
-  const handlePublishToggle = async (page: PublicPage) => {
+  const handleVisibilityCycle = async (page: PublicPage) => {
     setLoadingId(page.id);
     setActionError(null);
     try {
-      await onPublish(page.id, !page.published);
+      await onSetVisibility(page.id, NEXT_VISIBILITY[page.visibility]);
     } catch (err: unknown) {
       setActionError(err instanceof Error ? err.message : 'Action failed');
     } finally {
@@ -65,6 +84,16 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
         )}
       </div>
 
+      {/* Visibility legend */}
+      <div className="flex flex-wrap gap-3 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-lg px-4 py-3">
+        <span className="font-medium text-gray-600 mr-1">Visibility:</span>
+        <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Draft — officers &amp; admins only</span>
+        <span className="text-gray-300">·</span>
+        <span className="flex items-center gap-1"><Lock className="w-3.5 h-3.5" /> Members only — signed-in members</span>
+        <span className="text-gray-300">·</span>
+        <span className="flex items-center gap-1"><Globe className="w-3.5 h-3.5" /> Public — anyone on the internet</span>
+      </div>
+
       {/* Error */}
       {actionError && (
         <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
@@ -89,6 +118,8 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
       <div className="space-y-3">
         {pages.map((page) => {
           const isLoading = loadingId === page.id;
+          const badge = VISIBILITY_BADGE[page.visibility];
+          const BadgeIcon = badge.Icon;
 
           return (
             <div
@@ -99,27 +130,27 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-base font-semibold text-gray-900 truncate">{page.title}</h2>
-                    <span
-                      className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        page.published
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {page.published ? 'Published' : 'Draft'}
+                    <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${badge.classes}`}>
+                      <BadgeIcon className="w-3 h-3" />
+                      {badge.label}
                     </span>
                   </div>
                   <p className="text-sm text-gray-500">
-                    /pages/{page.slug} · Updated {formatDate(page.updated_at)}
+                    {page.visibility === 'public'
+                      ? `/p/${page.slug}`
+                      : page.visibility === 'members'
+                        ? `/pages/${page.slug}`
+                        : `draft · /pages/${page.slug}`}
+                    {' '}· Updated {formatDate(page.updated_at)}
                   </p>
                 </div>
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 shrink-0">
-                  {/* View — only if published */}
-                  {page.published && (
+                  {/* View — public pages go to /p/slug, members pages go to /pages/slug */}
+                  {page.visibility !== 'draft' && (
                     <Link
-                      to={`/pages/${page.slug}`}
+                      to={page.visibility === 'public' ? `/p/${page.slug}` : `/pages/${page.slug}`}
                       className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-h-[44px]"
                       title="View page"
                     >
@@ -140,25 +171,17 @@ export default function PagesList({ pages, currentUser, onPublish, onDelete }: P
                     </Link>
                   )}
 
-                  {/* Publish/Unpublish — officers and admins */}
+                  {/* Visibility cycle — officers and admins */}
                   {isOfficerOrAdmin && (
                     <button
-                      onClick={() => handlePublishToggle(page)}
+                      onClick={() => handleVisibilityCycle(page)}
                       disabled={isLoading}
-                      className={`flex items-center gap-1 px-3 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 min-h-[44px] ${
-                        page.published
-                          ? 'text-amber-700 bg-amber-50 hover:bg-amber-100'
-                          : 'text-green-700 bg-green-50 hover:bg-green-100'
-                      }`}
-                      title={page.published ? 'Unpublish' : 'Publish'}
+                      className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 min-h-[44px]"
+                      title={NEXT_VISIBILITY_LABEL[page.visibility]}
                     >
-                      {page.published ? (
-                        <GlobeLock className="w-4 h-4" />
-                      ) : (
-                        <Globe className="w-4 h-4" />
-                      )}
+                      <BadgeIcon className="w-4 h-4" />
                       <span className="hidden sm:inline">
-                        {page.published ? 'Unpublish' : 'Publish'}
+                        {NEXT_VISIBILITY_LABEL[page.visibility]}
                       </span>
                     </button>
                   )}

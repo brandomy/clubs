@@ -9,8 +9,8 @@ import {
 } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
-import { Save, Globe, GlobeLock, Trash2, CheckCircle } from 'lucide-react';
-import { PublicPage, User } from '../../types';
+import { Save, Globe, Lock, FileText, Trash2, CheckCircle, ChevronDown } from 'lucide-react';
+import { PublicPage, PageVisibility, User } from '../../types';
 import { supabase } from '../../lib/supabase';
 import { cmsSchema } from './cmsSchema';
 
@@ -66,13 +66,102 @@ function CustomFilePanel({ blockId }: { blockId: string }) {
   );
 }
 
+// ── Visibility option config ──────────────────────────────────────────────────
+
+const VISIBILITY_OPTIONS: {
+  value: PageVisibility;
+  label: string;
+  description: string;
+  icon: typeof Globe;
+  colors: string;
+}[] = [
+  {
+    value: 'draft',
+    label: 'Draft',
+    description: 'Officers & admins only',
+    icon: FileText,
+    colors: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+  },
+  {
+    value: 'members',
+    label: 'Members only',
+    description: 'Signed-in members only',
+    icon: Lock,
+    colors: 'bg-blue-50 text-blue-800 hover:bg-blue-100',
+  },
+  {
+    value: 'public',
+    label: 'Public',
+    description: 'Anyone on the internet',
+    icon: Globe,
+    colors: 'bg-green-50 text-green-800 hover:bg-green-100',
+  },
+];
+
+// ── Visibility dropdown ───────────────────────────────────────────────────────
+
+interface VisibilityDropdownProps {
+  value: PageVisibility;
+  onChange: (v: PageVisibility) => void;
+  disabled?: boolean;
+}
+
+function VisibilityDropdown({ value, onChange, disabled }: VisibilityDropdownProps) {
+  const [open, setOpen] = useState(false);
+  const current = VISIBILITY_OPTIONS.find((o) => o.value === value)!;
+  const Icon = current.icon;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        disabled={disabled}
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${current.colors} disabled:opacity-50`}
+      >
+        <Icon className="w-4 h-4" />
+        {current.label}
+        <ChevronDown className="w-3 h-3 opacity-60" />
+      </button>
+
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+            {VISIBILITY_OPTIONS.map((opt) => {
+              const OptIcon = opt.icon;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => { onChange(opt.value); setOpen(false); }}
+                  className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
+                    opt.value === value ? 'bg-gray-50' : ''
+                  }`}
+                >
+                  <OptIcon className="w-4 h-4 mt-0.5 shrink-0 text-gray-500" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">{opt.label}</div>
+                    <div className="text-xs text-gray-500">{opt.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── Editor component ──────────────────────────────────────────────────────────
 
 interface PageEditorProps {
   page?: PublicPage;
   currentUser: User;
   onSave: (page: Partial<PublicPage> & { title: string; content: any }) => Promise<PublicPage | null>;
-  onPublish: (pageId: string, published: boolean) => Promise<void>;
+  onSetVisibility: (pageId: string, visibility: PageVisibility) => Promise<void>;
   onDelete?: (pageId: string) => Promise<void>;
   onCancel: () => void;
 }
@@ -91,15 +180,16 @@ export default function PageEditor({
   page,
   currentUser,
   onSave,
-  onPublish,
+  onSetVisibility,
   onDelete,
   onCancel,
 }: PageEditorProps) {
   const [title, setTitle] = useState(page?.title ?? '');
   const [slug, setSlug] = useState(page?.slug ?? '');
   const [slugEdited, setSlugEdited] = useState(!!page?.slug);
+  const [visibility, setVisibility] = useState<PageVisibility>(page?.visibility ?? 'draft');
   const [isSaving, setIsSaving] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
+  const [isChangingVisibility, setIsChangingVisibility] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -127,7 +217,7 @@ export default function PageEditor({
     setSlugEdited(true);
   }, []);
 
-  const handleSaveDraft = useCallback(async () => {
+  const handleSave = useCallback(async () => {
     if (!title.trim()) return;
     setIsSaving(true);
     setSaveError(null);
@@ -137,7 +227,7 @@ export default function PageEditor({
         title: title.trim(),
         slug: slug || generateSlug(title),
         content: editor.document,
-        published: page?.published ?? false,
+        visibility,
         author_id: currentUser.id,
       });
       showToast();
@@ -146,49 +236,34 @@ export default function PageEditor({
     } finally {
       setIsSaving(false);
     }
-  }, [title, slug, editor, page, currentUser.id, onSave, showToast]);
+  }, [title, slug, editor, page, currentUser.id, visibility, onSave, showToast]);
 
-  const handlePublishToggle = useCallback(async () => {
-    if (!page?.id) {
-      setIsSaving(true);
+  const handleVisibilityChange = useCallback(async (newVisibility: PageVisibility) => {
+    setVisibility(newVisibility);
+
+    // If page exists, persist immediately; otherwise it's saved with the next Save
+    if (page?.id) {
+      setIsChangingVisibility(true);
       setSaveError(null);
       try {
-        const saved = await onSave({
-          title: title.trim(),
-          slug: slug || generateSlug(title),
+        await onSave({
+          ...page,
+          title: title.trim() || page.title,
+          slug: slug || page.slug,
           content: editor.document,
-          published: true,
+          visibility: newVisibility,
           author_id: currentUser.id,
         });
-        if (!saved) setSaveError('Failed to publish');
-        else showToast();
+        await onSetVisibility(page.id, newVisibility);
+        showToast();
       } catch (err: unknown) {
-        setSaveError(err instanceof Error ? err.message : 'Publish failed');
+        setSaveError(err instanceof Error ? err.message : 'Failed to update visibility');
+        setVisibility(page.visibility); // revert
       } finally {
-        setIsSaving(false);
+        setIsChangingVisibility(false);
       }
-      return;
     }
-
-    setIsPublishing(true);
-    setSaveError(null);
-    try {
-      await onSave({
-        ...page,
-        title: title.trim(),
-        slug: slug || generateSlug(title),
-        content: editor.document,
-        published: !page.published,
-        author_id: currentUser.id,
-      });
-      await onPublish(page.id, !page.published);
-      showToast();
-    } catch (err: unknown) {
-      setSaveError(err instanceof Error ? err.message : 'Publish toggle failed');
-    } finally {
-      setIsPublishing(false);
-    }
-  }, [page, title, slug, editor, currentUser.id, onSave, onPublish, showToast]);
+  }, [page, title, slug, editor, currentUser.id, onSave, onSetVisibility, showToast]);
 
   const handleDelete = useCallback(async () => {
     if (!page?.id || !onDelete) return;
@@ -203,7 +278,6 @@ export default function PageEditor({
   }, [page, onDelete]);
 
   const isAdmin = currentUser.role === 'admin';
-  const isPublished = page?.published ?? false;
 
   return (
     <div className="space-y-4">
@@ -245,37 +319,21 @@ export default function PageEditor({
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-3 pt-2 flex-wrap">
         <button
-          onClick={handleSaveDraft}
-          disabled={!title.trim() || isSaving}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 min-h-[44px]"
+          onClick={handleSave}
+          disabled={!title.trim() || isSaving || isChangingVisibility}
+          className="flex items-center gap-2 px-4 py-2 bg-tm-blue text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 min-h-[44px]"
         >
           <Save className="w-4 h-4" />
-          {isSaving ? 'Saving…' : isPublished ? 'Save' : 'Save Draft'}
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
 
-        <button
-          onClick={handlePublishToggle}
-          disabled={!title.trim() || isPublishing || isSaving}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50 min-h-[44px] ${
-            isPublished
-              ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-              : 'bg-tm-blue text-white hover:bg-blue-700'
-          }`}
-        >
-          {isPublished ? (
-            <>
-              <GlobeLock className="w-4 h-4" />
-              {isPublishing ? 'Unpublishing…' : 'Unpublish'}
-            </>
-          ) : (
-            <>
-              <Globe className="w-4 h-4" />
-              {isPublishing ? 'Publishing…' : 'Publish'}
-            </>
-          )}
-        </button>
+        <VisibilityDropdown
+          value={visibility}
+          onChange={handleVisibilityChange}
+          disabled={isSaving || isChangingVisibility}
+        />
 
         {isAdmin && page?.id && (
           <button
@@ -298,8 +356,8 @@ export default function PageEditor({
 
       {/* Save success toast */}
       {saveSuccess && (
-        <div className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg text-sm font-medium animate-fade-in z-50">
-          <CheckCircle className="w-4 h-4 flex-shrink-0" />
+        <div className="fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg text-sm font-medium z-50">
+          <CheckCircle className="w-4 h-4 shrink-0" />
           Saved successfully
         </div>
       )}

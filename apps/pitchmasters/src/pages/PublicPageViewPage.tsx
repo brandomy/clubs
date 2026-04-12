@@ -8,6 +8,10 @@ import { PublicPage } from '../types';
 
 export default function PublicPageViewPage() {
   const { slug } = useParams<{ slug: string }>();
+  // Pass the user's club_id if logged in; the hook falls back to
+  // VITE_DEMO_CLUB_ID for unauthenticated visitors so public pages still load.
+  // RLS enforces visibility at the database level — members-only pages return
+  // null for unauthenticated callers, triggering the "not found" state.
   const { user } = useAuth();
   const { getPage } = usePublicPages(user?.club_id ?? null);
   const [page, setPage] = useState<PublicPage | null>(null);
@@ -17,8 +21,11 @@ export default function PublicPageViewPage() {
   useEffect(() => {
     if (!slug) return;
     setIsLoading(true);
+    setNotFound(false);
+    setPage(null);
     getPage(slug).then((result) => {
-      if (!result || !result.published) {
+      // Draft pages are never viewable here — only members/public
+      if (!result || result.visibility === 'draft') {
         setNotFound(true);
       } else {
         setPage(result);
@@ -43,11 +50,11 @@ export default function PublicPageViewPage() {
           This page doesn't exist or hasn't been published yet.
         </p>
         <Link
-          to="/pages"
+          to="/about"
           className="inline-flex items-center gap-2 text-tm-blue hover:underline"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Pages
+          Back to home
         </Link>
       </div>
     );
@@ -55,15 +62,6 @@ export default function PublicPageViewPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <Link
-          to="/pages"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-tm-blue transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          All Pages
-        </Link>
-      </div>
       <PublicPageView page={page} />
     </div>
   );

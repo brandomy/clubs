@@ -162,13 +162,15 @@ export interface MemberWithProfile extends User {
   privacy_settings?: PrivacySettings;
 }
 
+export type PageVisibility = 'draft' | 'members' | 'public';
+
 export interface PublicPage {
   id: string;
   club_id: string;
   slug: string;
   title: string;
   content: any; // BlockNote JSON document
-  published: boolean;
+  visibility: PageVisibility;
   author_id: string | null;
   created_at: string;
   updated_at: string;

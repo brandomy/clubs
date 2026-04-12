@@ -1,6 +1,7 @@
 import { lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import PublicLayout from './components/PublicLayout';
 import Dashboard from './pages/Dashboard';
 import MembersPage from './pages/MembersPage';
 import MemberProfilePage from './pages/MemberProfilePage';
@@ -38,19 +39,21 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Public routes — no auth required */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/about" element={<Navigate to="/pages/about" replace />} />
+      <Route path="/p/:slug" element={<PublicLayout><PublicPageViewPage /></PublicLayout>} />
+      <Route path="/pages" element={<Layout><PagesListPage /></Layout>} />
+      <Route path="/pages/:slug" element={<Layout><PublicPageViewPage /></Layout>} />
 
-      {/* Protected routes — wrapped in Layout */}
+      {/* Protected routes — members only */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
       <Route path="/members" element={<ProtectedRoute><Layout><MembersPage /></Layout></ProtectedRoute>} />
       <Route path="/members/:memberId" element={<ProtectedRoute><Layout><MemberProfilePage /></Layout></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Layout><CommunityPage /></Layout></ProtectedRoute>} />
-      <Route path="/pages" element={<ProtectedRoute><Layout><PagesListPage /></Layout></ProtectedRoute>} />
       <Route path="/pages/new" element={<ProtectedRoute><Layout><PageEditorPage /></Layout></ProtectedRoute>} />
       <Route path="/pages/:slug/edit" element={<ProtectedRoute><Layout><PageEditorPage /></Layout></ProtectedRoute>} />
-      <Route path="/pages/:slug" element={<ProtectedRoute><Layout><PublicPageViewPage /></Layout></ProtectedRoute>} />
 
       {/* LMS — member-facing */}
       <Route path="/learn" element={<ProtectedRoute><Layout><LearningDashboard /></Layout></ProtectedRoute>} />

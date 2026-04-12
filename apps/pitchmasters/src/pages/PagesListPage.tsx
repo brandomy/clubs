@@ -5,8 +5,10 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function PagesListPage() {
   const { user } = useAuth();
+  // Use the authenticated club_id if available; hook falls back to
+  // VITE_DEMO_CLUB_ID so anonymous visitors can browse public pages.
   const clubId = user?.club_id ?? null;
-  const { pages, isLoading, error, publishPage, deletePage } = usePublicPages(clubId);
+  const { pages, isLoading, error, setVisibility, deletePage } = usePublicPages(clubId);
 
   if (isLoading) {
     return (
@@ -25,13 +27,11 @@ export default function PagesListPage() {
     );
   }
 
-  if (!user) return null;
-
   return (
     <PagesList
       pages={pages}
       currentUser={user}
-      onPublish={publishPage}
+      onSetVisibility={setVisibility}
       onDelete={deletePage}
     />
   );
