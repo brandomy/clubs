@@ -22,7 +22,7 @@ export default function PublicPageView({ page }: PublicPageViewProps) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden pm-page-view">
+      <div className="pm-page-view">
         <BlockNoteView editor={editor} editable={false} theme="light" />
       </div>
       <p className="text-xs text-gray-400 mt-3 text-right">Last updated {updatedDate}</p>

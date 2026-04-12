@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
   const closeMobile = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <header className="bg-tm-blue text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,10 +130,8 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          {children}
-        </div>
+      <main className="flex-1 max-w-7xl w-full mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        {children}
       </main>
 
       {/* Footer */}
