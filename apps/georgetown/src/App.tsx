@@ -3,6 +3,8 @@ import { lazy, Suspense } from 'react'
 import ErrorBoundary from './components/ErrorBoundary'
 import LoadingFallback from './components/LoadingFallback'
 import Footer from './components/Footer'
+import PublicLayout from './components/PublicLayout'
+import JoinUsPage from './components/JoinUsPage'
 import RouteTracker from './components/RouteTracker'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { OfflineIndicator } from './components/OfflineIndicator'
@@ -52,10 +54,11 @@ function App() {
                   {/* Public routes */}
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
+                  <Route path="/join-us" element={<PublicLayout><JoinUsPage /></PublicLayout>} />
 
                   {/* Protected routes */}
                   <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                  <Route path="/about" element={<ProtectedRoute><AboutPage /></ProtectedRoute>} />
                   <Route path="/members" element={<ProtectedRoute><MemberDirectory /></ProtectedRoute>} />
                   <Route path="/calendar" element={<ProtectedRoute><CalendarView /></ProtectedRoute>} />
                   <Route path="/timeline" element={<ProtectedRoute><TimelineView /></ProtectedRoute>} />

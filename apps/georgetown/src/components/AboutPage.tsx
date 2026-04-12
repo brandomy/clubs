@@ -1,15 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Mail, Phone, Facebook, Linkedin, Instagram, ArrowRight } from 'lucide-react'
-import AppHeader from './AppHeader'
 
 export default function AboutPage() {
-  const navigate = useNavigate()
-
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header (no secondary nav on public page) */}
-      <AppHeader sectionName="ABOUT" showAddButton={false} />
-
+    <div className="bg-gray-50">
       {/* Main Content */}
       <main className="flex-1 px-4 py-8 max-w-4xl mx-auto w-full">
         {/* Club Overview */}
@@ -129,17 +123,15 @@ export default function AboutPage() {
           <p className="text-white/90 mb-6">
             Access the member toolkit to manage speakers, projects, and more.
           </p>
-          <button
-            onClick={() => navigate('/')}
+          <Link
+            to="/login"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#f7a81b] hover:bg-[#f4b000] text-[#0067c8] rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
           >
-            <span>Member Login</span>
+            <span>Member Sign In</span>
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </Link>
         </div>
       </main>
-
-      {/* Note: No BottomNav on About page - it's a public page */}
     </div>
   )
 }
